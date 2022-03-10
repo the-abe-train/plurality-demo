@@ -4,6 +4,9 @@ import Footer from "~/components/Footer";
 import Header from "~/components/Header";
 import Question from "~/components/Question";
 
+import { IQuestion } from "~/lib/question";
+import { Photo } from "~/lib/unsplash";
+
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
@@ -41,13 +44,21 @@ export const loader: LoaderFunction = async () => {
   // Read in data from database here
 
   // TODO Apply for production from Unsplash
+
+  async function fetchPhoto(question: IQuestion): Promise<Photo> {
+    const api = baseApi + question.photoId + "/?client_id=" + key;
+    const response = await fetch(api);
+    const photo = await response.json();
+    return photo;
+  }
+
   const key = process.env.UNSPLASH_ACCESS_KEY;
   const baseApi = "https://api.unsplash.com/photos/";
+
   const data = Promise.all(
-    questionData.map(async (question) => {
-      const api = baseApi + question.photo + "/?client_id=" + key;
-      const response = await fetch(api);
-      return response.json();
+    questionData.map(async (question): Promise<IQuestion> => {
+      const photo = await fetchPhoto(question);
+      return { ...question, photo };
     })
   );
 
@@ -55,7 +66,7 @@ export const loader: LoaderFunction = async () => {
 };
 
 export default function Index() {
-  const data = useLoaderData();
+  const data = useLoaderData<IQuestion[]>();
   const [today, yesterday, tomorrow] = data;
 
   const [helper, setHelper] = useState("");
@@ -127,7 +138,7 @@ export default function Index() {
           <article className="p-4 border-2 border-black rounded-md space-y-4 bg-[#EFEFFF]">
             <h2 className="font-header text-2xl">Today</h2>
             <p>Can you figure out the most popular answers?</p>
-            <Question image={today.urls.raw} id={342} />
+            <Question question={today} />
             <div className="flex w-full justify-between">
               <p>15.6k Ballots</p>
               <p>|</p>
@@ -148,7 +159,7 @@ export default function Index() {
           >
             <h2 className="font-header text-2xl">Yesterday</h2>
             <p>Take a look at how you did yesterday's questions!</p>
-            <Question image={yesterday.urls.raw} id={341} />
+            <Question question={yesterday} />
             <Answers id={341} />
             <div className="flex w-full justify-between">
               <a className="underline" href="/">
@@ -163,7 +174,7 @@ export default function Index() {
           <article className="p-4 border-2 border-black rounded-md space-y-4 bg-[#EBFAEB]">
             <h2 className="font-header text-2xl">Tomorrow</h2>
             <p>Participate in the survey for tomorrow's game!</p>
-            <Question image={tomorrow.urls.raw} id={343} />
+            <Question question={tomorrow} />
             <div className="flex w-full justify-between">
               <p>Only 14 hours left to vote!</p>
               <a className="underline" href="/">

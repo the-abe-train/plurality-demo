@@ -3,7 +3,7 @@
     "id": 341,
     "text": "Which browser do you use?",
     "votes": 21325,
-    "photo": "jbtfM0XBeRc",
+    "photoId": "jbtfM0XBeRc",
     "answers": [
       { "text": "Brave", "token": 7250 },
       { "text": "Chrome", "token": 6184 },
@@ -16,7 +16,7 @@
     "id": 342,
     "text": "What is the best colour?",
     "votes": 21325,
-    "photo": "eMemmpUojlw",
+    "photoId": "eMemmpUojlw",
     "answers": [
       { "text": "Brave", "token": 7250 },
       { "text": "Chrome", "token": 6184 },
@@ -29,7 +29,7 @@
     "id": 343,
     "text": "Name something you butter up.",
     "votes": 21325,
-    "photo": "094mP_CBdpM",
+    "photoId": "094mP_CBdpM",
     "answers": [
       { "text": "Brave", "token": 7250 },
       { "text": "Chrome", "token": 6184 },
