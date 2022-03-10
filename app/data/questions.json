@@ -1,0 +1,41 @@
+[
+  {
+    "id": 341,
+    "text": "Which browser do you use?",
+    "votes": 21325,
+    "photo": "jbtfM0XBeRc",
+    "answers": [
+      { "text": "Brave", "token": 7250 },
+      { "text": "Chrome", "token": 6184 },
+      { "text": "Firefox", "token": 3412 },
+      { "text": "Opera", "token": 1706 },
+      { "text": "Edge", "token": 912 }
+    ]
+  },
+  {
+    "id": 342,
+    "text": "What is the best colour?",
+    "votes": 21325,
+    "photo": "eMemmpUojlw",
+    "answers": [
+      { "text": "Brave", "token": 7250 },
+      { "text": "Chrome", "token": 6184 },
+      { "text": "Firefox", "token": 3412 },
+      { "text": "Opera", "token": 1706 },
+      { "text": "Edge", "token": 912 }
+    ]
+  },
+  {
+    "id": 343,
+    "text": "Name something you butter up.",
+    "votes": 21325,
+    "photo": "094mP_CBdpM",
+    "answers": [
+      { "text": "Brave", "token": 7250 },
+      { "text": "Chrome", "token": 6184 },
+      { "text": "Firefox", "token": 3412 },
+      { "text": "Opera", "token": 1706 },
+      { "text": "Edge", "token": 912 }
+    ]
+  }
+]

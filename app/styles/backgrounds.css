@@ -1,0 +1,15 @@
+.light {
+  background: linear-gradient(
+      168.53deg,
+      rgba(255, 253, 208, 0) 4.14%,
+      rgba(255, 253, 208, 0.1) 39.37%,
+      rgba(255, 225, 208, 0.5) 80.43%
+    ),
+    #ffffff;
+}
+
+.skeleton {
+  --contentWidth: 896px;
+  padding: 1rem max(1rem, 50vw - var(--contentWidth) / 2);
+  width: 100%;
+}

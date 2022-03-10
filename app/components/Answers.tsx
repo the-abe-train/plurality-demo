@@ -1,10 +1,5 @@
 import { statFormat } from "~/util/text";
 
-type Answer = {
-  text: string;
-  token: number;
-};
-
 const data = [
   {
     id: 341,
@@ -20,22 +15,33 @@ const data = [
   },
 ];
 
+const defaultQuestion = {
+  id: 0,
+  text: "",
+  votes: 0,
+  answers: [{ text: "Brave", token: 7250 }],
+};
+
 type Props = {
   id: number;
 };
 
 export default function Answers({ id }: Props) {
-  const question = data.find((question) => question.id === id);
-  const answers: Answer[] = question
-    ? question.answers
-    : [{ text: "", token: 0 }];
+  const question =
+    data.find((question) => question.id === id) ?? defaultQuestion;
+  const answers = question.answers;
   return (
-    <div className="grid grid-cols-2">
+    <div className="grid grid-cols-2 gap-1 text-sm">
       {answers.map((answer) => {
+        const score = ((answer.token / question.votes) * 100).toPrecision(2);
         return (
-          <div className="flex justify-between w-full border-2">
-            <span>{answer.text}</span>
-            <span>{statFormat(answer.token)} B</span>
+          <div
+            key={answer.text}
+            className="flex w-full border-[1px] border-black rounded-sm bg-white p-1"
+          >
+            <span className="text-sm font-bold w-1/2">{answer.text}</span>
+            <span className="text-sm flex-grow">{`${score}%`}</span>
+            <span>{`${statFormat(answer.token)}B`}</span>
           </div>
         );
       })}

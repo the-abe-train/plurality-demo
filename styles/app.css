@@ -1,3 +1,15 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Amaranth:wght@700&family=Kanit:wght@300&display=swap"); */
+
+@import url("https://fonts.googleapis.com/css2?family=Amaranth:wght@400;700&family=Kanit:wght@300&display=swap");
+
+/* @font-face {
+  font-family: "Amaranth";
+  src: url("https://fonts.googleapis.com/css2?family=Amaranth");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+} */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
