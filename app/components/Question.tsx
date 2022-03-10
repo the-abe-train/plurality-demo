@@ -13,7 +13,10 @@ export default function Question({ image, id }: Props) {
   const question = data.find((question) => question.id === id);
   const text = question ? question.text : "";
   return (
-    <div className="border-2 border-black rounded-lg overflow-clip drop-shadow-block z-20 bg-white">
+    <div
+      className="border-2 border-black rounded-lg overflow-clip 
+    drop-shadow-block z-20 bg-white floating"
+    >
       <img
         src={image}
         alt="question image"

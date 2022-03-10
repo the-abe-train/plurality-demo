@@ -534,10 +534,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   z-index: 30;
 }
 
-.col-span-4{
-  grid-column: span 4 / span 4;
-}
-
 .col-span-3{
   grid-column: span 3 / span 3;
 }
@@ -561,6 +557,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .mr-2{
   margin-right: 0.5rem;
+}
+
+.mr-4{
+  margin-right: 1rem;
 }
 
 .mb-2{
@@ -693,12 +693,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-space-y-reverse: 0;
   margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
-}
-
-.space-y-2 > :not([hidden]) ~ :not([hidden]){
-  --tw-space-y-reverse: 0;
-  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 
 .self-end{
@@ -930,12 +924,20 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 @media (min-width: 768px){
-  .md\:col-start-1{
-    grid-column-start: 1;
+  .md\:order-first{
+    order: -9999;
+  }
+
+  .md\:col-span-1{
+    grid-column: span 1 / span 1;
   }
 
   .md\:grid-flow-col{
     grid-auto-flow: column;
+  }
+
+  .md\:grid-cols-4{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .md\:grid-rows-1{
@@ -944,10 +946,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 @media (min-width: 1024px){
-  .lg\:row-start-2{
-    grid-row-start: 2;
-  }
-
   .lg\:block{
     display: block;
   }

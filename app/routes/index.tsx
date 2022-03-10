@@ -6,6 +6,7 @@ import Question from "~/components/Question";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
+import animations from "~/styles/animations.css";
 
 import questionData from "~/data/questions.json";
 import { useState } from "react";
@@ -14,6 +15,7 @@ export function links() {
   return [
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: backgrounds },
+    { rel: "stylesheet", href: animations },
   ];
 }
 
@@ -107,14 +109,17 @@ export default function Index() {
             })}
           </div>
           {helper !== "" && (
-            <div className="bg-white border-2 border-black p-2 rounded-md flex sm:hidden">
+            <div
+              className="bg-white border-2 border-black p-2 rounded-md flex sm:hidden
+            fade-in"
+            >
               <img src={icon} alt="" className="mr-4" />
               <p>{helper}</p>
             </div>
           )}
         </section>
         <section
-          className="m-4 space-y-4 sm:space-y-0 gap-4 sm:grid "
+          className="m-4 space-y-4 sm:space-y-0 gap-4 sm:grid"
           style={{
             gridTemplateColumns: "repeat(auto-fit, minmax(384px, 1fr))",
           }}
@@ -137,7 +142,10 @@ export default function Index() {
               </a>
             </div>
           </article>
-          <article className="p-4 border-2 border-black rounded-md space-y-4 bg-[#FFECEC] ">
+          <article
+            className="p-4 border-2 border-black rounded-md space-y-4 bg-[#FFECEC] 
+          md:order-first"
+          >
             <h2 className="font-header text-2xl">Yesterday</h2>
             <p>Take a look at how you did yesterday's questions!</p>
             <Question image={yesterday.urls.raw} id={341} />
@@ -151,6 +159,7 @@ export default function Index() {
               </a>
             </div>
           </article>
+
           <article className="p-4 border-2 border-black rounded-md space-y-4 bg-[#EBFAEB]">
             <h2 className="font-header text-2xl">Tomorrow</h2>
             <p>Participate in the survey for tomorrow's game!</p>
