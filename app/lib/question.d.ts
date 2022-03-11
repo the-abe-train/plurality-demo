@@ -8,8 +8,9 @@ export interface IAnswer {
 export interface IQuestion {
   id: number;
   text: string;
-  votes: number;
+  voters: number;
   photoId: string;
   answers: IAnswer[];
   photo?: Photo;
+  surveyClosed: number;
 }

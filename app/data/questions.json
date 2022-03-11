@@ -2,40 +2,65 @@
   {
     "id": 341,
     "text": "Which browser do you use?",
-    "votes": 21325,
-    "photoId": "jbtfM0XBeRc",
+    "voters": 5456,
+    "photoId": "eMemmpUojlw",
+    "surveyClosed": 1646888400000,
     "answers": [
       { "text": "Brave", "token": 7250 },
       { "text": "Chrome", "token": 6184 },
       { "text": "Firefox", "token": 3412 },
       { "text": "Opera", "token": 1706 },
-      { "text": "Edge", "token": 912 }
+      { "text": "Edge", "token": 912 },
+      { "text": "DuckDuckGo", "token": 251 },
+      { "text": "Safari", "token": 84 }
     ]
   },
   {
     "id": 342,
     "text": "What is the best colour?",
-    "votes": 21325,
-    "photoId": "eMemmpUojlw",
+    "voters": 858,
+    "photoId": "jbtfM0XBeRc",
+    "surveyClosed": 1646974800000,
     "answers": [
-      { "text": "Brave", "token": 7250 },
-      { "text": "Chrome", "token": 6184 },
-      { "text": "Firefox", "token": 3412 },
-      { "text": "Opera", "token": 1706 },
-      { "text": "Edge", "token": 912 }
+      { "text": "Red", "token": 5641 },
+      { "text": "Green", "token": 4562 },
+      { "text": "Blue", "token": 3698 },
+      { "text": "Yellow", "token": 1462 },
+      { "text": "Orange", "token": 874 },
+      { "text": "Pink", "token": 550 },
+      { "text": "Purple", "token": 117 }
     ]
   },
   {
     "id": 343,
     "text": "Name something you butter up.",
-    "votes": 21325,
+    "voters": 5687,
+    "surveyClosed": 1647061200000,
     "photoId": "094mP_CBdpM",
     "answers": [
-      { "text": "Brave", "token": 7250 },
-      { "text": "Chrome", "token": 6184 },
-      { "text": "Firefox", "token": 3412 },
-      { "text": "Opera", "token": 1706 },
-      { "text": "Edge", "token": 912 }
+      { "text": "Roll", "token": 4535 },
+      { "text": "Boss", "token": 4575 },
+      { "text": "Client", "token": 7854 },
+      { "text": "Bread", "token": 6548 },
+      { "text": "Wife", "token": 875 },
+      { "text": "Cop", "token": 3547 },
+      { "text": "Waitress", "token": 52 }
+    ]
+  },
+  {
+    "id": 344,
+    "text": "Name something your wife tells you to get rid of.",
+    "voters": 4856,
+    "surveyClosed": 1647147600000,
+    "photoId": "7_SgIqa688Q",
+    "answers": [
+      { "text": "Motorcycle", "token": 7894 },
+      { "text": "Games", "token": 5612 },
+      { "text": "Mistress", "token": 4561 },
+      { "text": "Pornography", "token": 3127 },
+      { "text": "Magazines", "token": 2156 },
+      { "text": "Car", "token": 458 },
+      { "text": "Attitude", "token": 52 }
     ]
   }
 ]

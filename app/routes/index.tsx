@@ -13,6 +13,10 @@ import animations from "~/styles/animations.css";
 
 import questionData from "~/data/questions.json";
 import { useState } from "react";
+import { fetchPhoto } from "~/util/unsplash";
+import { countAnswers, sumToken } from "~/util/math";
+import { statFormat } from "~/util/text";
+import { timeLeft, relativeSurvey } from "~/util/time";
 
 export function links() {
   return [
@@ -45,21 +49,17 @@ export const loader: LoaderFunction = async () => {
 
   // TODO Apply for production from Unsplash
 
-  async function fetchPhoto(question: IQuestion): Promise<Photo> {
-    const api = baseApi + question.photoId + "/?client_id=" + key;
-    const response = await fetch(api);
-    const photo = await response.json();
-    return photo;
-  }
-
-  const key = process.env.UNSPLASH_ACCESS_KEY;
-  const baseApi = "https://api.unsplash.com/photos/";
-
+  // const day = new Date("2022-03-13");
   const data = Promise.all(
-    questionData.map(async (question): Promise<IQuestion> => {
-      const photo = await fetchPhoto(question);
-      return { ...question, photo };
-    })
+    questionData
+      .filter((question) => {
+        const relativeDay = relativeSurvey(question);
+        return relativeDay >= -2 && relativeDay <= 0;
+      })
+      .map(async (question): Promise<IQuestion> => {
+        const photo = await fetchPhoto(question);
+        return { ...question, photo };
+      })
   );
 
   return data;
@@ -67,10 +67,12 @@ export const loader: LoaderFunction = async () => {
 
 export default function Index() {
   const data = useLoaderData<IQuestion[]>();
-  const [today, yesterday, tomorrow] = data;
+  const [yesterday, today, tomorrow] = data;
 
   const [helper, setHelper] = useState("");
   const [icon, setIcon] = useState("");
+
+  const closingTime = timeLeft(tomorrow.surveyClosed - new Date().getTime());
 
   return (
     <div className="light w-full top-0 bottom-0 flex flex-col">
@@ -80,6 +82,7 @@ export default function Index() {
           <h1
             className="text-4xl text-center font-header font-bold flex items-center 
           w-full justify-center gap-x-2"
+            onClick={() => setHelper("")}
           >
             <img
               className="inline h-8 object-fill"
@@ -135,19 +138,19 @@ export default function Index() {
             gridTemplateColumns: "repeat(auto-fit, minmax(384px, 1fr))",
           }}
         >
-          <article className="p-4 border-2 border-black rounded-md space-y-4 bg-[#EFEFFF]">
+          <article className="p-4 border-2 border-black rounded-md space-y-3 bg-[#EFEFFF]">
             <h2 className="font-header text-2xl">Today</h2>
-            <p>Can you figure out the most popular answers?</p>
+            <p className="mb-2">Can you figure out the most popular answers?</p>
             <Question question={today} />
             <div className="flex w-full justify-between">
-              <p>15.6k Ballots</p>
+              <p>{statFormat(sumToken(today.answers))} Ballots</p>
               <p>|</p>
-              <p>3.1k Voters</p>
+              <p>{statFormat(today.voters)} Voters</p>
               <p>|</p>
-              <p>54 Unique answers</p>
+              <p>{countAnswers(today)} Unique answers</p>
             </div>
             <div className="flex w-full justify-between">
-              <p>Only 14 hours left to play!</p>
+              <p>Only {closingTime} left to play!</p>
               <a className="underline" href="/">
                 More questions
               </a>
@@ -160,7 +163,7 @@ export default function Index() {
             <h2 className="font-header text-2xl">Yesterday</h2>
             <p>Take a look at how you did yesterday's questions!</p>
             <Question question={yesterday} />
-            <Answers id={341} />
+            <Answers question={yesterday} />
             <div className="flex w-full justify-between">
               <a className="underline" href="/">
                 See all answers
@@ -170,13 +173,12 @@ export default function Index() {
               </a>
             </div>
           </article>
-
           <article className="p-4 border-2 border-black rounded-md space-y-4 bg-[#EBFAEB]">
             <h2 className="font-header text-2xl">Tomorrow</h2>
             <p>Participate in the survey for tomorrow's game!</p>
             <Question question={tomorrow} />
             <div className="flex w-full justify-between">
-              <p>Only 14 hours left to vote!</p>
+              <p>Only {closingTime} left to vote!</p>
               <a className="underline" href="/">
                 More questions
               </a>

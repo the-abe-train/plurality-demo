@@ -15,7 +15,7 @@ export default function Footer() {
           <div className="font-header text-xl space-x-1 flex items-center">
             <img
               className="inline h-5"
-              src="./icons/white_logo.svg"
+              src="../icons/white_logo.svg"
               alt="logo"
             />
             <span>Plurality</span>
