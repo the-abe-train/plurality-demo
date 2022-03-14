@@ -1,13 +1,8 @@
 import { IAnswer, IQuestion } from "~/lib/question";
 import { sumToken } from "~/util/math";
 import { statFormat } from "~/util/text";
-
-const defaultQuestion = {
-  id: 0,
-  text: "",
-  votes: 0,
-  answers: [{ text: "Brave", token: 7250 }],
-};
+import { motion } from "framer-motion";
+import { useRef } from "react";
 
 type Props = {
   question: IQuestion;
@@ -15,6 +10,8 @@ type Props = {
 };
 
 export default function Answers({ question, guesses }: Props) {
+  const nodeRef = useRef<HTMLDivElement>(null!);
+
   let answers = question.answers.sort((a, b) => b.token - a.token);
   if (guesses) {
     // If a list of guesses was passed, only show those
@@ -28,24 +25,61 @@ export default function Answers({ question, guesses }: Props) {
     }
   }
   return (
-    <div className="grid grid-cols-2 gap-1 text-sm">
-      {answers.map((answer) => {
+    <motion.div
+      variants={{
+        hidden: {
+          height: 0,
+          transition: {
+            staggerChildren: 0.5,
+          },
+        },
+        visible: {
+          height: "auto",
+          transition: {
+            staggerChildren: 0.5,
+          },
+        },
+      }}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+      className="grid grid-cols-2 gap-1 text-sm"
+      ref={nodeRef}
+    >
+      {answers.map((answer, idx) => {
         const score = statFormat(
           (answer.token / sumToken(question.answers)) * 100
         );
+        const variants = {
+          hidden: {
+            y: 90,
+            x: idx % 2 ? "-50%" : "50%",
+            opacity: 0,
+          },
+          visible: {
+            y: 0,
+            x: 0,
+            opacity: 1,
+            transition: {
+              duration: 0.5,
+            },
+          },
+        };
+
         return (
-          <div
+          <motion.div
             key={answer.text}
             className="flex w-full border-[1px] border-black rounded-sm bg-white p-1"
+            variants={variants}
           >
             <span className="text-sm font-bold w-[50%] overflow-hidden overflow-ellipsis">
               {answer.text}
             </span>
             <span className="ml-1 text-sm flex-grow">{`${score}%`}</span>
             <span>{`${statFormat(answer.token)}B`}</span>
-          </div>
+          </motion.div>
         );
       })}
-    </div>
+    </motion.div>
   );
 }

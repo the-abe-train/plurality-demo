@@ -1,11 +1,10 @@
-import { json, LoaderFunction, useLoaderData } from "remix";
+import { LoaderFunction, useLoaderData } from "remix";
 import Answers from "~/components/Answers";
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
 import Question from "~/components/Question";
 
 import { IQuestion } from "~/lib/question";
-import { Photo } from "~/lib/unsplash";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
@@ -18,8 +17,6 @@ import { countAnswers, sumToken } from "~/util/math";
 import { statFormat } from "~/util/text";
 import { timeLeft, relativeSurvey } from "~/util/time";
 
-import { CSSTransition, TransitionGroup } from "react-transition-group";
-import Collapse from "~/transitions/Collapse";
 import Instructions from "~/components/Instructions";
 
 export function links() {

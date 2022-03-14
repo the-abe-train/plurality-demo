@@ -8,7 +8,7 @@ export default function Footer() {
   return (
     <footer className="p-4 bg-[#292929] text-white text-sm w-full">
       <div
-        className="grid grid-flow-row md:grid-flow-col auto-rows-min gap-6
+        className="grid grid-flow-row md:grid-flow-col auto-rows-min gap-4 sm:gap-6
      md:grid-rows-1 md:grid-cols-4 container"
       >
         <section>
@@ -26,7 +26,7 @@ export default function Footer() {
           <h3 className="font-bold">Pages</h3>
           <ul>
             <li>Home</li>
-            <li>Dashboard</li>
+            <li>Profile</li>
             <li>Help</li>
             <li>Questions</li>
           </ul>

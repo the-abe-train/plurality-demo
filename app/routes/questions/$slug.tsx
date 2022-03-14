@@ -12,6 +12,9 @@ import animations from "~/styles/animations.css";
 import { useState } from "react";
 import { sumToken } from "~/util/math";
 
+import { motion } from "framer-motion";
+import Counter from "~/components/Counter";
+
 export function links() {
   return [
     { rel: "stylesheet", href: styles },
@@ -31,6 +34,7 @@ export const loader: LoaderFunction = async ({
 };
 
 export default function QuestionSlug() {
+  // TODO Is all the question data, including answers, visible in the source?
   const question = useLoaderData<IQuestion>();
   const { answers } = question;
 
@@ -94,27 +98,26 @@ export default function QuestionSlug() {
       </section>
       <section className="flex flex-col space-y-4">
         <div className="w-3/4 mx-auto bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 relative">
-          <div
+          <motion.div
             className="bg-blue-600 h-2.5 rounded-full"
-            style={{ width: `${score * 100}%`, scale: 9 }}
-          ></div>
+            // style={{ width: `${score * 100}%` }}
+            initial={{ width: 0 }}
+            animate={{ width: `${score * 100}%` }}
+            transition={{ duration: 1 }}
+          ></motion.div>
           <div className="h-full w-1 z-10 bg-black absolute right-[5%] top-0"></div>
         </div>
         <div className="flex justify-center w-full space-x-12">
           <div className="flex flex-col items-center">
-            <p className="font-bold font-header text-xl">
-              {statFormat(points)}
-            </p>
+            <Counter value={points} />
             <p>Points</p>
           </div>
           <div className="flex flex-col items-center">
-            <p className="font-bold font-header text-xl">{statFormat(total)}</p>
+            <Counter value={total} />
             <p>Votes</p>
           </div>
           <div className="flex flex-col items-center">
-            <p className="font-bold font-header text-xl">
-              {statFormat(score * 100)}%
-            </p>
+            <Counter value={score * 100} percent />
             <p>Score</p>
           </div>
         </div>

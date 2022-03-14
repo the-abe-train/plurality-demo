@@ -43,6 +43,7 @@
 
 .fade-in {
   animation: fadeIn 0.5s;
+  transition: 1s ease-in-out all;
 }
 
 @keyframes fadeIn {

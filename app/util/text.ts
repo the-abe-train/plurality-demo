@@ -4,10 +4,12 @@ export function statFormat(number: number) {
   if (number >= 1000) {
     const newNum = (number / 1000).toPrecision(3);
     return newNum + "k";
+  } else if (100 <= number && number < 1000) {
+    return String(Math.floor(number));
   } else if (0 < number && number < 100) {
-    return number.toPrecision(2);
+    return String(Math.floor(number));
   } else {
-    return number;
+    return String(number);
   }
 }
 
