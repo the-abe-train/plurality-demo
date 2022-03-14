@@ -1,66 +1,1563 @@
 [
   {
-    "id": 341,
-    "text": "Which browser do you use?",
-    "voters": 5456,
-    "photoId": "eMemmpUojlw",
+    "id": 1,
+    "text": "Name a reason you might get rid of an old family heirloom.",
+    "answers": [
+      { "text": "Broken", "token": 7888 },
+      { "text": "Ugly", "token": 4356 },
+      { "text": "Divorce", "token": 15588 },
+      { "text": "Sell/need money", "token": 9708 },
+      { "text": "Too much stuff", "token": 7560 },
+      { "text": "Family feud", "token": 4640 },
+      { "text": "Moving", "token": 704 }
+    ],
+    "voters": 50444,
     "surveyClosed": 1646888400000,
-    "answers": [
-      { "text": "Brave", "token": 7250 },
-      { "text": "Chrome", "token": 6184 },
-      { "text": "Firefox", "token": 3412 },
-      { "text": "Opera", "token": 1706 },
-      { "text": "Edge", "token": 912 },
-      { "text": "DuckDuckGo", "token": 251 },
-      { "text": "Safari", "token": 84 }
-    ]
+    "photoId": "edQ4Ka5R3DQ"
   },
   {
-    "id": 342,
-    "text": "What is the best colour?",
-    "voters": 858,
-    "photoId": "jbtfM0XBeRc",
+    "id": 2,
+    "text": "Where do kids nowadays spend most of their time?",
+    "answers": [
+      { "text": "Room/bed", "token": 20188 },
+      { "text": "School", "token": 5236 },
+      { "text": "Internet", "token": 13280 },
+      { "text": "Mall", "token": 2148 },
+      { "text": "Friend's house", "token": 2680 },
+      { "text": "Park", "token": 3024 },
+      { "text": "Work", "token": 3800 }
+    ],
+    "voters": 50356,
     "surveyClosed": 1646974800000,
-    "answers": [
-      { "text": "Red", "token": 5641 },
-      { "text": "Green", "token": 4562 },
-      { "text": "Blue", "token": 3698 },
-      { "text": "Yellow", "token": 1462 },
-      { "text": "Orange", "token": 874 },
-      { "text": "Pink", "token": 550 },
-      { "text": "Purple", "token": 117 }
-    ]
+    "photoId": "K4EIPaHIywE"
   },
   {
-    "id": 343,
-    "text": "Name something you butter up.",
-    "voters": 5687,
+    "id": 3,
+    "text": "Tell me something many people do just once a week.",
+    "answers": [
+      { "text": "Church", "token": 4480 },
+      { "text": "Groceries/shopping", "token": 3312 },
+      { "text": "Laundry", "token": 7428 },
+      { "text": "Clean the house", "token": 2046 },
+      { "text": "Sleep in", "token": 4926 },
+      { "text": "Eat out", "token": 1060 }
+    ],
+    "voters": 23252,
     "surveyClosed": 1647061200000,
-    "photoId": "094mP_CBdpM",
-    "answers": [
-      { "text": "Roll", "token": 4535 },
-      { "text": "Boss", "token": 4575 },
-      { "text": "Client", "token": 7854 },
-      { "text": "Bread", "token": 6548 },
-      { "text": "Wife", "token": 875 },
-      { "text": "Cop", "token": 3547 },
-      { "text": "Waitress", "token": 52 }
-    ]
+    "photoId": "clGbMOqFAmE"
   },
   {
-    "id": 344,
-    "text": "Name something your wife tells you to get rid of.",
-    "voters": 4856,
-    "surveyClosed": 1647147600000,
-    "photoId": "7_SgIqa688Q",
+    "id": 4,
+    "text": "Name a reason a person might wake up at 2:00 in the morning.",
     "answers": [
-      { "text": "Motorcycle", "token": 7894 },
-      { "text": "Games", "token": 5612 },
-      { "text": "Mistress", "token": 4561 },
-      { "text": "Pornography", "token": 3127 },
-      { "text": "Magazines", "token": 2156 },
-      { "text": "Car", "token": 458 },
-      { "text": "Attitude", "token": 52 }
-    ]
+      { "text": "Bathroom", "token": 15192 },
+      { "text": "Baby/child", "token": 8113 },
+      { "text": "Bad dream", "token": 2960 },
+      { "text": "Heard a noise", "token": 4693 },
+      { "text": "Hot/cold", "token": 2268 },
+      { "text": "Hungry/thirsty", "token": 660 },
+      { "text": "Work", "token": 412 },
+      { "text": "Itchy", "token": 820 },
+      { "text": "In the mood", "token": 1004 }
+    ],
+    "voters": 36122,
+    "surveyClosed": 1647147600000,
+    "photoId": "Pg4spGCmxwE"
+  },
+  {
+    "id": 5,
+    "text": "Name something you might eat with a hamburger.",
+    "answers": [
+      { "text": "French fries", "token": 59100 },
+      { "text": "Soup", "token": 2136 },
+      { "text": "Salad", "token": 6417 },
+      { "text": "Onion rings", "token": 1990 },
+      { "text": "Tater tots", "token": 1155 },
+      { "text": "Pickles", "token": 2100 }
+    ],
+    "voters": 72898,
+    "surveyClosed": 1647234000000,
+    "photoId": "tCyI0KY9jTs"
+  },
+  {
+    "id": 6,
+    "text": "Name something you haven't done since high school gym class.",
+    "answers": [
+      { "text": "Run a mile", "token": 20600 },
+      { "text": "Dodgeball", "token": 13133 },
+      { "text": "Push-ups", "token": 4011 },
+      { "text": "Sit-ups/crunches", "token": 6975 },
+      { "text": "Lift weights", "token": 864 },
+      { "text": "Swim laps", "token": 4410 },
+      { "text": "Change in a locker room", "token": 819 },
+      { "text": "Tennis", "token": 1464 },
+      { "text": "Exercise", "token": 1312 }
+    ],
+    "voters": 53588,
+    "surveyClosed": 1647320400000,
+    "photoId": "dNXIMNklkS8"
+  },
+  {
+    "id": 7,
+    "text": "We asked 100 Americans: How much do you tip for good service?",
+    "answers": [
+      { "text": "0.2", "token": 33930 },
+      { "text": "0.15", "token": 20680 },
+      { "text": "0.25", "token": 5814 },
+      { "text": "0.18", "token": 4176 },
+      { "text": "$20", "token": 5831 },
+      { "text": "0.1", "token": 1310 }
+    ],
+    "voters": 71741,
+    "surveyClosed": 1647406800000,
+    "photoId": "gakIfgeuO88"
+  },
+  {
+    "id": 8,
+    "text": "Who was the most popular character on the sitcom Friends?",
+    "answers": [
+      { "text": "Rachel", "token": 12426 },
+      { "text": "Joey", "token": 4284 },
+      { "text": "Ross", "token": 13008 },
+      { "text": "Chandler", "token": 2672 },
+      { "text": "Monica", "token": 10444 },
+      { "text": "Phoebe", "token": 5140 },
+      { "text": "Gunther", "token": 1593 }
+    ],
+    "voters": 49567,
+    "surveyClosed": 1647493200000,
+    "photoId": "T3ObK7JnDgE"
+  },
+  {
+    "id": 9,
+    "text": "Tell me something you can buy that costs a dollar or less.",
+    "answers": [
+      { "text": "Fruit", "token": 12586 },
+      { "text": "Fast food", "token": 2668 },
+      { "text": "Soft drink", "token": 1870 },
+      { "text": "Newspaper", "token": 1990 },
+      { "text": "Stamp", "token": 3294 },
+      { "text": "Gum", "token": 1760 }
+    ],
+    "voters": 24168,
+    "surveyClosed": 1647579600000,
+    "photoId": "nKvnP1zjZbQ"
+  },
+  {
+    "id": 10,
+    "text": "Name a country that speaks Spanish.",
+    "answers": [
+      { "text": "Spain", "token": 33516 },
+      { "text": "Mexico", "token": 5784 },
+      { "text": "United States", "token": 9940 },
+      { "text": "Cuba", "token": 5520 },
+      { "text": "Argentina", "token": 3176 },
+      { "text": "Costa Rica", "token": 2307 },
+      { "text": "Chile", "token": 2271 },
+      { "text": "Colombia", "token": 2535 },
+      { "text": "Guatemala", "token": 1226 }
+    ],
+    "voters": 66275,
+    "surveyClosed": 1647666000000,
+    "photoId": "L3JN07IzjC0"
+  },
+  {
+    "id": 11,
+    "text": "Name a liquid in your kitchen that you hope no one ever accidentally drinks.",
+    "answers": [
+      { "text": "Soap", "token": 10396 },
+      { "text": "Vinegar", "token": 5760 },
+      { "text": "Cooking oil", "token": 9728 },
+      { "text": "Soy sauce", "token": 4000 },
+      { "text": "Bacon grease", "token": 982 }
+    ],
+    "voters": 30866,
+    "surveyClosed": 1647752400000,
+    "photoId": "sbMIdsKswv0"
+  },
+  {
+    "id": 12,
+    "text": "Name something that breaks down.",
+    "answers": [
+      { "text": "Car", "token": 11088 },
+      { "text": "Body", "token": 9460 },
+      { "text": "Computer", "token": 4046 },
+      { "text": "Communication", "token": 3136 },
+      { "text": "Foreign relations", "token": 832 },
+      { "text": "TV", "token": 1274 },
+      { "text": "Name a famous wizard.", "token": 0 },
+      { "text": "Harry Potter", "token": 31561 },
+      { "text": "Merlin", "token": 20046 },
+      { "text": "Gandalf", "token": 5379 },
+      { "text": "Dr. Strange", "token": 2007 },
+      { "text": "The Wizard of Oz", "token": 4360 },
+      { "text": "Voldemort", "token": 660 },
+      { "text": "Newt Scamander", "token": 408 }
+    ],
+    "voters": 94257,
+    "surveyClosed": 1647838800000,
+    "photoId": "AHLz7x6SwGs"
+  },
+  {
+    "id": 13,
+    "text": "We asked 100 men: If you were dating a woman, how much weight could she gain between dates without you noticing?",
+    "answers": [
+      { "text": "5 pounds", "token": 24045 },
+      { "text": "10 pounds", "token": 20544 },
+      { "text": "1 pound", "token": 8080 },
+      { "text": "2 pounds", "token": 6744 },
+      { "text": "15 pounds", "token": 702 },
+      { "text": "20 pounds", "token": 1834 }
+    ],
+    "voters": 61949,
+    "surveyClosed": 1647925200000,
+    "photoId": "9kZ4XjuSYuQ"
+  },
+  {
+    "id": 14,
+    "text": "How many pairs of socks does a fast food worker wear in one week?",
+    "answers": [
+      { "text": "7", "token": 17050 },
+      { "text": "10", "token": 17894 },
+      { "text": "14", "token": 19340 },
+      { "text": "15", "token": 2394 },
+      { "text": "2", "token": 4900 },
+      { "text": "20", "token": 1095 },
+      { "text": "5", "token": 2649 },
+      { "text": "Name another word for \"book.\"", "token": 0 },
+      { "text": "Novel", "token": 10065 },
+      { "text": "Story", "token": 11472 },
+      { "text": "Paperback", "token": 4360 },
+      { "text": "Pamphlet", "token": 2592 },
+      { "text": "Tome", "token": 2488 },
+      { "text": "Volume", "token": 2274 },
+      { "text": "Publication", "token": 2166 }
+    ],
+    "voters": 100739,
+    "surveyClosed": 1648011600000,
+    "photoId": "B7Qg_iM17UQ"
+  },
+  {
+    "id": 15,
+    "text": "What is the most stressful thing in the life a 25-year-old woman?",
+    "answers": [
+      { "text": "Love life", "token": 24948 },
+      { "text": "Job", "token": 5070 },
+      { "text": "Finances/debt", "token": 9588 },
+      { "text": "Family/kids", "token": 10751 },
+      { "text": "School", "token": 760 },
+      { "text": "Friends", "token": 2865 },
+      { "text": "Clothes", "token": 1250 },
+      { "text": "Roommate", "token": 902 },
+      { "text": "Starting a family", "token": 832 }
+    ],
+    "voters": 56966,
+    "surveyClosed": 1648098000000,
+    "photoId": "y5yIrfZXNHg"
+  },
+  {
+    "id": 16,
+    "text": "Name a specific piece of furniture that might be handmade.",
+    "answers": [
+      { "text": "Table", "token": 30504 },
+      { "text": "Chair", "token": 25265 },
+      { "text": "Shelf/bookshelf", "token": 9012 },
+      { "text": "Dresser", "token": 605 },
+      { "text": "Bed", "token": 1262 },
+      { "text": "Cabinet", "token": 306 },
+      { "text": "Bench", "token": 736 }
+    ],
+    "voters": 67690,
+    "surveyClosed": 1648184400000,
+    "photoId": "4-iqbswufek"
+  },
+  {
+    "id": 17,
+    "text": "Tell me whose name a young man might have tattooed on himself.",
+    "answers": [
+      { "text": "Mom", "token": 31878 },
+      { "text": "Wife/girlfriend", "token": 11650 },
+      { "text": "Child", "token": 9926 },
+      { "text": "God", "token": 2570 },
+      { "text": "Father", "token": 1368 },
+      { "text": "Grandparent", "token": 4635 },
+      { "text": "Pet", "token": 1736 }
+    ],
+    "voters": 63763,
+    "surveyClosed": 1648270800000,
+    "photoId": "4RzMX1TaLWg"
+  },
+  {
+    "id": 18,
+    "text": "Name a character from Game of Thrones.",
+    "answers": [
+      { "text": "Jon Snow", "token": 19292 },
+      { "text": "Daenerys \"Khaleesi\" Targaryen", "token": 7797 },
+      { "text": "Arya Stark", "token": 4312 },
+      { "text": "Tyrion \"The Dwarf\" Lannister", "token": 7290 },
+      { "text": "Cersei Lannister", "token": 6013 },
+      { "text": "Jaime Lannister", "token": 1746 },
+      { "text": "Sansa Stark", "token": 700 },
+      { "text": "Ned Stark", "token": 216 }
+    ],
+    "voters": 47366,
+    "surveyClosed": 1648357200000,
+    "photoId": "V-Hij5DyW7c"
+  },
+  {
+    "id": 19,
+    "text": "How long is an \"unbearable\" commute?",
+    "answers": [
+      { "text": "1 hour", "token": 25666 },
+      { "text": "30 minutes", "token": 24908 },
+      { "text": "45 minutes", "token": 3480 },
+      { "text": "20 minutes", "token": 4704 },
+      { "text": "2 hours", "token": 1265 },
+      { "text": "1.5 hours", "token": 494 }
+    ],
+    "voters": 60517,
+    "surveyClosed": 1648443600000,
+    "photoId": "DCeoeUMCk7c"
+  },
+  {
+    "id": 20,
+    "text": "Name something you always have to keep plugged in.",
+    "answers": [
+      { "text": "TV", "token": 7062 },
+      { "text": "Phone", "token": 21825 },
+      { "text": "Computer", "token": 17496 },
+      { "text": "Lamp", "token": 1848 },
+      { "text": "Headphones", "token": 1166 },
+      { "text": "Computer mouse", "token": 546 }
+    ],
+    "voters": 49943,
+    "surveyClosed": 1648530000000,
+    "photoId": "0VEDrQXxrQo"
+  },
+  {
+    "id": 22,
+    "text": "Name a sport some mothers hope their child never plays.",
+    "answers": [
+      { "text": "Hockey", "token": 31860 },
+      { "text": "Football", "token": 22882 },
+      { "text": "Baseball", "token": 5499 },
+      { "text": "Soccer", "token": 6832 },
+      { "text": "Rugby", "token": 3645 },
+      { "text": "Basketball", "token": 1023 }
+    ],
+    "voters": 71741,
+    "surveyClosed": 1648616400000,
+    "photoId": "OvNQgag9FAo"
+  },
+  {
+    "id": 23,
+    "text": "Name a fruit you might eat in the morning.",
+    "answers": [
+      { "text": "Banana", "token": 5800 },
+      { "text": "Grapefruit", "token": 14300 },
+      { "text": "Strawberry", "token": 10982 },
+      { "text": "Apple", "token": 3090 },
+      { "text": "Orange", "token": 10512 },
+      { "text": "Melon", "token": 1863 },
+      { "text": "Peach", "token": 934 }
+    ],
+    "voters": 47481,
+    "surveyClosed": 1648702800000,
+    "photoId": "UdvOABLvTz4"
+  },
+  {
+    "id": 24,
+    "text": "Name a reason you might be late for work.",
+    "answers": [
+      { "text": "Traffic", "token": 28272 },
+      { "text": "Woke up/left late", "token": 3146 },
+      { "text": "Car trouble/accident", "token": 7227 },
+      { "text": "Bus/train delay", "token": 4480 },
+      { "text": "Dropping off kids", "token": 2924 },
+      { "text": "Sick/medical emergency", "token": 468 },
+      { "text": "Weather", "token": 2550 },
+      { "text": "Hungover", "token": 1338 }
+    ],
+    "voters": 50405,
+    "surveyClosed": 1648789200000,
+    "photoId": "ozqy4IMfDjI"
+  },
+  {
+    "id": 25,
+    "text": "What is the first thing most people do in the morning?",
+    "answers": [
+      { "text": "Bathroom", "token": 22464 },
+      { "text": "Shower", "token": 16416 },
+      { "text": "Breakfast", "token": 12402 },
+      { "text": "Open eyes", "token": 5580 },
+      { "text": "Turn off alarm/snooze", "token": 4380 },
+      { "text": "Brush teeth", "token": 4228 },
+      { "text": "Get dressed", "token": 1478 }
+    ],
+    "voters": 66948,
+    "surveyClosed": 1648875600000,
+    "photoId": "y69xP87X26U"
+  },
+  {
+    "id": 26,
+    "text": "Name a U.S. President who might have been described during their time in office as a \"young\" president.",
+    "answers": [
+      { "text": "Kennedy", "token": 7052 },
+      { "text": "Obama", "token": 15708 },
+      { "text": "Clinton", "token": 12495 },
+      { "text": "Lincoln", "token": 2580 },
+      { "text": "T. Roosevelt", "token": 740 }
+    ],
+    "voters": 38575,
+    "surveyClosed": 1648962000000,
+    "photoId": "Lszky6odA6I"
+  },
+  {
+    "id": 27,
+    "text": "Name a beverage some people drink exclusively with breakfast.",
+    "answers": [
+      { "text": "Coffee", "token": 13237 },
+      { "text": "Orange juice", "token": 4200 },
+      { "text": "Milk", "token": 10368 },
+      { "text": "Grapefruit juice", "token": 1092 },
+      { "text": "Water", "token": 3664 },
+      { "text": "Champagne", "token": 318 }
+    ],
+    "voters": 32879,
+    "surveyClosed": 1649048400000,
+    "photoId": "Umzf0swKRR0"
+  },
+  {
+    "id": 28,
+    "text": "Tell me a type of gun that doesn't shoot bullets.",
+    "answers": [
+      { "text": "Nail gun", "token": 8280 },
+      { "text": "Stun gun", "token": 13671 },
+      { "text": "Water gun", "token": 10134 },
+      { "text": "BB gun", "token": 12180 },
+      { "text": "Biceps/muscles", "token": 2472 },
+      { "text": "Paintball gun", "token": 1070 },
+      { "text": "Son of a gun", "token": 1310 }
+    ],
+    "voters": 49117,
+    "surveyClosed": 1649134800000,
+    "photoId": "FGyZUYOh5wc"
+  },
+  {
+    "id": 29,
+    "text": "Name a place you might not get cell phone reception.",
+    "answers": [
+      { "text": "Wilderness/mountains", "token": 8762 },
+      { "text": "Basement", "token": 3408 },
+      { "text": "Tunnel", "token": 12416 },
+      { "text": "Boat/ocean", "token": 7224 },
+      { "text": "Work/office building", "token": 11531 },
+      { "text": "School", "token": 318 },
+      { "text": "Court", "token": 720 }
+    ],
+    "voters": 44379,
+    "surveyClosed": 1649221200000,
+    "photoId": "UqKtGyN1A9c"
+  },
+  {
+    "id": 30,
+    "text": "After you take a selfie, who might you send it to?",
+    "answers": [
+      { "text": "Spouse/partner", "token": 7964 },
+      { "text": "Parent", "token": 14720 },
+      { "text": "Aunt/grandparent", "token": 14112 },
+      { "text": "Friend", "token": 6555 },
+      { "text": "Facebook/social media", "token": 6864 },
+      { "text": "Government", "token": 1355 },
+      { "text": "Stranger", "token": 1190 }
+    ],
+    "voters": 52760,
+    "surveyClosed": 1649307600000,
+    "photoId": "dUbU2DasK5c"
+  },
+  {
+    "id": 31,
+    "text": "Name a plant people might grow themselves.",
+    "answers": [
+      { "text": "Tomatoes", "token": 11055 },
+      { "text": "Flowers/roses", "token": 8246 },
+      { "text": "Apples", "token": 10318 },
+      { "text": "Zucchini", "token": 4746 },
+      { "text": "Plums", "token": 3956 },
+      { "text": "Grass/pot", "token": 1761 }
+    ],
+    "voters": 40082,
+    "surveyClosed": 1649394000000,
+    "photoId": "n9aLcniO4s0"
+  },
+  {
+    "id": 32,
+    "text": "Name something you might put in your bed before you go to sleep to keep you warm at night.",
+    "answers": [
+      { "text": "Blanket/electric blanket", "token": 16401 },
+      { "text": "Other person", "token": 24414 },
+      { "text": "Pajamas", "token": 5572 },
+      { "text": "Heater", "token": 8600 },
+      { "text": "Socks/scarf", "token": 3318 },
+      { "text": "Dog/cat", "token": 2940 },
+      { "text": "Hot water bottle", "token": 1550 }
+    ],
+    "voters": 62795,
+    "surveyClosed": 1649480400000,
+    "photoId": "Gz-NPicm6r4"
+  },
+  {
+    "id": 33,
+    "text": "Name a type of vehicle you really wouldn't want to hit while driving.",
+    "answers": [
+      { "text": "Police car", "token": 24376 },
+      { "text": "Firetruck", "token": 10656 },
+      { "text": "Ambulance", "token": 11640 },
+      { "text": "Train", "token": 4740 },
+      { "text": "Hearse", "token": 996 },
+      { "text": "Hummer", "token": 1796 },
+      { "text": "Limo", "token": 1846 }
+    ],
+    "voters": 56050,
+    "surveyClosed": 1649566800000,
+    "photoId": "mO-HwOE29wQ"
+  },
+  {
+    "id": 34,
+    "text": "Name a part of your body that you might say has an \"ache.\"",
+    "answers": [
+      { "text": "Head", "token": 32436 },
+      { "text": "Stomach", "token": 8844 },
+      { "text": "Back", "token": 6138 },
+      { "text": "Tooth", "token": 2352 },
+      { "text": "Muscle", "token": 1914 },
+      { "text": "Knee", "token": 1656 },
+      { "text": "Ear", "token": 884 }
+    ],
+    "voters": 54224,
+    "surveyClosed": 1649653200000,
+    "photoId": "_ZW5UUZ-1Yg"
+  },
+  {
+    "id": 35,
+    "text": "At your job, out of the 60 minutes in each hour, how many do you spend doing actual work?",
+    "answers": [
+      { "text": "45 minutes", "token": 11550 },
+      { "text": "30 minutes", "token": 20999 },
+      { "text": "50 minutes", "token": 3296 },
+      { "text": "60 minutes", "token": 11016 },
+      { "text": "0 minutes", "token": 966 },
+      { "text": "15 minutes", "token": 925 },
+      { "text": "10 minutes", "token": 1504 }
+    ],
+    "voters": 50256,
+    "surveyClosed": 1649739600000,
+    "photoId": "4yBeMayTYys"
+  },
+  {
+    "id": 36,
+    "text": "Name someone you might ask for directions.",
+    "answers": [
+      { "text": "Friend", "token": 8200 },
+      { "text": "Siri/app", "token": 11343 },
+      { "text": "Gas station employee", "token": 6480 },
+      { "text": "Store owner", "token": 4606 },
+      { "text": "Stranger/pedestrian", "token": 6040 },
+      { "text": "Priest", "token": 1899 },
+      { "text": "Neighbor", "token": 2016 },
+      { "text": "Parent", "token": 1868 }
+    ],
+    "voters": 42452,
+    "surveyClosed": 1649826000000,
+    "photoId": "9xcssELUNWw"
+  },
+  {
+    "id": 37,
+    "text": "How old would you like your first child to be before their first date?",
+    "answers": [
+      { "text": "18", "token": 22545 },
+      { "text": "16", "token": 10475 },
+      { "text": "15", "token": 16128 },
+      { "text": "14", "token": 1540 },
+      { "text": "17", "token": 2625 },
+      { "text": "21", "token": 632 },
+      { "text": "13", "token": 954 }
+    ],
+    "voters": 54899,
+    "surveyClosed": 1649912400000,
+    "photoId": "1cUZ3PCso_8"
+  },
+  {
+    "id": 38,
+    "text": "Name a reason a person might be running.",
+    "answers": [
+      { "text": "Exercise", "token": 30060 },
+      { "text": "Catch bus or train", "token": 7228 },
+      { "text": "Catch other person", "token": 8372 },
+      { "text": "Get somewhere", "token": 6696 },
+      { "text": "Sport/game", "token": 3414 },
+      { "text": "Escape/being chased", "token": 3940 },
+      { "text": "Broke the law", "token": 600 }
+    ],
+    "voters": 60310,
+    "surveyClosed": 1649998800000,
+    "photoId": "sY4eZVAWHkg"
+  },
+  {
+    "id": 39,
+    "text": "Besides a pillow, name something you might rest your head on to go sleep.",
+    "answers": [
+      { "text": "Bed", "token": 13884 },
+      { "text": "Blanket", "token": 13508 },
+      { "text": "Other person", "token": 15180 },
+      { "text": "Your arm", "token": 5320 },
+      { "text": "Stuffed animal/teddy bear", "token": 2640 }
+    ],
+    "voters": 50532,
+    "surveyClosed": 1650085200000,
+    "photoId": "KWjfOv1qp2Y"
+  },
+  {
+    "id": 40,
+    "text": "Name an older actor who is in a lot of movies.",
+    "answers": [
+      { "text": "Tom Cruise", "token": 10659 },
+      { "text": "Dwayne \"The Rock\" Johnson", "token": 14212 },
+      { "text": "Tom Hanks", "token": 2055 },
+      { "text": "John Wayne", "token": 8905 },
+      { "text": "Clint Eastwood", "token": 12727 },
+      { "text": "Harrison Ford", "token": 4417 }
+    ],
+    "voters": 52975,
+    "surveyClosed": 1650171600000,
+    "photoId": "jMEs4objgIA"
+  },
+  {
+    "id": 41,
+    "text": "Name a place where people have to use coins.",
+    "answers": [
+      { "text": "Vending machine", "token": 3393 },
+      { "text": "Laundromat", "token": 3586 },
+      { "text": "Bus/subway", "token": 6573 },
+      { "text": "Parking meter", "token": 11040 },
+      { "text": "Pay phone", "token": 306 },
+      { "text": "Bank", "token": 1176 }
+    ],
+    "voters": 26074,
+    "surveyClosed": 1650258000000,
+    "photoId": "Ri1w-K1gjiE"
+  },
+  {
+    "id": 42,
+    "text": "Other than wood, name a material that might be used when building a house.",
+    "answers": [
+      { "text": "Brick", "token": 27192 },
+      { "text": "Glass", "token": 18460 },
+      { "text": "Nails", "token": 4780 },
+      { "text": "Concrete", "token": 17000 },
+      { "text": "Steel", "token": 5520 },
+      { "text": "Plastic", "token": 984 },
+      { "text": "Insulation", "token": 735 },
+      { "text": "Vinyl", "token": 1748 }
+    ],
+    "voters": 76419,
+    "surveyClosed": 1650344400000,
+    "photoId": "GU4RTr6sRyQ"
+  },
+  {
+    "id": 43,
+    "text": "Name something you never leave home without.",
+    "answers": [
+      { "text": "Cell phone", "token": 22172 },
+      { "text": "Purse", "token": 5790 },
+      { "text": "Wallet", "token": 1300 },
+      { "text": "Keys", "token": 2395 },
+      { "text": "Money", "token": 378 },
+      { "text": "Kids", "token": 1934 },
+      { "text": "Car", "token": 976 }
+    ],
+    "voters": 34945,
+    "surveyClosed": 1650430800000,
+    "photoId": "3K0LfPFBz9U"
+  },
+  {
+    "id": 44,
+    "text": "Name a metal that old coins might be made out of.",
+    "answers": [
+      { "text": "Silver", "token": 26448 },
+      { "text": "Gold", "token": 14825 },
+      { "text": "Copper", "token": 6600 },
+      { "text": "Bronze", "token": 6966 },
+      { "text": "Zinc", "token": 712 },
+      { "text": "Steel", "token": 1160 }
+    ],
+    "voters": 56711,
+    "surveyClosed": 1650517200000,
+    "photoId": "cnjk64nzifA"
+  },
+  {
+    "id": 45,
+    "text": "Name a country with a name that starts with the letter A.",
+    "answers": [
+      { "text": "Australia", "token": 4862 },
+      { "text": "Afghanistan", "token": 17367 },
+      { "text": "America", "token": 9486 },
+      { "text": "Albania", "token": 9022 },
+      { "text": "Algeria", "token": 3888 },
+      { "text": "Argentina", "token": 3680 },
+      { "text": "Armenia", "token": 1844 }
+    ],
+    "voters": 50149,
+    "surveyClosed": 1650603600000,
+    "photoId": "z3htkdHUh5w"
+  },
+  {
+    "id": 46,
+    "text": "Name something that comes out of clouds.",
+    "answers": [
+      { "text": "Rain", "token": 10241 },
+      { "text": "Snow", "token": 7875 },
+      { "text": "Thunder", "token": 1080 },
+      { "text": "Lightning", "token": 1180 },
+      { "text": "Birds", "token": 3884 },
+      { "text": "Planes", "token": 996 },
+      { "text": "Blimps", "token": 262 },
+      { "text": "Drones", "token": 1002 },
+      { "text": "Superman", "token": 326 }
+    ],
+    "voters": 26846,
+    "surveyClosed": 1650690000000,
+    "photoId": "R571L_hFrM0"
+  },
+  {
+    "id": 47,
+    "text": "Name a profession through which an ugly person might become famous.",
+    "answers": [
+      { "text": "Athletics", "token": 21204 },
+      { "text": "Radio", "token": 23494 },
+      { "text": "Politics", "token": 3528 },
+      { "text": "Acting", "token": 7496 },
+      { "text": "Writing", "token": 715 },
+      { "text": "Academics", "token": 1134 },
+      { "text": "Internet/explicit content", "token": 1828 }
+    ],
+    "voters": 59399,
+    "surveyClosed": 1650776400000,
+    "photoId": "1n-lveJmDuw"
+  },
+  {
+    "id": 48,
+    "text": "Name something you eat that might roll away if you dropped it on the floor.",
+    "answers": [
+      { "text": "Meatball", "token": 26124 },
+      { "text": "Peas", "token": 18879 },
+      { "text": "Grape", "token": 10272 },
+      { "text": "Orange", "token": 9269 },
+      { "text": "Apple", "token": 5704 },
+      { "text": "Candy/gumball", "token": 4310 },
+      { "text": "Egg", "token": 1382 }
+    ],
+    "voters": 75940,
+    "surveyClosed": 1650862800000,
+    "photoId": "JfVkcw9E_Bo"
+  },
+  {
+    "id": 49,
+    "text": "Name something that comes in a glass bottle.",
+    "answers": [
+      { "text": "Milk", "token": 17136 },
+      { "text": "Beer", "token": 20254 },
+      { "text": "Soda", "token": 2940 },
+      { "text": "Ketchup/condiments", "token": 14655 },
+      { "text": "Ship", "token": 496 }
+    ],
+    "voters": 55481,
+    "surveyClosed": 1650949200000,
+    "photoId": "V0gX0LS5qB0"
+  },
+  {
+    "id": 50,
+    "text": "Name a country with a lot of land.",
+    "answers": [
+      { "text": "Russia", "token": 28489 },
+      { "text": "China", "token": 12019 },
+      { "text": "Canada", "token": 5763 },
+      { "text": "USA", "token": 9968 },
+      { "text": "Greenland", "token": 4715 },
+      { "text": "Mexico", "token": 592 },
+      { "text": "Australia", "token": 2644 },
+      { "text": "India", "token": 1318 }
+    ],
+    "voters": 65508,
+    "surveyClosed": 1651035600000,
+    "photoId": "AdnD0rO1feg"
+  },
+  {
+    "id": 51,
+    "text": "How long does a typical New Year's Resolution last?",
+    "answers": [
+      { "text": "1 month", "token": 4961 },
+      { "text": "1 week", "token": 14940 },
+      { "text": "10 days", "token": 8500 },
+      { "text": "1 year", "token": 2360 },
+      { "text": "3 months", "token": 1563 },
+      { "text": "2 months", "token": 360 },
+      { "text": "20 days/3 weeks", "token": 1340 },
+      { "text": "Forever", "token": 950 }
+    ],
+    "voters": 34974,
+    "surveyClosed": 1651122000000,
+    "photoId": "n2qThX62ss8"
+  },
+  {
+    "id": 52,
+    "text": "Name something you'd hate to find swimming around in your bathtub.",
+    "answers": [
+      { "text": "Rat/mouse", "token": 25456 },
+      { "text": "Snake", "token": 6490 },
+      { "text": "Cockroach", "token": 18669 },
+      { "text": "Spider", "token": 4207 },
+      { "text": "Lizard", "token": 2985 },
+      { "text": "Dog", "token": 315 },
+      { "text": "Alligator", "token": 1826 },
+      { "text": "Fish", "token": 1810 }
+    ],
+    "voters": 61758,
+    "surveyClosed": 1651208400000,
+    "photoId": "jT3umt5xdqU"
+  },
+  {
+    "id": 53,
+    "text": "About how many pages is the longest book you've ever read?",
+    "answers": [
+      { "text": "250", "token": 14314 },
+      { "text": "1000", "token": 5792 },
+      { "text": "100", "token": 14448 },
+      { "text": "500", "token": 4275 },
+      { "text": "2000", "token": 1500 },
+      { "text": "300", "token": 4290 },
+      { "text": "200", "token": 1716 },
+      { "text": "10", "token": 846 },
+      { "text": "50", "token": 814 }
+    ],
+    "voters": 47995,
+    "surveyClosed": 1651294800000,
+    "photoId": "CDnoQrlKA9s"
+  },
+  {
+    "id": 54,
+    "text": "If you asked a person from Texas, what might they say is their favorite genre of music?",
+    "answers": [
+      { "text": "Country", "token": 27795 },
+      { "text": "Rock", "token": 11420 },
+      { "text": "Mexican/Tex-Mex", "token": 7888 },
+      { "text": "Rap", "token": 6153 },
+      { "text": "Pop", "token": 1495 },
+      { "text": "Gospel", "token": 2492 },
+      { "text": "Patriotic/national anthem", "token": 1836 }
+    ],
+    "voters": 59079,
+    "surveyClosed": 1651381200000,
+    "photoId": "Wm4Cr1oVVqk"
+  },
+  {
+    "id": 55,
+    "text": "What might a married man rather admit to his buddies than to his wife?",
+    "answers": [
+      { "text": "She's a bad cook", "token": 8086 },
+      { "text": "Doesn't like in-laws", "token": 11770 },
+      { "text": "Doesn't like wife's friends", "token": 22923 },
+      { "text": "Dirty pictures/magazines", "token": 9860 },
+      { "text": "In debt", "token": 3640 },
+      { "text": "Checked out another woman", "token": 3360 },
+      { "text": "Quit job", "token": 2976 },
+      { "text": "Kid is ugly", "token": 1485 }
+    ],
+    "voters": 64100,
+    "surveyClosed": 1651467600000,
+    "photoId": "mKLjUjUkX6c"
+  },
+  {
+    "id": 56,
+    "text": "Name a chore that people put off because they have work the next day.",
+    "answers": [
+      { "text": "Take out trash", "token": 13090 },
+      { "text": "Dishes", "token": 29400 },
+      { "text": "Vacuum", "token": 14652 },
+      { "text": "Laundry", "token": 4200 },
+      { "text": "Clean bathroom", "token": 1024 },
+      { "text": "Dust", "token": 2871 }
+    ],
+    "voters": 65237,
+    "surveyClosed": 1651554000000,
+    "photoId": "h9UncwmDYG0"
+  },
+  {
+    "id": 57,
+    "text": "Name a superhero member of the Justice League.",
+    "answers": [
+      { "text": "Batman", "token": 7254 },
+      { "text": "Superman", "token": 12760 },
+      { "text": "Wonder Woman", "token": 5068 },
+      { "text": "Aquaman", "token": 1260 },
+      { "text": "The Flash", "token": 1852 },
+      { "text": "Cyborg", "token": 926 }
+    ],
+    "voters": 29120,
+    "surveyClosed": 1651640400000,
+    "photoId": "AFjhuHfFdCQ"
+  },
+  {
+    "id": 58,
+    "text": "Tell me something for which Kentucky is famous.",
+    "answers": [
+      { "text": "Derby", "token": 32400 },
+      { "text": "Fried chicken", "token": 16346 },
+      { "text": "Wildcats/college sports", "token": 3732 },
+      { "text": "Bourbon", "token": 1330 },
+      { "text": "Moonshine", "token": 3436 },
+      { "text": "Coal", "token": 3192 },
+      { "text": "Bluegrass", "token": 228 }
+    ],
+    "voters": 60664,
+    "surveyClosed": 1651726800000,
+    "photoId": "h0rmuR-5kSo"
+  },
+  {
+    "id": 59,
+    "text": "Name something appealing about working from home.",
+    "answers": [
+      { "text": "No clothes/dress code", "token": 20020 },
+      { "text": "Flexible hours", "token": 8190 },
+      { "text": "Great commute", "token": 6001 },
+      { "text": "See family", "token": 9470 },
+      { "text": "Avoid coworkers", "token": 3152 },
+      { "text": "Save money", "token": 1101 },
+      { "text": "Avoid boss", "token": 1539 },
+      { "text": "Bathroom anytime", "token": 1638 },
+      { "text": "No babysitter", "token": 734 }
+    ],
+    "voters": 51845,
+    "surveyClosed": 1651813200000,
+    "photoId": "ztR-F3DWzbI"
+  },
+  {
+    "id": 60,
+    "text": "Name someone you would call after getting engaged.",
+    "answers": [
+      { "text": "Parent", "token": 28908 },
+      { "text": "Best friend", "token": 15254 },
+      { "text": "Sibling", "token": 9100 },
+      { "text": "Grandparent", "token": 2076 },
+      { "text": "Aunt/uncle", "token": 1170 },
+      { "text": "Priest", "token": 1872 },
+      { "text": "Lawyer", "token": 974 }
+    ],
+    "voters": 59354,
+    "surveyClosed": 1651899600000,
+    "photoId": "ztR-F3DWzbI"
+  },
+  {
+    "id": 61,
+    "text": "Name a country with a lot of ice.",
+    "answers": [
+      { "text": "Iceland", "token": 4545 },
+      { "text": "Russia", "token": 8602 },
+      { "text": "Canada", "token": 3270 },
+      { "text": "Greenland", "token": 5643 },
+      { "text": "Norway", "token": 4355 },
+      { "text": "Antarctica", "token": 3160 },
+      { "text": "Alaska", "token": 1148 }
+    ],
+    "voters": 30723,
+    "surveyClosed": 1651986000000,
+    "photoId": "50-IQjlwbgQ"
+  },
+  {
+    "id": 62,
+    "text": "Name a color of underwear a person might save for a special occasion.",
+    "answers": [
+      { "text": "Red", "token": 14942 },
+      { "text": "Black", "token": 7462 },
+      { "text": "White", "token": 1526 },
+      { "text": "Pink", "token": 6942 },
+      { "text": "Green", "token": 7420 },
+      { "text": "Yellow", "token": 806 }
+    ],
+    "voters": 39098,
+    "surveyClosed": 1652072400000,
+    "photoId": "yLIoAnVK6eI"
+  },
+  {
+    "id": 63,
+    "text": "Name a behavior a dog would get away with that a person wouldn't get away with.",
+    "answers": [
+      { "text": "Public pooping", "token": 4917 },
+      { "text": "Scratching", "token": 3289 },
+      { "text": "Humping", "token": 13158 },
+      { "text": "Licking strangers", "token": 9086 },
+      { "text": "Head out of car window", "token": 1628 }
+    ],
+    "voters": 32078,
+    "surveyClosed": 1652158800000,
+    "photoId": "F61c5_tfT_k"
+  },
+  {
+    "id": 64,
+    "text": "Other than jewelry, what is the most expensive single item in your home?",
+    "answers": [
+      { "text": "TV", "token": 27090 },
+      { "text": "Furniture", "token": 20034 },
+      { "text": "Appliance", "token": 9770 },
+      { "text": "Computer", "token": 1744 },
+      { "text": "Collectibles", "token": 1796 },
+      { "text": "Money", "token": 1436 },
+      { "text": "Clothes", "token": 1580 },
+      { "text": "Car", "token": 648 }
+    ],
+    "voters": 64098,
+    "surveyClosed": 1652245200000,
+    "photoId": "K7DehNGIOxI"
+  },
+  {
+    "id": 65,
+    "text": "Name something you might buy at a gas station.",
+    "answers": [
+      { "text": "Gas", "token": 33660 },
+      { "text": "Gum/candy", "token": 10464 },
+      { "text": "Soda/water", "token": 10815 },
+      { "text": "Coffee", "token": 5270 },
+      { "text": "Chips", "token": 788 },
+      { "text": "Lottery ticket", "token": 1071 },
+      { "text": "Meal/breakfast", "token": 1362 },
+      { "text": "Car wash", "token": 1422 }
+    ],
+    "voters": 64852,
+    "surveyClosed": 1652331600000,
+    "photoId": "wDqytTN8XqE"
+  },
+  {
+    "id": 66,
+    "text": "Name something you have to do that would give you a reason to set an alarm to wake up.",
+    "answers": [
+      { "text": "Work", "token": 10017 },
+      { "text": "School", "token": 3125 },
+      { "text": "Exercise", "token": 5208 },
+      { "text": "Catch bus/train", "token": 6695 },
+      { "text": "Flight", "token": 8091 },
+      { "text": "Drop off kids", "token": 2080 }
+    ],
+    "voters": 35216,
+    "surveyClosed": 1652418000000,
+    "photoId": "-X0iQy6EtTM"
+  },
+  {
+    "id": 67,
+    "text": "Name a downside of biking to work.",
+    "answers": [
+      { "text": "Takes longer", "token": 17304 },
+      { "text": "Tired", "token": 22250 },
+      { "text": "Stinky at work", "token": 14535 },
+      { "text": "More dangerous/accidents", "token": 5610 },
+      { "text": "Harder to carry things", "token": 4170 },
+      { "text": "Look silly", "token": 875 },
+      { "text": "Worry about bike", "token": 2289 }
+    ],
+    "voters": 67033,
+    "surveyClosed": 1652504400000,
+    "photoId": "ydCrXVqpphA"
+  },
+  {
+    "id": 69,
+    "text": "Name an animal some people keep as a pet that you would never allow in your house.",
+    "answers": [
+      { "text": "Snake", "token": 16169 },
+      { "text": "Rat", "token": 8988 },
+      { "text": "Lizard", "token": 5092 },
+      { "text": "Tarantula", "token": 4600 },
+      { "text": "Mouse", "token": 4100 },
+      { "text": "Cockroach", "token": 3168 },
+      { "text": "Dog", "token": 1280 },
+      { "text": "Name a type of bear.", "token": 0 },
+      { "text": "Grizzly", "token": 19683 },
+      { "text": "Polar", "token": 15224 },
+      { "text": "Panda", "token": 7854 },
+      { "text": "Teddy", "token": 1750 },
+      { "text": "Brown", "token": 2088 },
+      { "text": "Black", "token": 1896 }
+    ],
+    "voters": 91892,
+    "surveyClosed": 1652590800000,
+    "photoId": "DltiuHDZ_Tw"
+  },
+  {
+    "id": 70,
+    "text": "Name a word you might use to describe a dog that could also describe your partner.",
+    "answers": [
+      { "text": "Loyal", "token": 7304 },
+      { "text": "Playful", "token": 10908 },
+      { "text": "Hairy", "token": 9690 },
+      { "text": "Cute", "token": 7882 },
+      { "text": "Horny", "token": 7960 },
+      { "text": "Obedient", "token": 4848 },
+      { "text": "Sweet", "token": 980 },
+      { "text": "Greedy", "token": 476 },
+      { "text": "Male/female", "token": 2691 }
+    ],
+    "voters": 52739,
+    "surveyClosed": 1652677200000,
+    "photoId": "VWcPlbHglYc"
+  },
+  {
+    "id": 71,
+    "text": "Name a profession that would be difficult for a coward.",
+    "answers": [
+      { "text": "Police officer", "token": 6732 },
+      { "text": "Firefighter", "token": 9956 },
+      { "text": "Armed forces", "token": 9612 },
+      { "text": "Doctor/surgeon", "token": 11790 },
+      { "text": "Mortician", "token": 5264 },
+      { "text": "Exterminator", "token": 1364 }
+    ],
+    "voters": 44718,
+    "surveyClosed": 1652763600000,
+    "photoId": "2j_jCdoW9sg"
+  },
+  {
+    "id": 72,
+    "text": "Name something you might wear while driving.",
+    "answers": [
+      { "text": "Seatbelt/safety belt", "token": 8019 },
+      { "text": "Sunglasses", "token": 23328 },
+      { "text": "Eyeglasses", "token": 21912 },
+      { "text": "Gloves", "token": 4896 },
+      { "text": "Shoes", "token": 4750 }
+    ],
+    "voters": 62905,
+    "surveyClosed": 1652850000000,
+    "photoId": "S0tveAWf4Yw"
+  },
+  {
+    "id": 73,
+    "text": "How many days can you keep a banana before it goes bad?",
+    "answers": [
+      { "text": "3", "token": 15820 },
+      { "text": "5", "token": 2420 },
+      { "text": "7", "token": 13755 },
+      { "text": "4", "token": 4568 },
+      { "text": "10", "token": 4685 }
+    ],
+    "voters": 41248,
+    "surveyClosed": 1652936400000,
+    "photoId": "ml2b8JdQoZk"
+  },
+  {
+    "id": 74,
+    "text": "Name a state with a lot of mountains.",
+    "answers": [
+      { "text": "Colorado", "token": 13992 },
+      { "text": "Alaska", "token": 5560 },
+      { "text": "Montana", "token": 7398 },
+      { "text": "Wyoming", "token": 2853 },
+      { "text": "Idaho", "token": 4744 },
+      { "text": "California", "token": 5726 },
+      { "text": "Utah", "token": 1355 }
+    ],
+    "voters": 41628,
+    "surveyClosed": 1653022800000,
+    "photoId": "pxWB6zqom90"
+  },
+  {
+    "id": 75,
+    "text": "Name a job that requires a lot of education.",
+    "answers": [
+      { "text": "Doctor", "token": 21421 },
+      { "text": "Lawyer", "token": 9083 },
+      { "text": "Teacher", "token": 15057 },
+      { "text": "College professor", "token": 10153 },
+      { "text": "Nurse", "token": 1632 }
+    ],
+    "voters": 57346,
+    "surveyClosed": 1653109200000,
+    "photoId": "OaD5um45Cik"
+  },
+  {
+    "id": 76,
+    "text": "Name a country with a large population.",
+    "answers": [
+      { "text": "China", "token": 27945 },
+      { "text": "India", "token": 11816 },
+      { "text": "United States", "token": 17800 },
+      { "text": "Brazil", "token": 4210 },
+      { "text": "Mexico", "token": 204 },
+      { "text": "Indonesia", "token": 954 }
+    ],
+    "voters": 62929,
+    "surveyClosed": 1653195600000,
+    "photoId": "UCHolj9FkkE"
+  },
+  {
+    "id": 77,
+    "text": "Other than letters, name something people get in the mail.",
+    "answers": [
+      { "text": "Junk mail/ads", "token": 17784 },
+      { "text": "Magazines", "token": 8074 },
+      { "text": "Bills", "token": 9554 },
+      { "text": "Packages", "token": 3724 },
+      { "text": "Postcards", "token": 2980 },
+      { "text": "Checks", "token": 3928 }
+    ],
+    "voters": 46044,
+    "surveyClosed": 1653282000000,
+    "photoId": "q1C116-6HHE"
+  },
+  {
+    "id": 78,
+    "text": "Name a type of building where it always seems to be cold.",
+    "answers": [
+      { "text": "Doctor office", "token": 14212 },
+      { "text": "Work", "token": 18772 },
+      { "text": "Classroom", "token": 11172 },
+      { "text": "DMV", "token": 2104 },
+      { "text": "Hotel room", "token": 1316 },
+      { "text": "Igloo", "token": 792 }
+    ],
+    "voters": 48368,
+    "surveyClosed": 1653368400000,
+    "photoId": "V3LsMM-gscs"
+  },
+  {
+    "id": 79,
+    "text": "Name the happiest day in a woman's life.",
+    "answers": [
+      { "text": "Married", "token": 20008 },
+      { "text": "Kids", "token": 22150 },
+      { "text": "Promotion/new job", "token": 11914 },
+      { "text": "Grandkids", "token": 4860 },
+      { "text": "Graduation/college", "token": 1412 },
+      { "text": "Kid's graduation", "token": 1014 },
+      { "text": "Retirement", "token": 1896 }
+    ],
+    "voters": 63254,
+    "surveyClosed": 1653454800000,
+    "photoId": "Zeg_5A4tmoI"
+  },
+  {
+    "id": 80,
+    "text": "Name something you would buy after getting engaged.",
+    "answers": [
+      { "text": "Dress", "token": 34760 },
+      { "text": "Ring", "token": 16120 },
+      { "text": "Champagne/drinks", "token": 2134 },
+      { "text": "Dinner", "token": 4374 },
+      { "text": "Name a type of insurance.", "token": 0 },
+      { "text": "Car", "token": 17864 },
+      { "text": "Health/dental", "token": 19954 },
+      { "text": "Life", "token": 7275 },
+      { "text": "Home", "token": 9310 },
+      { "text": "Renter's", "token": 5480 },
+      { "text": "Flood", "token": 3384 },
+      { "text": "Travel", "token": 3528 },
+      { "text": "Blackjack", "token": 654 }
+    ],
+    "voters": 124837,
+    "surveyClosed": 1653541200000,
+    "photoId": "iLNPS0N_6J4"
+  },
+  {
+    "id": 81,
+    "text": "Name a common candy bar component.",
+    "answers": [
+      { "text": "Chocolate", "token": 18576 },
+      { "text": "Peanuts", "token": 13288 },
+      { "text": "Caramel", "token": 13800 },
+      { "text": "Almonds", "token": 8040 },
+      { "text": "Nougat", "token": 7720 },
+      { "text": "Coconut", "token": 732 }
+    ],
+    "voters": 62156,
+    "surveyClosed": 1653627600000,
+    "photoId": "FjlMWWBM9sQ"
+  },
+  {
+    "id": 82,
+    "text": "Name the most annoying thing other drivers do on the road.",
+    "answers": [
+      { "text": "Not use turn signals", "token": 27468 },
+      { "text": "Cut you off", "token": 7410 },
+      { "text": "Speed", "token": 6981 },
+      { "text": "Drive too slow", "token": 9120 },
+      { "text": "Tailgate", "token": 5089 },
+      { "text": "Use cell phone", "token": 2224 },
+      { "text": "Loud music", "token": 1143 }
+    ],
+    "voters": 59435,
+    "surveyClosed": 1653714000000,
+    "photoId": "T_BWvVnkk0c"
+  },
+  {
+    "id": 83,
+    "text": "Name a state that has a lot of sports teams.",
+    "answers": [
+      { "text": "New York", "token": 31878 },
+      { "text": "California", "token": 21630 },
+      { "text": "Florida", "token": 9720 },
+      { "text": "Texas", "token": 12363 },
+      { "text": "Pennsylvania", "token": 2523 },
+      { "text": "Illinois", "token": 1882 }
+    ],
+    "voters": 79996,
+    "surveyClosed": 1653800400000,
+    "photoId": "UpAuSZqKL7c"
+  },
+  {
+    "id": 84,
+    "text": "Name something you might be asked to bring to a friend's party.",
+    "answers": [
+      { "text": "Food", "token": 28743 },
+      { "text": "Drinks/alcohol", "token": 5084 },
+      { "text": "Date/more guests", "token": 3952 },
+      { "text": "Chairs", "token": 3540 },
+      { "text": "Music", "token": 3672 },
+      { "text": "Party games", "token": 364 },
+      { "text": "Yourself", "token": 1116 }
+    ],
+    "voters": 46471,
+    "surveyClosed": 1653886800000,
+    "photoId": "mk6NEGfhlsE"
+  },
+  {
+    "id": 85,
+    "text": "For what reason might you choose not to go to a new restaurant, even after someone recommended it to you?",
+    "answers": [
+      { "text": "Bad reviews online", "token": 24882 },
+      { "text": "Too expensive/budget", "token": 14679 },
+      { "text": "Too far away", "token": 1904 },
+      { "text": "Don't trust recommender", "token": 2145 },
+      { "text": "No babysitter", "token": 1134 },
+      { "text": "Not like cuisine", "token": 1160 },
+      { "text": "Bad part of town", "token": 1509 }
+    ],
+    "voters": 47413,
+    "surveyClosed": 1653973200000,
+    "photoId": "wpIYy2lZ04s"
+  },
+  {
+    "id": 86,
+    "text": "Name something you might prefer to buy in person rather than online.",
+    "answers": [
+      { "text": "Clothes", "token": 13746 },
+      { "text": "Car", "token": 5572 },
+      { "text": "Food", "token": 5886 },
+      { "text": "Mattress", "token": 12166 },
+      { "text": "Jewelry", "token": 1568 },
+      { "text": "Perfume/cologne", "token": 2380 },
+      { "text": "Shoes", "token": 1788 }
+    ],
+    "voters": 43106,
+    "surveyClosed": 1654059600000,
+    "photoId": "DzlLSLqMP0I"
+  },
+  {
+    "id": 87,
+    "text": "Name a reason you might call a taxi.",
+    "answers": [
+      { "text": "Needed a ride/no car", "token": 38318 },
+      { "text": "Impaired", "token": 23952 },
+      { "text": "Lost/no directions", "token": 7776 },
+      { "text": "Hard to find parking", "token": 4501 },
+      { "text": "Not enough space in car", "token": 2324 },
+      { "text": "Name a planet.", "token": 0 },
+      { "text": "Mars", "token": 15480 },
+      { "text": "Earth", "token": 9482 },
+      { "text": "Jupiter", "token": 15344 },
+      { "text": "Venus", "token": 7800 },
+      { "text": "Saturn", "token": 5950 },
+      { "text": "Pluto", "token": 3552 },
+      { "text": "Uranus", "token": 729 }
+    ],
+    "voters": 135208,
+    "surveyClosed": 1654146000000,
+    "photoId": "qpy3lg857Tg"
+  },
+  {
+    "id": 88,
+    "text": "Name something a person cares more about as they pass middle age.",
+    "answers": [
+      { "text": "Retirement", "token": 17820 },
+      { "text": "Grandchildren", "token": 17810 },
+      { "text": "Afterlife/religion", "token": 6640 },
+      { "text": "Health", "token": 1092 },
+      { "text": "Politics", "token": 1040 },
+      { "text": "Politics", "token": 1864 }
+    ],
+    "voters": 46266,
+    "surveyClosed": 1654232400000,
+    "photoId": "1k5Yp26_tAk"
+  },
+  {
+    "id": 89,
+    "text": "Name a U.S. president who was already old when he took the job.",
+    "answers": [
+      { "text": "Biden", "token": 10045 },
+      { "text": "Reagan", "token": 10649 },
+      { "text": "Trump", "token": 9394 },
+      { "text": "Carter", "token": 4475 },
+      { "text": "George H.W. Bush", "token": 905 },
+      { "text": "Ford", "token": 1788 }
+    ],
+    "voters": 37256,
+    "surveyClosed": 1654318800000,
+    "photoId": "aj7SvmAZdqY"
+  },
+  {
+    "id": 91,
+    "text": "Name a professional sport where the players make a lot of money.",
+    "answers": [
+      { "text": "Football", "token": 23432 },
+      { "text": "Baseball", "token": 25866 },
+      { "text": "Basketball", "token": 8256 },
+      { "text": "Soccer", "token": 3451 },
+      { "text": "Tennis", "token": 2408 },
+      { "text": "Darts", "token": 1384 }
+    ],
+    "voters": 64797,
+    "surveyClosed": 1654405200000,
+    "photoId": "X6F3Qfa98T4"
+  },
+  {
+    "id": 92,
+    "text": "Name something you find in a breakfast buffet.",
+    "answers": [
+      { "text": "Eggs", "token": 16925 },
+      { "text": "Bacon", "token": 7200 },
+      { "text": "Sausage", "token": 12958 },
+      { "text": "Potatoes/hash browns", "token": 11976 },
+      { "text": "Orange juice", "token": 1911 },
+      { "text": "Coffee", "token": 5310 },
+      { "text": "Melon", "token": 1474 }
+    ],
+    "voters": 57754,
+    "surveyClosed": 1654491600000,
+    "photoId": "kO4_dHoKnJo"
+  },
+  {
+    "id": 93,
+    "text": "We only asked married people: What is the most expensive thing you've ever bought while married without telling your spouse first?",
+    "answers": [
+      { "text": "Car", "token": 17913 },
+      { "text": "Trip/hotel room", "token": 12180 },
+      { "text": "Clothes", "token": 9027 },
+      { "text": "TV", "token": 14520 },
+      { "text": "Computer", "token": 9450 },
+      { "text": "Video games/system", "token": 2175 },
+      { "text": "Boat", "token": 1581 }
+    ],
+    "voters": 66846,
+    "surveyClosed": 1654578000000,
+    "photoId": "QH0ytOLN-Mw"
+  },
+  {
+    "id": 94,
+    "text": "What's something you keep in your car, just in case?",
+    "answers": [
+      { "text": "Money/coins", "token": 9766 },
+      { "text": "Food/water", "token": 10782 },
+      { "text": "First aid kit", "token": 3564 },
+      { "text": "Spare tire", "token": 9105 },
+      { "text": "Map", "token": 2457 },
+      { "text": "Jumper cables", "token": 4473 },
+      { "text": "Spare clothes/shoes", "token": 4245 },
+      { "text": "Flashlight", "token": 3696 },
+      { "text": "Gas can", "token": 1406 },
+      { "text": "Flare", "token": 912 }
+    ],
+    "voters": 50406,
+    "surveyClosed": 1654664400000,
+    "photoId": "_zPbQ_xKyKE"
+  },
+  {
+    "id": 95,
+    "text": "Name a place where you might see someone wearing a baseball cap.",
+    "answers": [
+      { "text": "Baseball/Little League game", "token": 38236 },
+      { "text": "Beach", "token": 13826 },
+      { "text": "Park", "token": 6576 },
+      { "text": "Football game", "token": 3342 }
+    ],
+    "voters": 61980,
+    "surveyClosed": 1654750800000,
+    "photoId": "A5E-ym6WyGM"
+  },
+  {
+    "id": 96,
+    "text": "When you enter a bathroom, what color do you really hope not to see in the toilet bowl?",
+    "answers": [
+      { "text": "Brown", "token": 56730 },
+      { "text": "Yellow", "token": 10857 },
+      { "text": "Green", "token": 6440 },
+      { "text": "Red", "token": 8230 },
+      { "text": "Black", "token": 220 }
+    ],
+    "voters": 82477,
+    "surveyClosed": 1654837200000,
+    "photoId": "EE0HOMYkgDg"
+  },
+  {
+    "id": 97,
+    "text": "Name something you might see a commercial for during a baseball game.",
+    "answers": [
+      { "text": "Car/truck", "token": 5796 },
+      { "text": "Baseball equipment/jerseys", "token": 12948 },
+      { "text": "Baseball games/tickets", "token": 2775 },
+      { "text": "Restaurant", "token": 2160 },
+      { "text": "Medication", "token": 942 }
+    ],
+    "voters": 24621,
+    "surveyClosed": 1654923600000,
+    "photoId": "k_poKCFtZPw"
+  },
+  {
+    "id": 98,
+    "text": "Name something in a person's closet that only comes out for special occasions.",
+    "answers": [
+      { "text": "Suit/tux", "token": 12215 },
+      { "text": "Dress", "token": 9100 },
+      { "text": "Tie", "token": 7350 },
+      { "text": "Jewelry", "token": 1610 },
+      { "text": "Dress shoes", "token": 1506 },
+      { "text": "Shotgun", "token": 3248 }
+    ],
+    "voters": 35029,
+    "surveyClosed": 1655010000000,
+    "photoId": "lq3PESIaK7s"
+  },
+  {
+    "id": 99,
+    "text": "Name something associated with vampires.",
+    "answers": [
+      { "text": "\"Twilight\"", "token": 29007 },
+      { "text": "Blood/bloodsucker", "token": 28275 },
+      { "text": "Garlic", "token": 7767 },
+      { "text": "Bat", "token": 3696 },
+      { "text": "Cape", "token": 5327 },
+      { "text": "Dracula", "token": 3485 },
+      { "text": "Fangs", "token": 2716 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 },
+      { "text": "", "token": 0 }
+    ],
+    "voters": 80273,
+    "surveyClosed": 1655096400000,
+    "photoId": "JTlActPBBiU"
   }
 ]

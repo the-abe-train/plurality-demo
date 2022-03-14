@@ -36,7 +36,7 @@ export default function Answers({ question, guesses }: Props) {
         visible: {
           height: "auto",
           transition: {
-            staggerChildren: 0.5,
+            staggerChildren: 3,
           },
         },
       }}

@@ -3,7 +3,7 @@ import Answers from "~/components/Answers";
 import Question from "~/components/Question";
 import questionData from "~/data/questions.json";
 import { IAnswer, IQuestion } from "~/lib/question";
-import { statFormat, trim, trimListText } from "~/util/text";
+import { parseAnswer, statFormat, trim, trimListText } from "~/util/text";
 import { fetchPhoto } from "~/util/unsplash";
 
 import styles from "~/styles/app.css";
@@ -50,14 +50,17 @@ export default function QuestionSlug() {
   function formValidate(e: any) {
     e.preventDefault();
     const trimmedGuess = guess.trim().toLowerCase();
-    const alreadyGuessed = trimListText(correctGuesses);
-    const correctGuess = answers.find((a) => trim(a.text) === trimmedGuess);
-    if (alreadyGuessed.includes(guess)) {
-      setMessage("Already guessed.");
-    } else if (correctGuess) {
-      setMessage("");
-      setCorrectGuesses([...correctGuesses, correctGuess]);
-      setGuess("");
+    const correctGuess = answers.find(({ text }) => {
+      return parseAnswer(text).includes(trimmedGuess);
+    });
+    if (correctGuess) {
+      if (correctGuesses.includes(correctGuess)) {
+        setMessage("Already guessed.");
+      } else {
+        setMessage("");
+        setCorrectGuesses([...correctGuesses, correctGuess]);
+        setGuess("");
+      }
     } else {
       setMessage("Invalid guess");
     }

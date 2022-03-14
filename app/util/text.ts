@@ -20,3 +20,13 @@ export function trim(str: string) {
 export function trimListText(items: IAnswer[]) {
   return items.map((a) => trim(a.text));
 }
+
+export function parseAnswer(ans: string) {
+  const trimmedAns = trim(ans);
+  const splitAns = trimmedAns.split(/[\s,/]/);
+  const options = splitAns.filter((a) => {
+    const prepositions = ["a", "the", "in"];
+    return !prepositions.includes(a);
+  });
+  return options;
+}
