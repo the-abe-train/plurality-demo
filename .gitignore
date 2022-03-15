@@ -6,3 +6,5 @@ node_modules
 .env
 
 questions old.json
+
+app/styles/app.css
