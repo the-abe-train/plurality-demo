@@ -6,10 +6,10 @@ export function links() {
 
 export default function Footer() {
   return (
-    <footer className="p-4 bg-[#292929] text-white text-sm w-full">
+    <footer className="bg-[#292929] p-4 text-white text-sm">
       <div
         className="grid grid-flow-row md:grid-flow-col auto-rows-min gap-4 sm:gap-6
-     md:grid-rows-1 md:grid-cols-4 container"
+     md:grid-rows-1 md:grid-cols-4 max-w-4xl container"
       >
         <section>
           <div className="font-header text-xl space-x-1 flex items-center">
