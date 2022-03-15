@@ -1,5 +1,4 @@
 import { LoaderFunction, useLoaderData } from "remix";
-import Answers from "~/components/Answers";
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
 import Question from "~/components/Question";
@@ -11,13 +10,11 @@ import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
 import questionData from "~/data/questions.json";
-import { useEffect, useState } from "react";
 import { fetchPhoto } from "~/util/unsplash";
-import { countAnswers, sumToken } from "~/util/math";
-import { statFormat } from "~/util/text";
-import { timeLeft, relativeSurvey } from "~/util/time";
+import { relativeSurvey } from "~/util/time";
 
 import Instructions from "~/components/Instructions";
+import Summary from "~/components/Summary";
 
 export function links() {
   return [
@@ -26,24 +23,6 @@ export function links() {
     { rel: "stylesheet", href: animations },
   ];
 }
-
-const instructions = [
-  {
-    name: "Play",
-    icon: "./icons/play.svg",
-    text: "Guess the most popular answers to surveys with respondants from around the world.",
-  },
-  {
-    name: "Vote",
-    icon: "./icons/vote.svg",
-    text: "Use the Ballot token to participate in tomorrow’s surveys.",
-  },
-  {
-    name: "Draft",
-    icon: "./icons/draft.svg",
-    text: "Submit custom questions to be a part of upcoming surveys.",
-  },
-];
 
 export const loader: LoaderFunction = async () => {
   // Read in data from database here
@@ -70,83 +49,62 @@ export default function Index() {
   const data = useLoaderData<IQuestion[]>();
   const [yesterday, today, tomorrow] = data;
 
-  const closingTime = timeLeft(tomorrow.surveyClosed - new Date().getTime());
-
   return (
-    <div className="light w-full top-0 bottom-0 flex flex-col">
+    <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
       <Header />
-      <main className="container">
+      <main className="container flex-grow px-4">
         <Instructions />
         <section
-          className="m-4 space-y-4 sm:space-y-0 gap-4 sm:grid"
+          className="space-y-4 sm:space-y-0 gap-4 sm:grid justify-items-center"
           style={{
             gridTemplateColumns: "repeat(auto-fit, minmax(384px, 1fr))",
           }}
         >
-          <article className="p-4 border-2 border-black rounded-md space-y-3 bg-[#EFEFFF]">
+          <article
+            className="p-4 border-2 border-black rounded-md space-y-3 
+          bg-[#EFEFFF] max-w-md"
+          >
             <h2 className="font-header text-2xl">Today</h2>
             <p className="mb-2">Can you figure out the most popular answers?</p>
             <Question question={today} />
-            <div className="flex w-full justify-between">
-              <p>{statFormat(sumToken(today.answers))} Ballots</p>
-              <p>|</p>
-              <p>{statFormat(today.voters)} Voters</p>
-              <p>|</p>
-              <p>{countAnswers(today)} Unique answers</p>
-            </div>
-            <div className="flex w-full justify-between">
-              <p>Only {closingTime} left to play!</p>
-              <a className="underline" href="/">
-                More questions
-              </a>
-            </div>
+            <Summary question={today} />
           </article>
           <article
-            className="p-4 border-2 border-black rounded-md space-y-4 bg-[#FFECEC] 
-          md:order-first"
+            className="p-4 border-2 border-black rounded-md space-y-3 
+          bg-[#EBFAEB] max-w-md"
+          >
+            <h2 className="font-header text-2xl">Tomorrow</h2>
+            <p>Participate in the survey for tomorrow's game!</p>
+            <Question question={tomorrow} />
+            <Summary question={tomorrow} />
+          </article>
+          <article
+            className="p-4 border-2 border-black rounded-md space-y-3 
+            bg-[#FFECEC] max-w-md lg:order-first"
           >
             <h2 className="font-header text-2xl">Yesterday</h2>
             <p>Take a look at how you did yesterday's questions!</p>
             <Question question={yesterday} />
-            <Answers question={yesterday} />
-            <div className="flex w-full justify-between">
-              <a className="underline" href="/">
-                See all answers
-              </a>
-              <a className="underline" href="/">
-                Archived questions
-              </a>
-            </div>
+            <Summary question={yesterday} />
           </article>
-          <article className="p-4 border-2 border-black rounded-md space-y-4 bg-[#EBFAEB]">
-            <h2 className="font-header text-2xl">Tomorrow</h2>
-            <p>Participate in the survey for tomorrow's game!</p>
-            <Question question={tomorrow} />
-            <div className="flex w-full justify-between">
-              <p>Only {closingTime} left to vote!</p>
-              <a className="underline" href="/">
-                More questions
-              </a>
-            </div>
-          </article>
-          <article className="self-end">
-            <h2 className="font-header text-2xl mb-2">More</h2>
-            <div className="flex space-x-4">
-              <button className="shadow px-2 py-1 rounded-sm border-button text-button bg-[#F9F1F0] font-bold border-2">
-                Buy Ballot
-              </button>
-              <button className="shadow px-2 py-1 rounded-sm border-button text-button bg-[#F9F1F0] font-bold border-2">
-                Draft a question
-              </button>
-            </div>
-            <p className="my-4">
-              Plurality is a{" "}
-              <a href="/" className="underline">
-                decentralized app
-              </a>
-              .
-            </p>
-          </article>
+        </section>
+        <section className="self-end justify-self-start p-8">
+          <h2 className="font-header text-2xl mb-2">More</h2>
+          <div className="flex space-x-4">
+            <button className="shadow px-2 py-1 rounded-sm border-button text-button bg-[#F9F1F0] font-bold border-2">
+              Buy Ballot
+            </button>
+            <button className="shadow px-2 py-1 rounded-sm border-button text-button bg-[#F9F1F0] font-bold border-2">
+              Draft a question
+            </button>
+          </div>
+          <p className="my-4">
+            Plurality is a{" "}
+            <a href="/" className="underline">
+              decentralized app
+            </a>
+            .
+          </p>
         </section>
       </main>
       <Footer />
