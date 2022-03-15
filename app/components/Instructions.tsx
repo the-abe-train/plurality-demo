@@ -90,7 +90,9 @@ export default function Instructions() {
                 });
               }}
             >
-              <h3 className="text-accent font-header text-2xl">{instr.name}</h3>
+              <h3 className="text-[#012A36] font-header text-2xl">
+                {instr.name}
+              </h3>
               <div
                 className="flex items-center bg-white sm:border-2 
         border-black rounded-md p-2 space-x-3"
@@ -106,26 +108,28 @@ export default function Instructions() {
           );
         })}
       </div>
-      <AnimatePresence initial={false}>
-        {showPopup && (
-          <motion.div
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            variants={containerVariants}
-            className="bg-white border-2 border-black rounded-md sm:hidden"
-          >
+      <div className="sm:hidden">
+        <AnimatePresence initial={false}>
+          {showPopup && (
             <motion.div
-              variants={childVariants}
-              // animate={control}
-              className="flex p-2"
+              initial="collapsed"
+              animate="open"
+              exit="collapsed"
+              variants={containerVariants}
+              className="bg-white border-2 border-black rounded-md"
             >
-              <img src={icon} alt="Instruction symbol" className="mr-4" />
-              <p className="m-0">{helper}</p>
+              <motion.div
+                variants={childVariants}
+                // animate={control}
+                className="flex p-2"
+              >
+                <img src={icon} alt="Instruction symbol" className="mr-4" />
+                <p className="m-0">{helper}</p>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </div>
     </section>
   );
 }

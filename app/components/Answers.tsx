@@ -36,7 +36,7 @@ export default function Answers({ question, guesses }: Props) {
         visible: {
           height: "auto",
           transition: {
-            staggerChildren: 3,
+            staggerChildren: 0.5,
           },
         },
       }}
@@ -69,7 +69,8 @@ export default function Answers({ question, guesses }: Props) {
         return (
           <motion.div
             key={answer.text}
-            className="flex w-full border-[1px] border-black rounded-sm bg-white p-1"
+            className="flex items-center w-full border-[1px] border-black 
+            rounded-sm bg-white p-1"
             variants={variants}
           >
             <span className="text-sm font-bold w-[50%] overflow-hidden overflow-ellipsis">

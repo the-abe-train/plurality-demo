@@ -9,6 +9,7 @@ import { fetchPhoto } from "~/util/unsplash";
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
+
 import { useState } from "react";
 import { sumToken } from "~/util/math";
 
@@ -50,9 +51,10 @@ export default function QuestionSlug() {
   function formValidate(e: any) {
     e.preventDefault();
     const trimmedGuess = guess.trim().toLowerCase();
-    const correctGuess = answers.find(({ text }) => {
-      return parseAnswer(text).includes(trimmedGuess);
-    });
+    const correctGuess = answers.find(
+      ({ text }) =>
+        trim(text) === trimmedGuess || parseAnswer(text).includes(trimmedGuess)
+    );
     if (correctGuess) {
       if (correctGuesses.includes(correctGuess)) {
         setMessage("Already guessed.");
