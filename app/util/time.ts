@@ -32,3 +32,24 @@ export function dateBySurvey(question: IQuestion) {
   const surveyClose = question.surveyClosed;
   return new Date(surveyClose).toLocaleDateString("en-CA");
 }
+
+function getMidnight() {
+  const today = new Date().getTime();
+  const MS_PER_DAY = 86_400_000;
+  const FIRST_MIDNIGHT = 1646888400000;
+  let midnight = FIRST_MIDNIGHT;
+  while (today > midnight) {
+    midnight += MS_PER_DAY;
+  }
+  return midnight;
+}
+
+export function midnights() {
+  const MS_PER_DAY = 86_400_000;
+  const tomorrow = getMidnight();
+  return {
+    tomorrow,
+    today: tomorrow - MS_PER_DAY,
+    yesterday: tomorrow - MS_PER_DAY * 2,
+  };
+}

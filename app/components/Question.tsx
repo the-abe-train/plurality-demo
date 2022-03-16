@@ -15,9 +15,9 @@ export default function Question({ question }: Props) {
         <img
           src={question.photo?.urls.raw}
           alt="question image"
-          className="object-cover h-36 w-full z-20"
+          className="object-cover h-36 w-full z-10 overflow-clip"
         />
-        <h2 className="text-lg p-2 font-bold border-t-2 z-30 border-black">
+        <h2 className="text-lg p-2 font-bold border-t-2 z-30 border-black bg-white">
           #{question.id} {question.text}
         </h2>
       </div>

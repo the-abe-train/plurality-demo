@@ -11,10 +11,13 @@ import animations from "~/styles/animations.css";
 
 import questionData from "~/data/questions.json";
 import { fetchPhoto } from "~/util/unsplash";
-import { relativeSurvey } from "~/util/time";
+import { midnights, relativeSurvey } from "~/util/time";
 
 import Instructions from "~/components/Instructions";
 import Summary from "~/components/Summary";
+import { closeDb, connectDb, questions } from "~/util/db";
+
+import type { WithId } from "mongodb";
 
 export function links() {
   return [
@@ -25,24 +28,32 @@ export function links() {
 }
 
 export const loader: LoaderFunction = async () => {
-  // Read in data from database here
+  await connectDb();
+  const surveyCloses = midnights();
+  const today = await questions.findOne({
+    surveyClosed: surveyCloses["today"],
+  });
+  const yesterday = await questions.findOne({
+    surveyClosed: surveyCloses["yesterday"],
+  });
+  const tomorrow = await questions.findOne({
+    surveyClosed: surveyCloses["tomorrow"],
+  });
+  await closeDb();
 
   // TODO Apply for production from Unsplash
 
-  // const day = new Date("2022-03-13");
-  const data = Promise.all(
-    questionData
-      .filter((question) => {
-        const relativeDay = relativeSurvey(question);
-        return relativeDay >= -2 && relativeDay <= 0;
-      })
-      .map(async (question): Promise<IQuestion> => {
+  if (today && tomorrow && yesterday) {
+    const data = Promise.all(
+      [yesterday, today, tomorrow].map(async (question): Promise<IQuestion> => {
         const photo = await fetchPhoto(question);
         return { ...question, photo };
       })
-  );
-
-  return data;
+    );
+    return data;
+  } else {
+    return null;
+  }
 };
 
 export default function Index() {
