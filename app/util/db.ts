@@ -4,8 +4,6 @@ import { IQuestion } from "~/lib/question";
 export const mongoUrl = process.env.MONGO_URL ?? "";
 export const jwtSignature = process.env.JWT_SIGNATURE ?? "";
 
-console.log(mongoUrl);
-
 interface Options extends MongoClientOptions {
   useNewUrlParser: boolean;
 }
@@ -31,6 +29,8 @@ export async function connectDb() {
 export const questions = client
   .db("plurality")
   .collection<IQuestion>("questions");
+
+export const user = client.db("plurality").collection("user");
 
 export async function closeDb() {
   try {

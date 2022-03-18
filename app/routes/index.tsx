@@ -9,15 +9,12 @@ import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
-import questionData from "~/data/questions.json";
 import { fetchPhoto } from "~/util/unsplash";
-import { midnights, relativeSurvey } from "~/util/time";
+import { midnights } from "~/util/time";
 
 import Instructions from "~/components/Instructions";
 import Summary from "~/components/Summary";
 import { closeDb, connectDb, questions } from "~/util/db";
-
-import type { WithId } from "mongodb";
 
 export function links() {
   return [
@@ -102,10 +99,16 @@ export default function Index() {
         <section className="self-end justify-self-start p-8">
           <h2 className="font-header text-2xl mb-2">More</h2>
           <div className="flex space-x-4">
-            <button className="shadow px-2 py-1 rounded-sm border-button text-button bg-[#F9F1F0] font-bold border-2">
+            <button
+              className="shadow px-2 py-1 rounded-sm border-button 
+            text-button bg-[#F9F1F0] font-bold border-2"
+            >
               Buy Ballot
             </button>
-            <button className="shadow px-2 py-1 rounded-sm border-button text-button bg-[#F9F1F0] font-bold border-2">
+            <button
+              className="shadow px-2 py-1 rounded-sm border-button 
+            text-button bg-[#F9F1F0] font-bold border-2"
+            >
               Draft a question
             </button>
           </div>

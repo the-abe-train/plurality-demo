@@ -15,6 +15,7 @@ import { sumToken } from "~/util/math";
 
 import { motion } from "framer-motion";
 import Counter from "~/components/Counter";
+import { closeDb, connectDb, questions } from "~/util/db";
 
 export function links() {
   return [
@@ -27,7 +28,15 @@ export function links() {
 export const loader: LoaderFunction = async ({
   params,
 }): Promise<IQuestion> => {
-  const question = questionData.find((q) => String(q.id) === params.slug);
+  await connectDb();
+
+  const question = await questions.findOne({
+    id: Number(params.slug),
+  });
+
+  await closeDb();
+
+  // const question = questionData.find((q) => String(q.id) === params.slug);
   if (!question) throw new Error();
   const photo = await fetchPhoto(question);
   const data = { ...question, photo };

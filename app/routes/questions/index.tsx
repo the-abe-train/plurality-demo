@@ -15,6 +15,8 @@ import { fetchPhoto } from "~/util/unsplash";
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
+import { closeDb, connectDb, questions } from "~/util/db";
+import dayjs from "dayjs";
 
 type Metadata = {
   pageStart: number;
@@ -41,24 +43,32 @@ export const action: ActionFunction = async ({ request }): Promise<Data> => {
   let dateParam = body.get("date");
   let pageParam = body.get("page");
 
+  const textSearch = textParam
+    ? new RegExp(String.raw`${textParam}`, "g")
+    : /^\S+$/;
+  const dateSearchStart = dayjs(String(dateParam)).startOf("day").valueOf();
+  const dateSearchEnd = dayjs(String(dateParam)).endOf("day").valueOf();
+
+  console.log("start", dateSearchStart);
+  console.log("end", dateSearchEnd);
+
+  // Pull data from database
+  await connectDb();
+  const cursorQuestions = questions.find({
+    $or: [
+      // { $nor: [{ text: { $regex: textSearch } }, { text: "" }] },
+      { text: { $regex: textSearch } },
+      { id: Number(textParam) },
+      { surveyClosed: { $gte: dateSearchStart, $lte: dateSearchEnd } },
+    ],
+  });
+  const allQuestions = await cursorQuestions.toArray();
+  await closeDb();
+  // {text: {$regex: /that/}}
+
   const perPage = 6;
   const pageStart = pageParam ? (Number(pageParam) - 1) * perPage : 0;
   const pageEnd = pageParam ? Number(pageParam) * perPage : perPage;
-
-  const allQuestions = questionData.filter((q) => {
-    let textQuery, dateQuery;
-    if (textParam) {
-      const re = new RegExp(String.raw`${textParam}`, "g");
-      const textMatch = q.text.match(re);
-      const idMatch = String(q.id) === textParam;
-      textQuery = !!textMatch || idMatch;
-    }
-    if (dateParam) {
-      const dateString = dateBySurvey(q);
-      dateQuery = dateParam === dateString;
-    }
-    return textQuery || dateQuery;
-  });
 
   const metadata = {
     total: allQuestions.length,

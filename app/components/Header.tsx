@@ -29,17 +29,19 @@ export default function Header() {
               <Link to="/">Contact Us</Link>
             </li>
           </ul>
-          <button
-            className="px-2 py-1 rounded-sm border-button text-button 
+          <Link to="/user">
+            <button
+              className="px-2 py-1 rounded-sm border-button text-button 
       bg-[#F9F1F0] font-bold border-2 shadow"
-          >
-            <img
-              className="inline mr-2"
-              src="../icons/wallet.svg"
-              alt="wallet"
-            />
-            Connect wallet
-          </button>
+            >
+              <img
+                className="inline mr-2"
+                src="../icons/wallet.svg"
+                alt="wallet"
+              />
+              Connect wallet
+            </button>
+          </Link>
         </div>
       </nav>
     </div>

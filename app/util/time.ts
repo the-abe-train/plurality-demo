@@ -33,12 +33,13 @@ export function dateBySurvey(question: IQuestion) {
   return new Date(surveyClose).toLocaleDateString("en-CA");
 }
 
-function getMidnight() {
+function getMidnight(userDay?: Date) {
   const today = new Date().getTime();
+  const day = userDay ?? today;
   const MS_PER_DAY = 86_400_000;
   const FIRST_MIDNIGHT = 1646888400000;
   let midnight = FIRST_MIDNIGHT;
-  while (today > midnight) {
+  while (day > midnight) {
     midnight += MS_PER_DAY;
   }
   return midnight;
