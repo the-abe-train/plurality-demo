@@ -15,7 +15,7 @@ import { sumToken } from "~/util/math";
 
 import { motion } from "framer-motion";
 import Counter from "~/components/Counter";
-import { closeDb, connectDb, questions } from "~/util/db";
+import { closeDb, connectDb, questionCollection } from "~/server/db";
 
 export function links() {
   return [
@@ -30,7 +30,7 @@ export const loader: LoaderFunction = async ({
 }): Promise<IQuestion> => {
   await connectDb();
 
-  const question = await questions.findOne({
+  const question = await questionCollection.findOne({
     id: Number(params.slug),
   });
 

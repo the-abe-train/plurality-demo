@@ -1,8 +1,7 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
+import { Session, User } from "~/lib/authentication";
 import { IQuestion } from "~/lib/question";
-
-export const mongoUrl = process.env.MONGO_URL ?? "";
-export const jwtSignature = process.env.JWT_SIGNATURE ?? "";
+import { mongoUrl } from "./env";
 
 interface Options extends MongoClientOptions {
   useNewUrlParser: boolean;
@@ -12,10 +11,10 @@ const options: Options = { useNewUrlParser: true };
 
 export const client = new MongoClient(mongoUrl, options);
 
+// Database connections
 export async function connectDb() {
   try {
     await client.connect();
-
     // Confirm connection
     await client.db("plurality").command({ ping: 1 });
     console.log("Connected to DB success 🗃");
@@ -25,13 +24,6 @@ export async function connectDb() {
     await client.close();
   }
 }
-
-export const questions = client
-  .db("plurality")
-  .collection<IQuestion>("questions");
-
-export const user = client.db("plurality").collection("user");
-
 export async function closeDb() {
   try {
     await client.close();
@@ -41,3 +33,12 @@ export async function closeDb() {
     await client.close();
   }
 }
+
+// Collections
+export const questionCollection = client
+  .db("plurality")
+  .collection<IQuestion>("questions");
+export const userCollection = client.db("plurality").collection<User>("user");
+export const sessionCollection = client
+  .db("plurality")
+  .collection<Session>("session");

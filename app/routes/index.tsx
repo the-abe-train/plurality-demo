@@ -14,7 +14,8 @@ import { midnights } from "~/util/time";
 
 import Instructions from "~/components/Instructions";
 import Summary from "~/components/Summary";
-import { closeDb, connectDb, questions } from "~/util/db";
+import { closeDb, connectDb, questionCollection } from "~/server/db";
+import { getSession } from "~/sessions";
 
 export function links() {
   return [
@@ -24,16 +25,20 @@ export function links() {
   ];
 }
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
   await connectDb();
+  const session = await getSession(request.headers.get("Cookie"));
+  console.log("_id", session.get("_id"));
+  const userId = session.get("_id");
+  console.log("User ID:", userId);
   const surveyCloses = midnights();
-  const today = await questions.findOne({
+  const today = await questionCollection.findOne({
     surveyClosed: surveyCloses["today"],
   });
-  const yesterday = await questions.findOne({
+  const yesterday = await questionCollection.findOne({
     surveyClosed: surveyCloses["yesterday"],
   });
-  const tomorrow = await questions.findOne({
+  const tomorrow = await questionCollection.findOne({
     surveyClosed: surveyCloses["tomorrow"],
   });
   await closeDb();

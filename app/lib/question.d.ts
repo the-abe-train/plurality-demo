@@ -1,6 +1,5 @@
 import { Photo } from "./unsplash";
 
-// import type { InferIdType,  } from "mongodb";
 import type { ObjectId } from "mongodb";
 
 export interface IAnswer {

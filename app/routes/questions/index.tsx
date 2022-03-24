@@ -15,7 +15,7 @@ import { fetchPhoto } from "~/util/unsplash";
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
-import { closeDb, connectDb, questions } from "~/util/db";
+import { closeDb, connectDb, questionCollection } from "~/server/db";
 import dayjs from "dayjs";
 
 type Metadata = {
@@ -49,12 +49,9 @@ export const action: ActionFunction = async ({ request }): Promise<Data> => {
   const dateSearchStart = dayjs(String(dateParam)).startOf("day").valueOf();
   const dateSearchEnd = dayjs(String(dateParam)).endOf("day").valueOf();
 
-  console.log("start", dateSearchStart);
-  console.log("end", dateSearchEnd);
-
   // Pull data from database
   await connectDb();
-  const cursorQuestions = questions.find({
+  const cursorQuestions = questionCollection.find({
     $or: [
       // { $nor: [{ text: { $regex: textSearch } }, { text: "" }] },
       { text: { $regex: textSearch } },
