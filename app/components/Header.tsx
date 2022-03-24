@@ -1,6 +1,10 @@
 import { Link } from "remix";
 
-export default function Header() {
+type Props = {
+  name?: string;
+};
+
+export default function Header({ name }: Props) {
   return (
     <div className="px-4 py-2 border-0 shadow-md light z-10 w-full">
       <nav className="flex justify-between items-center container max-w-4xl container">
@@ -39,7 +43,7 @@ export default function Header() {
                 src="../icons/wallet.svg"
                 alt="wallet"
               />
-              Connect wallet
+              {name || "Connect wallet"}
             </button>
           </Link>
         </div>

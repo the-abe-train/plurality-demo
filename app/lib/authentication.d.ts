@@ -14,4 +14,5 @@ export type User = {
   _id?: ObjectId;
   email: Email;
   password: string;
+  name: string;
 };

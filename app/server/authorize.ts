@@ -24,6 +24,7 @@ export async function registerUser(email: string, password: string) {
       address: email,
       verified: false,
     },
+    name: email,
     password: hashedPassword,
   });
 

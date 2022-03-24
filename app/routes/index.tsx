@@ -1,4 +1,4 @@
-import { LoaderFunction, useLoaderData } from "remix";
+import { json, LoaderFunction, useLoaderData } from "remix";
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
 import Question from "~/components/Question";
@@ -14,8 +14,14 @@ import { midnights } from "~/util/time";
 
 import Instructions from "~/components/Instructions";
 import Summary from "~/components/Summary";
-import { closeDb, connectDb, questionCollection } from "~/server/db";
+import {
+  closeDb,
+  connectDb,
+  questionCollection,
+  userCollection,
+} from "~/server/db";
 import { getSession } from "~/sessions";
+import { User } from "~/lib/authentication";
 
 export function links() {
   return [
@@ -25,12 +31,29 @@ export function links() {
   ];
 }
 
+type LoaderData = {
+  user: User | null;
+  questions: IQuestion[];
+};
+
 export const loader: LoaderFunction = async ({ request }) => {
+  // Data variables
+  const data: LoaderData = {
+    user: null,
+    questions: [],
+  };
+
+  // Connect to db
   await connectDb();
+
+  // Get user info
   const session = await getSession(request.headers.get("Cookie"));
-  console.log("_id", session.get("_id"));
-  const userId = session.get("_id");
-  console.log("User ID:", userId);
+  const userId = session.get("data")?.user;
+  if (userId) {
+    data["user"] = await userCollection.findOne({ _id: userId });
+  }
+
+  // Get home page questions
   const surveyCloses = midnights();
   const today = await questionCollection.findOne({
     surveyClosed: surveyCloses["today"],
@@ -41,30 +64,31 @@ export const loader: LoaderFunction = async ({ request }) => {
   const tomorrow = await questionCollection.findOne({
     surveyClosed: surveyCloses["tomorrow"],
   });
+
+  // Close connection to database
   await closeDb();
 
+  // Get pictures from Unsplash
   // TODO Apply for production from Unsplash
-
   if (today && tomorrow && yesterday) {
-    const data = Promise.all(
+    const questions = await Promise.all(
       [yesterday, today, tomorrow].map(async (question): Promise<IQuestion> => {
         const photo = await fetchPhoto(question);
         return { ...question, photo };
       })
     );
-    return data;
-  } else {
-    return null;
+    data["questions"] = questions;
   }
+  return json(data);
 };
 
 export default function Index() {
-  const data = useLoaderData<IQuestion[]>();
-  const [yesterday, today, tomorrow] = data;
+  const data = useLoaderData<LoaderData>();
+  const [yesterday, today, tomorrow] = data.questions;
 
   return (
     <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
-      <Header />
+      <Header name={data.user ? data.user.name : "Connect wallet"} />
       <main className="container flex-grow px-4">
         <Instructions />
         <section
