@@ -1,7 +1,15 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
 import { Session, User } from "~/lib/authentication";
 import { IQuestion } from "~/lib/question";
-import { mongoUrl } from "./env";
+import { MONGO_URL } from "./env";
+import {
+  QuestionSchema,
+  VoteAggregation,
+  Photo,
+  UserSchema,
+  VoteSchema,
+  GameSchema,
+} from "../lib/schemas";
 
 interface Options extends MongoClientOptions {
   useNewUrlParser: boolean;
@@ -9,7 +17,7 @@ interface Options extends MongoClientOptions {
 
 const options: Options = { useNewUrlParser: true };
 
-export const client = new MongoClient(mongoUrl, options);
+export const client = new MongoClient(MONGO_URL, options);
 
 // Database connections
 export async function connectDb() {
@@ -41,4 +49,10 @@ export const questionCollection = client
 export const userCollection = client.db("plurality").collection<User>("user");
 export const sessionCollection = client
   .db("plurality")
-  .collection<Session>("session");
+  .collection<Session>("sessions");
+
+const db = client.db("plurality");
+export const usersCollection = db.collection<UserSchema>("users");
+export const questionsCollection = db.collection<QuestionSchema>("questions");
+export const votesCollection = db.collection<VoteSchema>("votes");
+export const gamesCollection = db.collection<GameSchema>("games");

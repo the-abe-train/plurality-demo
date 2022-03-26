@@ -1,19 +1,22 @@
 import { json, LoaderFunction, useLoaderData } from "remix";
+
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
 import Question from "~/components/Question";
+import Instructions from "~/components/Instructions";
+import Summary from "~/components/Summary";
 
 import { IQuestion } from "~/lib/question";
+import { User } from "~/lib/authentication";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
-import { fetchPhoto } from "~/util/unsplash";
+// import { fetchPhoto } from "~/util/unsplash";
 import { midnights } from "~/util/time";
+import dayjs from "dayjs";
 
-import Instructions from "~/components/Instructions";
-import Summary from "~/components/Summary";
 import {
   closeDb,
   connectDb,
@@ -21,7 +24,18 @@ import {
   userCollection,
 } from "~/server/db";
 import { getSession } from "~/sessions";
-import { User } from "~/lib/authentication";
+import {
+  fetchPhoto,
+  questionBySurveyClose,
+  votesByQuestion,
+} from "~/server/queries";
+import {
+  Photo,
+  QuestionSchema,
+  VoteAggregation,
+  VoteSchema,
+} from "~/lib/schemas";
+import { WithId } from "mongodb";
 
 export function links() {
   return [
@@ -31,60 +45,77 @@ export function links() {
   ];
 }
 
+// type LoaderData = {
+//   user: User | null;
+//   questions: IQuestion[];
+// };
+
+type QuestionPhoto = {
+  photo: Photo;
+  votes: VoteAggregation[];
+  text: string;
+  surveyClose: Date;
+  drafted: Date;
+  _id: number;
+};
+
 type LoaderData = {
-  user: User | null;
-  questions: IQuestion[];
+  questions: QuestionSchema[];
+  photos: Photo[];
+  user?: User;
+  votes: VoteAggregation[][];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // Data variables
-  const data: LoaderData = {
-    user: null,
-    questions: [],
-  };
-
   // Connect to db
   await connectDb();
 
-  // Get user info
+  // // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("data")?.user;
-  if (userId) {
-    data["user"] = await userCollection.findOne({ _id: userId });
-  }
+  const user = (await userCollection.findOne({ _id: userId })) || undefined;
 
-  // Get home page questions
-  const surveyCloses = midnights();
-  const today = await questionCollection.findOne({
-    surveyClosed: surveyCloses["today"],
-  });
-  const yesterday = await questionCollection.findOne({
-    surveyClosed: surveyCloses["yesterday"],
-  });
-  const tomorrow = await questionCollection.findOne({
-    surveyClosed: surveyCloses["tomorrow"],
-  });
+  // Get datetime objects
+  const midnight = dayjs().endOf("day");
+  const todaySc = midnight.toDate();
+  const yesterdaySc = midnight.subtract(1, "day").toDate();
+  const tomorrowSc = midnight.add(1, "day").toDate();
 
-  // Close connection to database
-  await closeDb();
+  // Get questions from db
+  const today = await questionBySurveyClose(todaySc);
+  const yesterday = await questionBySurveyClose(yesterdaySc);
+  const tomorrow = await questionBySurveyClose(tomorrowSc);
 
-  // Get pictures from Unsplash
-  // TODO Apply for production from Unsplash
-  if (today && tomorrow && yesterday) {
-    const questions = await Promise.all(
-      [yesterday, today, tomorrow].map(async (question): Promise<IQuestion> => {
-        const photo = await fetchPhoto(question);
-        return { ...question, photo };
+  // Get photo for each question from Unsplash and votes from database
+  if (today && yesterday && tomorrow) {
+    const questions = [today, yesterday, tomorrow];
+    // TODO Apply for production from Unsplash
+    const photos = await Promise.all(
+      [yesterday, today, tomorrow].map(async (question) => {
+        return await fetchPhoto(question);
       })
     );
-    data["questions"] = questions;
+    const votes = await Promise.all(
+      [yesterday, today, tomorrow].map(async (question) => {
+        return await votesByQuestion(question);
+      })
+    );
+
+    const data = { questions, user, photos, votes };
+
+    // Close connection to database
+    await closeDb();
+
+    return json<LoaderData>(data);
   }
-  return json(data);
+  return "";
 };
 
 export default function Index() {
   const data = useLoaderData<LoaderData>();
   const [yesterday, today, tomorrow] = data.questions;
+  const [yesterdayVotes, todayVotes, tomorrowVotes] = data.votes;
+  const [yesterdayPhoto, todayPhoto, tomorrowPhoto] = data.photos;
 
   return (
     <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
@@ -103,8 +134,8 @@ export default function Index() {
           >
             <h2 className="font-header text-2xl">Today</h2>
             <p className="mb-2">Can you figure out the most popular answers?</p>
-            <Question question={today} />
-            <Summary question={today} />
+            <Question question={today} photo={todayPhoto} />
+            <Summary question={today} votes={todayVotes} />
           </article>
           <article
             className="p-4 border-2 border-black rounded-md space-y-3 
@@ -112,8 +143,8 @@ export default function Index() {
           >
             <h2 className="font-header text-2xl">Tomorrow</h2>
             <p>Participate in the survey for tomorrow's game!</p>
-            <Question question={tomorrow} />
-            <Summary question={tomorrow} />
+            <Question question={tomorrow} photo={tomorrowPhoto} />
+            <Summary question={tomorrow} votes={tomorrowVotes} />
           </article>
           <article
             className="p-4 border-2 border-black rounded-md space-y-3 
@@ -121,8 +152,8 @@ export default function Index() {
           >
             <h2 className="font-header text-2xl">Yesterday</h2>
             <p>Take a look at how you did yesterday's questions!</p>
-            <Question question={yesterday} />
-            <Summary question={yesterday} />
+            <Question question={yesterday} photo={yesterdayPhoto} />
+            <Summary question={yesterday} votes={yesterdayVotes} />
           </article>
         </section>
         <section className="self-end justify-self-start p-8">

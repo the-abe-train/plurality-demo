@@ -15,5 +15,6 @@ export interface IQuestion {
   photoId: string;
   answers: IAnswer[];
   photo?: Photo;
+  // TODO change surveyClosed to be an actual JS date object
   surveyClosed: number;
 }
