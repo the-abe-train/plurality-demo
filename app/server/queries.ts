@@ -1,9 +1,4 @@
-import {
-  questionsCollection,
-  usersCollection,
-  votesCollection,
-  gamesCollection,
-} from "./db";
+import { questionsCollection, usersCollection, gamesCollection } from "./db";
 import { QuestionSchema, VoteAggregation, Photo } from "../lib/schemas";
 import { UNSPLASH_ACCESS_KEY } from "./env";
 import { ObjectId } from "mongodb";
@@ -48,18 +43,20 @@ export async function questionBySearch({
     .toArray();
 }
 
-export async function votesByQuestion(question: QuestionSchema) {
-  const questionId = question._id;
-  const votes: unknown = await votesCollection
+export async function votesByQuestion(questionId: number) {
+  const votes: unknown = await gamesCollection
     .aggregate([
       {
         $match: {
           question: questionId,
+          vote: {
+            $exists: true,
+          },
         },
       },
       {
         $group: {
-          _id: "$text",
+          _id: "$vote.text",
           votes: {
             $count: {},
           },
@@ -70,11 +67,22 @@ export async function votesByQuestion(question: QuestionSchema) {
   return votes as VoteAggregation[];
 }
 
-export async function voteByQuestionUser(questionId: number, userId: ObjectId) {
-  return await votesCollection.findOne({
-    question: questionId,
-    user: userId,
-  });
+export async function gameByQuestionUser(questionId: number, userId: ObjectId) {
+  const result = await gamesCollection.findOneAndUpdate(
+    { question: questionId, user: userId },
+    { $set: { lastUpdated: new Date() }, $setOnInsert: { guesses: [] } },
+    { upsert: true, returnDocument: "after" }
+  );
+  return result.value;
+}
+
+export async function addGuess(gameId: ObjectId, guess: string) {
+  const result = await gamesCollection.findOneAndUpdate(
+    { _id: gameId },
+    { $set: { lastUpdated: new Date() }, $push: { guesses: guess } },
+    { upsert: true }
+  );
+  return result.value;
 }
 
 export async function fetchPhoto(question: QuestionSchema): Promise<Photo> {
@@ -83,11 +91,4 @@ export async function fetchPhoto(question: QuestionSchema): Promise<Photo> {
   const response = await fetch(api);
   const photo = await response.json();
   return photo;
-}
-
-export async function gameByQuestionUser(questionId: number, userId: ObjectId) {
-  return await gamesCollection.findOne({
-    question: questionId,
-    user: userId,
-  });
 }

@@ -2,21 +2,28 @@ import { useEffect, useRef, useState } from "react";
 import {
   ActionFunction,
   Form,
+  json,
   useActionData,
+  useLoaderData,
+  useMatches,
   useSubmit,
   useTransition,
 } from "remix";
+import dayjs from "dayjs";
+
 import Question from "~/components/Question";
-import questionData from "~/data/questions.json";
-import { IQuestion } from "~/lib/question";
-import { dateBySurvey } from "~/util/time";
-import { fetchPhoto } from "~/util/unsplash";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
-import { closeDb, connectDb, questionCollection } from "~/server/db";
-import dayjs from "dayjs";
+
+import { closeDb, connectDb } from "~/server/db";
+import { Photo, QuestionSchema, VoteAggregation } from "~/lib/schemas";
+import {
+  fetchPhoto,
+  questionBySearch,
+  votesByQuestion,
+} from "~/server/queries";
 
 type Metadata = {
   pageStart: number;
@@ -24,9 +31,11 @@ type Metadata = {
   total: number;
 };
 
-type Data = {
-  results: IQuestion[];
+type ActionData = {
+  pageQuestions: QuestionSchema[];
   metadata: Metadata;
+  photos: Photo[];
+  votes: VoteAggregation[][];
 };
 
 export function links() {
@@ -37,35 +46,32 @@ export function links() {
   ];
 }
 
-export const action: ActionFunction = async ({ request }): Promise<Data> => {
-  let body = await request.formData();
-  let textParam = body.get("text");
-  let dateParam = body.get("date");
-  let pageParam = body.get("page");
+export const action: ActionFunction = async ({ request }) => {
+  // Connect to db
+  await connectDb();
 
+  // Parse form
+  const body = await request.formData();
+  const textParam = body.get("text");
+  const dateParam = body.get("date");
+  const pageParam = body.get("page");
+
+  // Parse query parameters
+  const dateSearch = dayjs(String(dateParam)).endOf("day").toDate();
+  const idSearch = Number(textParam);
   const textSearch = textParam
     ? new RegExp(String.raw`${textParam}`, "g")
     : /^\S+$/;
-  const dateSearchStart = dayjs(String(dateParam)).startOf("day").valueOf();
-  const dateSearchEnd = dayjs(String(dateParam)).endOf("day").valueOf();
-
-  // Pull data from database
-  await connectDb();
-  const cursorQuestions = questionCollection.find({
-    $or: [
-      // { $nor: [{ text: { $regex: textSearch } }, { text: "" }] },
-      { text: { $regex: textSearch } },
-      { id: Number(textParam) },
-      { surveyClosed: { $gte: dateSearchStart, $lte: dateSearchEnd } },
-    ],
-  });
-  const allQuestions = await cursorQuestions.toArray();
-  await closeDb();
-  // {text: {$regex: /that/}}
-
   const perPage = 6;
   const pageStart = pageParam ? (Number(pageParam) - 1) * perPage : 0;
   const pageEnd = pageParam ? Number(pageParam) * perPage : perPage;
+
+  //  questions from database
+  const allQuestions = await questionBySearch({
+    textSearch,
+    dateSearch,
+    idSearch,
+  });
 
   const metadata = {
     total: allQuestions.length,
@@ -73,15 +79,29 @@ export const action: ActionFunction = async ({ request }): Promise<Data> => {
     pageEnd: Math.min(pageEnd, allQuestions.length),
   };
 
-  const results = await Promise.all(
-    allQuestions
-      .slice(pageStart, pageEnd)
-      .map(async (question): Promise<IQuestion> => {
-        const photo = await fetchPhoto(question);
-        return { ...question, photo };
+  const pageQuestions = allQuestions.slice(pageStart, pageEnd);
+
+  // Get votes from database
+  if (pageQuestions) {
+    const votes = await Promise.all(
+      pageQuestions.map(async (question) => {
+        return await votesByQuestion(question._id);
       })
-  );
-  return { results, metadata };
+    );
+    const photos = await Promise.all(
+      pageQuestions.map(async (question) => {
+        return await fetchPhoto(question);
+      })
+    );
+
+    // Close connection to database
+    await closeDb();
+
+    // Return data
+    const data = { pageQuestions, metadata, photos, votes };
+    return json<ActionData>(data);
+  }
+  return "";
 };
 
 export default function Index() {
@@ -90,7 +110,7 @@ export default function Index() {
   const formRef = useRef<HTMLFormElement>(null!);
   const transition = useTransition();
 
-  const data = useActionData<Data>();
+  const data = useActionData<ActionData>();
 
   useEffect(() => {
     if (data?.metadata) {
@@ -192,8 +212,9 @@ export default function Index() {
               </span>
             </div>
             <div className="lg:grid lg:grid-cols-3 gap-4">
-              {data.results.map((q: IQuestion) => {
-                return <Question question={q} key={q.id} />;
+              {data.pageQuestions.map((q, idx) => {
+                const photo = data.photos[idx];
+                return <Question question={q} photo={photo} key={q._id} />;
               })}
             </div>
           </section>

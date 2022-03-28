@@ -1,21 +1,39 @@
-import { Form, LoaderFunction, useLoaderData } from "remix";
+import {
+  ActionFunction,
+  Form,
+  json,
+  LoaderFunction,
+  useActionData,
+  useLoaderData,
+} from "remix";
 import Answers from "~/components/Answers";
 import Question from "~/components/Question";
-import questionData from "~/data/questions.json";
-import { IAnswer, IQuestion } from "~/lib/question";
-import { parseAnswer, statFormat, trim, trimListText } from "~/util/text";
-import { fetchPhoto } from "~/util/unsplash";
+import { parseAnswer, statFormat, trim } from "~/util/text";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
-import { useState } from "react";
-import { sumToken } from "~/util/math";
+import { useEffect, useState } from "react";
 
 import { motion } from "framer-motion";
 import Counter from "~/components/Counter";
-import { closeDb, connectDb, questionCollection } from "~/server/db";
+import { connectDb } from "~/server/db";
+import {
+  addGuess,
+  fetchPhoto,
+  gameByQuestionUser,
+  questionById,
+  votesByQuestion,
+} from "~/server/queries";
+import {
+  GameSchema,
+  Photo,
+  QuestionSchema,
+  VoteAggregation,
+} from "~/lib/schemas";
+import { getSession } from "~/sessions";
+import invariant from "tiny-invariant";
 
 export function links() {
   return [
@@ -25,96 +43,164 @@ export function links() {
   ];
 }
 
-export const loader: LoaderFunction = async ({
-  params,
-}): Promise<IQuestion> => {
+type LoaderData = {
+  question: QuestionSchema;
+  votes: VoteAggregation[];
+  photo: Photo;
+  game: GameSchema;
+};
+
+export const loader: LoaderFunction = async ({ params, request }) => {
+  // TODO figure out how to deal with db connections in loader functions
   await connectDb();
 
-  const question = await questionCollection.findOne({
-    id: Number(params.slug),
+  // Get user info
+  const session = await getSession(request.headers.get("Cookie"));
+  const userId = session.get("data")?.user;
+  console.log("User ID", userId);
+  const questionId = Number(params.slug);
+
+  // Get data from db and apis
+  const question = await questionById(questionId);
+  const votes = await votesByQuestion(questionId);
+  invariant(question, "No question found!");
+  const photo = await fetchPhoto(question);
+
+  // TODO need a "fake" game for when players are not signed in
+  const game = await gameByQuestionUser(questionId, userId);
+  invariant(game, "Game upsert failed");
+  console.log(game);
+  const data = { question, votes, photo, game };
+  return json<LoaderData>(data);
+};
+
+type ActionData = {
+  message: string;
+  newGuess?: string;
+};
+
+export const action: ActionFunction = async ({ request, params }) => {
+  // Connect to db
+  await connectDb();
+
+  // Parse form
+  const body = await request.formData();
+  const guess = body.get("guess");
+
+  // Reject empty form submissions
+  if (typeof guess !== "string") {
+    const message = "Please enter a guess";
+    return json<ActionData>({ message });
+  }
+
+  // Pull in relevant data
+  const session = await getSession(request.headers.get("Cookie"));
+  const userId = session.get("data")?.user;
+  const questionId = Number(params.slug);
+  const game = await gameByQuestionUser(questionId, userId);
+  invariant(game, "Game upsert failed");
+  const trimmedGuess = guess.trim().toLowerCase();
+
+  // Reject already guessed answers
+  const userGuesses = game.guesses;
+  if (userGuesses.includes(guess)) {
+    const message = "Already guessed";
+    return json<ActionData>({ message });
+  }
+
+  // Pull in more relevant data
+  const answers = await votesByQuestion(questionId);
+  console.log("Answers:", answers);
+  const correctGuess = answers.find((ans) => {
+    const text = ans._id;
+    return (
+      trim(text) === trimmedGuess || parseAnswer(text).includes(trimmedGuess)
+    );
   });
 
-  await closeDb();
+  // Reject incorrect guesses
+  if (!correctGuess) {
+    const message = "Incorrect guess";
+    return json<ActionData>({ message });
+  }
 
-  // const question = questionData.find((q) => String(q.id) === params.slug);
-  if (!question) throw new Error();
-  const photo = await fetchPhoto(question);
-  const data = { ...question, photo };
-  return data;
+  // Accept correct guess
+  const message = "";
+  const newGuess = correctGuess._id;
+  const updatedGame = await addGuess(game._id, newGuess);
+  invariant(updatedGame, "Game update failed");
+
+  return json<ActionData>({ message, newGuess });
 };
 
 export default function QuestionSlug() {
-  // TODO Is all the question data, including answers, visible in the source?
-  const question = useLoaderData<IQuestion>();
-  const { answers } = question;
+  // TODO Is all the question data, including answers, visible in the client?
+  const loaderData = useLoaderData<LoaderData>();
+  const actionData = useActionData<ActionData>();
 
-  const [guess, setGuess] = useState("");
-  const [correctGuesses, setCorrectGuesses] = useState<IAnswer[]>([]);
+  const [guesses, setGuesses] = useState(loaderData.game.guesses);
+  const [message, setMessage] = useState(actionData?.message || "");
 
-  const points = sumToken(correctGuesses);
-  const total = sumToken(answers);
-  const score = points / total;
-
-  const [message, setMessage] = useState("");
-
-  function formValidate(e: any) {
-    e.preventDefault();
-    const trimmedGuess = guess.trim().toLowerCase();
-    const correctGuess = answers.find(
-      ({ text }) =>
-        trim(text) === trimmedGuess || parseAnswer(text).includes(trimmedGuess)
-    );
-    if (correctGuess) {
-      if (correctGuesses.includes(correctGuess)) {
-        setMessage("Already guessed.");
-      } else {
-        setMessage("");
-        setCorrectGuesses([...correctGuesses, correctGuess]);
-        setGuess("");
-      }
-    } else {
-      setMessage("Invalid guess");
+  useEffect(() => {
+    if (actionData?.newGuess) {
+      setGuesses([...guesses, actionData.newGuess]);
     }
-  }
+  }, [actionData]);
+
+  const answers = loaderData.votes;
+  const totalVotes = answers.reduce((sum, vote) => {
+    return sum + vote.votes;
+  }, 0);
+  const points = guesses.reduce((sum, guess) => {
+    const newPoints = answers.find((ans) => ans._id === guess);
+    if (newPoints) {
+      return sum + newPoints.votes;
+    }
+    return 0;
+  }, 0);
+  const score = points / totalVotes;
 
   return (
     <main className="container space-y-4 my-4 max-w-lg">
       <section className="p-4 space-y-4">
-        <Question question={question} />
-        <Answers question={question} guesses={correctGuesses} />
-        <div className="block mx-auto w-44 border-[1px] border-black rounded-sm bg-white p-1">
+        <Question question={loaderData.question} photo={loaderData.photo} />
+        <Answers answers={answers} guesses={guesses} />
+        <div
+          className="block mx-auto w-44 border-[1px] border-black 
+        rounded-sm bg-white p-1"
+        >
           <div className="flex items-center">
             <span className="text-sm font-bold w-1/2">Remaining</span>
             <span className="text-sm flex-grow">
               {statFormat((1 - score) * 100)}%
             </span>
-            <span>{`${statFormat(total - points)}B`}</span>
+            <span>{`${statFormat(totalVotes - points)}B`}</span>
           </div>
         </div>
-        <Form className="text-center space-x-2" action="" method="post">
+        <Form className="text-center space-x-2" method="post">
           <input
             className="border-[1px] border-black py-1 px-2"
             type="text"
             name="guess"
             placeholder="Guess survey responses"
-            value={guess}
-            onChange={(e) => setGuess(e.target.value)}
           />
           <button
             className="px-2 py-1 rounded-sm border-button text-button 
       bg-[#F9F1F0] font-bold border-2 shadow"
-            onClick={(e) => formValidate(e)}
           >
             Enter
           </button>
         </Form>
         {message !== "" && <p>{message}</p>}
+        <p>{actionData?.message}</p>
       </section>
       <section className="flex flex-col space-y-4">
-        <div className="w-3/4 mx-auto bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 relative">
+        <div
+          className="w-3/4 mx-auto bg-gray-200 rounded-full h-2.5 
+        dark:bg-gray-700 relative"
+        >
           <motion.div
             className="bg-blue-600 h-2.5 rounded-full"
-            // style={{ width: `${score * 100}%` }}
             initial={{ width: 0 }}
             animate={{ width: `${score * 100}%` }}
             transition={{ duration: 1 }}
@@ -127,7 +213,7 @@ export default function QuestionSlug() {
             <p>Points</p>
           </div>
           <div className="flex flex-col items-center">
-            <Counter value={total} />
+            <Counter value={totalVotes} />
             <p>Votes</p>
           </div>
           <div className="flex flex-col items-center">

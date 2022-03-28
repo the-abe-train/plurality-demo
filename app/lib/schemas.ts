@@ -14,13 +14,10 @@ export type UserSchema = {
   lastUpdated: Date;
 };
 
-type SessionData = {
-  user: ObjectId;
-};
-
 export type SessionSchema = {
   _id?: ObjectId;
-  data: SessionData;
+  data: any;
+  expiry?: Date;
 };
 
 export type QuestionSchema = {
@@ -31,20 +28,25 @@ export type QuestionSchema = {
   drafted: Date;
 };
 
-export type VoteSchema = {
-  _id: ObjectId;
-  question: number;
-  user: ObjectId;
-  text: string;
-  date: Date;
-};
+// export type VoteSchema = {
+//   _id: ObjectId;
+//   question: number;
+//   user: ObjectId;
+//   text: string;
+//   date: Date;
+// };
 
 export type GameSchema = {
   _id: ObjectId;
   question: number;
   user: ObjectId;
   guesses: string[];
-  win: boolean;
+  win?: Date;
+  vote?: {
+    text: string;
+    date: Date;
+  };
+  lastUpdated: Date;
 };
 
 export type AnswerOld = {

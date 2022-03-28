@@ -4,9 +4,9 @@ import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 import { json, LoaderFunction, Outlet, useLoaderData } from "remix";
-import { closeDb, connectDb, userCollection } from "~/server/db";
+import { closeDb, connectDb, usersCollection } from "~/server/db";
 import { getSession } from "~/sessions";
-import { User } from "~/lib/authentication";
+import { UserSchema } from "~/lib/schemas";
 
 export function links() {
   return [
@@ -17,7 +17,7 @@ export function links() {
 }
 
 type LoaderData = {
-  user: User | null;
+  user: UserSchema | null;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -33,11 +33,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("data")?.user;
   if (userId) {
-    data["user"] = await userCollection.findOne({ _id: userId });
+    data["user"] = await usersCollection.findOne({ _id: userId });
   }
-
-  // Close connection to database
-  await closeDb();
 
   return json(data);
 };

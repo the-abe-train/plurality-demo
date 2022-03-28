@@ -1,29 +1,29 @@
-import { IAnswer, IQuestion } from "~/lib/question";
-import { sumToken } from "~/util/math";
 import { statFormat } from "~/util/text";
 import { motion } from "framer-motion";
 import { useRef } from "react";
+import { VoteAggregation } from "~/lib/schemas";
 
 type Props = {
-  question: IQuestion;
-  guesses?: IAnswer[];
+  answers: VoteAggregation[];
+  guesses: string[];
 };
 
-export default function Answers({ question, guesses }: Props) {
+export default function Answers({ answers, guesses }: Props) {
   const nodeRef = useRef<HTMLDivElement>(null!);
+  let sortedAnswers = answers
+    .sort((a, b) => b.votes - a.votes)
+    .filter((answer) => guesses.includes(answer._id));
 
-  let answers = question.answers.sort((a, b) => b.token - a.token);
-  if (guesses) {
-    // If a list of guesses was passed, only show those
-    answers = guesses.sort((a, b) => b.token - a.token);
-  } else {
-    // If no list of guesses passed, show up to top 6
-    const answerTokens = answers.map((a) => a.token);
-    const threshold = answerTokens.sort((a, b) => b - a).at(5);
-    if (threshold) {
-      answers = answers.filter((a) => a.token >= threshold);
-    }
+  const answerTokens = answers.map((a) => a.votes);
+  const threshold = answerTokens.sort((a, b) => b - a).at(5);
+  if (threshold) {
+    answers = answers.filter((a) => a.votes >= threshold);
   }
+
+  const totalVotes = answers.reduce((sum, vote) => {
+    return sum + vote.votes;
+  }, 0);
+
   return (
     <motion.div
       variants={{
@@ -46,10 +46,8 @@ export default function Answers({ question, guesses }: Props) {
       className="grid grid-cols-2 gap-1 text-sm"
       ref={nodeRef}
     >
-      {answers.map((answer, idx) => {
-        const score = statFormat(
-          (answer.token / sumToken(question.answers)) * 100
-        );
+      {sortedAnswers.map((answer, idx) => {
+        const score = statFormat((answer.votes / totalVotes) * 100);
         const variants = {
           hidden: {
             y: 90,
@@ -68,16 +66,19 @@ export default function Answers({ question, guesses }: Props) {
 
         return (
           <motion.div
-            key={answer.text}
+            key={answer._id}
             className="flex items-center w-full border-[1px] border-black 
             rounded-sm bg-white p-1"
             variants={variants}
           >
-            <span className="text-sm font-bold w-[50%] overflow-hidden overflow-ellipsis">
-              {answer.text}
+            <span
+              className="text-sm font-bold w-[50%] overflow-hidden 
+            overflow-ellipsis"
+            >
+              {answer._id}
             </span>
             <span className="ml-1 text-sm flex-grow">{`${score}%`}</span>
-            <span>{`${statFormat(answer.token)}B`}</span>
+            <span>{`${statFormat(answer.votes)}B`}</span>
           </motion.div>
         );
       })}

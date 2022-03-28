@@ -1,4 +1,5 @@
 import { json, LoaderFunction, useLoaderData } from "remix";
+import dayjs from "dayjs";
 
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
@@ -6,36 +7,24 @@ import Question from "~/components/Question";
 import Instructions from "~/components/Instructions";
 import Summary from "~/components/Summary";
 
-import { IQuestion } from "~/lib/question";
-import { User } from "~/lib/authentication";
+import {
+  Photo,
+  QuestionSchema,
+  UserSchema,
+  VoteAggregation,
+} from "~/lib/schemas";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
-// import { fetchPhoto } from "~/util/unsplash";
-import { midnights } from "~/util/time";
-import dayjs from "dayjs";
-
-import {
-  closeDb,
-  connectDb,
-  questionCollection,
-  userCollection,
-} from "~/server/db";
+import { closeDb, connectDb, usersCollection } from "~/server/db";
 import { getSession } from "~/sessions";
 import {
   fetchPhoto,
   questionBySurveyClose,
   votesByQuestion,
 } from "~/server/queries";
-import {
-  Photo,
-  QuestionSchema,
-  VoteAggregation,
-  VoteSchema,
-} from "~/lib/schemas";
-import { WithId } from "mongodb";
 
 export function links() {
   return [
@@ -45,24 +34,10 @@ export function links() {
   ];
 }
 
-// type LoaderData = {
-//   user: User | null;
-//   questions: IQuestion[];
-// };
-
-type QuestionPhoto = {
-  photo: Photo;
-  votes: VoteAggregation[];
-  text: string;
-  surveyClose: Date;
-  drafted: Date;
-  _id: number;
-};
-
 type LoaderData = {
   questions: QuestionSchema[];
   photos: Photo[];
-  user?: User;
+  user?: UserSchema;
   votes: VoteAggregation[][];
 };
 
@@ -72,8 +47,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   // // Get user info
   const session = await getSession(request.headers.get("Cookie"));
+  console.log("Index page session data:", session.get("data"));
   const userId = session.get("data")?.user;
-  const user = (await userCollection.findOne({ _id: userId })) || undefined;
+  console.log("Index page User ID:", userId);
+  const user = (await usersCollection.findOne({ _id: userId })) || undefined;
 
   // Get datetime objects
   const midnight = dayjs().endOf("day");
@@ -97,15 +74,15 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
     const votes = await Promise.all(
       [yesterday, today, tomorrow].map(async (question) => {
-        return await votesByQuestion(question);
+        return await votesByQuestion(question._id);
       })
     );
-
-    const data = { questions, user, photos, votes };
 
     // Close connection to database
     await closeDb();
 
+    // Return data
+    const data = { questions, user, photos, votes };
     return json<LoaderData>(data);
   }
   return "";

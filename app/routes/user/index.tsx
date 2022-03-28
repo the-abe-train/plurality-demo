@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { useState } from "react";
 import {
   ActionFunction,
@@ -10,23 +9,36 @@ import {
   useActionData,
   useLoaderData,
 } from "remix";
-import { User } from "~/lib/authentication";
-import { closeDb, connectDb, userCollection } from "~/server/db";
+import { UserSchema } from "~/lib/schemas";
+import { closeDb, connectDb, usersCollection } from "~/server/db";
 import { getSession, destroySession } from "../../sessions";
 
 type LoaderData = {
-  user: User;
+  user: UserSchema;
 };
+
+async function logOut(request: Request) {
+  console.log("logging out");
+  const session = await getSession(request.headers.get("Cookie"));
+  // Destroys the session in the database
+  // Sends an unauthenticated cookie back to the user
+  const cookieString = await destroySession(session);
+  return redirect("user/login", {
+    headers: {
+      "Set-Cookie": cookieString,
+    },
+  });
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
   await connectDb();
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("data")?.user;
+  const user = await usersCollection.findOne({ _id: userId });
   // Redirect to log-in page if user not signed in
-  if (!userId) {
+  if (!user) {
     return redirect("/user/login");
   }
-  const user = await userCollection.findOne({ _id: userId });
   const data = { user };
   await closeDb();
 
@@ -48,7 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
     console.log("changing the name, changing the game");
     const session = await getSession(request.headers.get("Cookie"));
     const userId = session.get("data")?.user;
-    const modified = await userCollection.findOneAndUpdate(
+    const modified = await usersCollection.findOneAndUpdate(
       { _id: userId },
       { $set: { name: newName } }
     );
@@ -59,30 +71,20 @@ export const action: ActionFunction = async ({ request }) => {
 
   // Handle log-out form
   if (_action === "logOut") {
-    console.log("logging out");
-    const session = await getSession(request.headers.get("Cookie"));
-    // Destroys the session in the database
-    // Sends an unauthenticated cookie back to the user
-    const cookieString = await destroySession(session);
-    await closeDb();
-    return redirect("user/login", {
-      headers: {
-        "Set-Cookie": cookieString,
-      },
-    });
+    logOut(request);
   }
 
   return "";
 };
 
 export default function LogoutRoute() {
-  const data = useLoaderData<LoaderData>();
+  const { user } = useLoaderData<LoaderData>();
   const newName = useActionData();
 
-  const [name, setName] = useState(data.user.name);
+  const [name, setName] = useState(user.name || "");
   return (
     <main className="flex-grow">
-      <p>Email: {data.user.email.address}</p>
+      <p>Email: {user.email.address}</p>
       <p>Are you sure you want to log out?</p>
       <Form method="post">
         <label>

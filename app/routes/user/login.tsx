@@ -7,7 +7,6 @@ import {
   LoaderFunction,
   redirect,
   useActionData,
-  useLoaderData,
 } from "remix";
 import { authorizeUser } from "~/server/authorize";
 import { closeDb, connectDb } from "~/server/db";
@@ -26,7 +25,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (session.has("_id")) {
     return redirect("/");
   }
-  await closeDb();
   return "";
 };
 
@@ -39,32 +37,33 @@ export const action: ActionFunction = async ({ request }) => {
 
   await connectDb();
   const session = await getSession(request.headers.get("Cookie"));
-  console.log(session.data);
+  console.log("Session data:", session.data);
   const nextWeek = dayjs().add(7, "day").toDate();
 
   const form = await request.formData();
   const email = form.get("email");
   const password = form.get("password");
 
-  if (typeof email === "string" && typeof password === "string") {
-    const { isAuthorized, userId } = await authorizeUser(email, password);
-    if (!isAuthorized) {
-      session.flash("error", "Invalid username/password");
-      await closeDb();
-      return json({ message: "Invalid username/password" });
-    }
-    session.set("user", userId);
-    const cookieString = await commitSession(session, { expires: nextWeek });
-    console.log(cookieString);
-    await closeDb();
-    return redirect("/", {
-      headers: {
-        "Set-Cookie": cookieString,
-      },
-    });
+  if (typeof email !== "string" || typeof password !== "string") {
+    session.flash("error", "Invalid username/password");
+    return json({ message: "Invalid username/password" });
   }
-  await closeDb();
-  return json({ message: "Authentication failed" });
+
+  const { isAuthorized, userId } = await authorizeUser(email, password);
+  if (!isAuthorized) {
+    session.flash("error", "Invalid username/password");
+    await closeDb();
+    return json({ message: "Invalid username/password" });
+  }
+
+  session.set("user", userId);
+  const cookieString = await commitSession(session, { expires: nextWeek });
+  console.log("Cookie string:", cookieString);
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": cookieString,
+    },
+  });
 };
 
 export default function Login() {
@@ -109,7 +108,7 @@ export default function Login() {
           Sign-up
         </Link>
       </p>
-      {data?.message && <p>{data.message}</p>}
+      {data?.message && <p className="text-red-700">{data.message}</p>}
     </main>
   );
 }

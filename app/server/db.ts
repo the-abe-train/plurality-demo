@@ -1,14 +1,10 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
-import { Session, User } from "~/lib/authentication";
-import { IQuestion } from "~/lib/question";
 import { MONGO_URL } from "./env";
 import {
   QuestionSchema,
-  VoteAggregation,
-  Photo,
   UserSchema,
-  VoteSchema,
   GameSchema,
+  SessionSchema,
 } from "../lib/schemas";
 
 interface Options extends MongoClientOptions {
@@ -43,16 +39,8 @@ export async function closeDb() {
 }
 
 // Collections
-export const questionCollection = client
-  .db("plurality")
-  .collection<IQuestion>("questions");
-export const userCollection = client.db("plurality").collection<User>("user");
-export const sessionCollection = client
-  .db("plurality")
-  .collection<Session>("sessions");
-
 const db = client.db("plurality");
+export const sessionCollection = db.collection<SessionSchema>("sessions");
 export const usersCollection = db.collection<UserSchema>("users");
 export const questionsCollection = db.collection<QuestionSchema>("questions");
-export const votesCollection = db.collection<VoteSchema>("votes");
 export const gamesCollection = db.collection<GameSchema>("games");

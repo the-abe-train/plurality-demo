@@ -11,7 +11,7 @@ export default function Question({ question, photo }: Props) {
     <Link to={`/questions/${question._id}`}>
       <div
         className="border-2 border-black rounded-lg overflow-clip 
-    drop-shadow-block z-20 bg-white floating my-3 max-w-md"
+    drop-shadow-block z-20 bg-white floating my-3 max-w-md mx-auto"
       >
         <img
           src={photo.urls.raw}

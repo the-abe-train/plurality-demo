@@ -4,6 +4,7 @@ import {
   ActionFunction,
   Form,
   json,
+  Link,
   LoaderFunction,
   redirect,
   useActionData,
@@ -38,34 +39,40 @@ export const action: ActionFunction = async ({ request }) => {
   // Close connection to database
   // Respond to the client with the new session in cookie and redirect to home
 
+  // Set-up
   await connectDb();
   const session = await getSession(request.headers.get("Cookie"));
   const nextWeek = dayjs().add(7, "day").toDate();
 
+  // Parse form data
   let form = await request.formData();
   let email = form.get("email");
   let password = form.get("password");
-
-  if (typeof email === "string" && typeof password === "string") {
-    const { isAuthorized, userId } = await registerUser(email, password);
-    if (!isAuthorized) {
-      session.flash("error", "Username already taken");
-      await closeDb();
-      return json({ message: "Username already taken" });
-    }
-    session.set("user", userId);
-    const cookieString = await commitSession(session, {
-      expires: nextWeek,
-    });
-    await closeDb();
-    return redirect("/", {
-      headers: {
-        "Set-Cookie": cookieString,
-      },
-    });
+  if (typeof email !== "string" || typeof password !== "string") {
+    session.flash("error", "Invalid username/password");
+    return json({ message: "Invalid username/password" });
   }
+
+  // Check if username is already taken
+  const { isAuthorized, userId } = await registerUser(email, password);
+  if (!isAuthorized) {
+    console.log("running into problems");
+    session.flash("error", "Username already taken");
+    return json({ message: "Username already taken" });
+  }
+
+  // Create user and redirect to home page
+  session.set("user", userId);
+  const cookieString = await commitSession(session, {
+    expires: nextWeek,
+  });
+  console.log("Cookie string:", cookieString);
   await closeDb();
-  return json({ message: "Authentication failed" });
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": cookieString,
+    },
+  });
 };
 
 export default function signup() {
@@ -104,7 +111,13 @@ export default function signup() {
           Sign-up
         </button>
       </Form>
-      {data?.message && <p>{data.message}</p>}
+      <p>
+        Already have an account?{" "}
+        <Link to="/user/login" className="underline">
+          Log-in
+        </Link>
+      </p>
+      {data?.message && <p className="text-red-700">{data.message}</p>}
     </main>
   );
 }

@@ -1,14 +1,14 @@
 import bcrypt from "bcryptjs";
-import { userCollection } from "~/server/db";
+import { ObjectId } from "mongodb";
+import { usersCollection } from "~/server/db";
 const { genSalt, hash, compare } = bcrypt;
 
 export async function registerUser(email: string, password: string) {
   // Check if user already exists
-  const existingUser = await userCollection.findOne({
+  const existingUser = await usersCollection.findOne({
     "email.address": email,
   });
-  console.log(existingUser);
-  if (existingUser) throw "User with that email already exists.";
+  if (existingUser) return { isAuthorized: false, userId: null };
 
   // Generate salt
   const salt = await genSalt(10);
@@ -19,13 +19,16 @@ export async function registerUser(email: string, password: string) {
   console.log("hash", hashedPassword);
 
   // Store in database
-  const user = await userCollection.insertOne({
+  const user = await usersCollection.insertOne({
     email: {
       address: email,
       verified: false,
     },
     name: email,
     password: hashedPassword,
+    createdDate: new Date(),
+    lastUpdated: new Date(),
+    _id: new ObjectId(),
   });
 
   // Return user from database
@@ -38,7 +41,7 @@ export async function authorizeUser(email: string, password: string) {
   // compare password with one in database
   // return boolean of "if password is correct"
 
-  const userData = await userCollection.findOne({
+  const userData = await usersCollection.findOne({
     "email.address": email,
   });
 
