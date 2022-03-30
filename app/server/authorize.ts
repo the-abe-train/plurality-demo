@@ -1,13 +1,11 @@
 import bcrypt from "bcryptjs";
-import { ObjectId } from "mongodb";
-import { usersCollection } from "~/server/db";
+import { client } from "~/server/db.server";
+import { createUser, userByEmail } from "./queries";
 const { genSalt, hash, compare } = bcrypt;
 
 export async function registerUser(email: string, password: string) {
   // Check if user already exists
-  const existingUser = await usersCollection.findOne({
-    "email.address": email,
-  });
+  const existingUser = await userByEmail(client, email);
   if (existingUser) return { isAuthorized: false, userId: null };
 
   // Generate salt
@@ -19,17 +17,7 @@ export async function registerUser(email: string, password: string) {
   console.log("hash", hashedPassword);
 
   // Store in database
-  const user = await usersCollection.insertOne({
-    email: {
-      address: email,
-      verified: false,
-    },
-    name: email,
-    password: hashedPassword,
-    createdDate: new Date(),
-    lastUpdated: new Date(),
-    _id: new ObjectId(),
-  });
+  const user = await createUser(client, email, hashedPassword);
 
   // Return user from database
   return { isAuthorized: true, userId: user.insertedId };
@@ -41,10 +29,7 @@ export async function authorizeUser(email: string, password: string) {
   // compare password with one in database
   // return boolean of "if password is correct"
 
-  const userData = await usersCollection.findOne({
-    "email.address": email,
-  });
-
+  const userData = await userByEmail(client, email);
   if (userData) {
     console.log(userData);
     const savedPassword = userData.password;

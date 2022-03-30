@@ -18,13 +18,15 @@ import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
-import { closeDb, connectDb, usersCollection } from "~/server/db";
+import { client, db } from "~/server/db.server";
 import { getSession } from "~/sessions";
 import {
   fetchPhoto,
   questionBySurveyClose,
+  userById,
   votesByQuestion,
 } from "~/server/queries";
+import invariant from "tiny-invariant";
 
 export function links() {
   return [
@@ -42,15 +44,23 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // Connect to db
-  await connectDb();
+  // await affirmConnection(db);
+  // let isConnected = false;
+  // while (!isConnected) {
+  //   try {
+  //     db.command({ ping: 1 });
+  //     isConnected = true;
+  //   } catch (e) {
+  //     console.log("Affirming connection.");
+  //   }
+  // }
 
-  // // Get user info
+  // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   console.log("Index page session data:", session.get("data"));
   const userId = session.get("data")?.user;
   console.log("Index page User ID:", userId);
-  const user = (await usersCollection.findOne({ _id: userId })) || undefined;
+  const user = (await userById(client, userId)) || undefined;
 
   // Get datetime objects
   const midnight = dayjs().endOf("day");
@@ -59,9 +69,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   const tomorrowSc = midnight.add(1, "day").toDate();
 
   // Get questions from db
-  const today = await questionBySurveyClose(todaySc);
-  const yesterday = await questionBySurveyClose(yesterdaySc);
-  const tomorrow = await questionBySurveyClose(tomorrowSc);
+  const today = await questionBySurveyClose(client, todaySc);
+  const yesterday = await questionBySurveyClose(client, yesterdaySc);
+  const tomorrow = await questionBySurveyClose(client, tomorrowSc);
+
+  invariant(today, "Today's question not fetched from database");
 
   // Get photo for each question from Unsplash and votes from database
   if (today && yesterday && tomorrow) {
@@ -74,12 +86,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
     const votes = await Promise.all(
       [yesterday, today, tomorrow].map(async (question) => {
-        return await votesByQuestion(question._id);
+        return await votesByQuestion(client, question._id);
       })
     );
-
-    // Close connection to database
-    await closeDb();
 
     // Return data
     const data = { questions, user, photos, votes };

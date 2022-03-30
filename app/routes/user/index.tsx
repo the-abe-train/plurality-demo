@@ -10,45 +10,27 @@ import {
   useLoaderData,
 } from "remix";
 import { UserSchema } from "~/lib/schemas";
-import { closeDb, connectDb, usersCollection } from "~/server/db";
+import { client } from "~/server/db.server";
+import { userById, userUpdateName } from "~/server/queries";
 import { getSession, destroySession } from "../../sessions";
 
 type LoaderData = {
   user: UserSchema;
 };
 
-async function logOut(request: Request) {
-  console.log("logging out");
-  const session = await getSession(request.headers.get("Cookie"));
-  // Destroys the session in the database
-  // Sends an unauthenticated cookie back to the user
-  const cookieString = await destroySession(session);
-  return redirect("user/login", {
-    headers: {
-      "Set-Cookie": cookieString,
-    },
-  });
-}
-
 export const loader: LoaderFunction = async ({ request }) => {
-  await connectDb();
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("data")?.user;
-  const user = await usersCollection.findOne({ _id: userId });
+  const user = (await userById(client, userId)) || undefined;
   // Redirect to log-in page if user not signed in
   if (!user) {
     return redirect("/user/login");
   }
   const data = { user };
-  await closeDb();
-
   return json(data);
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  // Connect to database
-  await connectDb();
-
   // Parse forms
   const form = await request.formData();
   const { _action, ...values } = Object.fromEntries(form);
@@ -60,18 +42,22 @@ export const action: ActionFunction = async ({ request }) => {
     console.log("changing the name, changing the game");
     const session = await getSession(request.headers.get("Cookie"));
     const userId = session.get("data")?.user;
-    const modified = await usersCollection.findOneAndUpdate(
-      { _id: userId },
-      { $set: { name: newName } }
-    );
-    console.log(modified);
-    await closeDb();
-    // return modified.value?.name;
+    const modified = await userUpdateName(client, userId, newName);
   }
 
   // Handle log-out form
   if (_action === "logOut") {
-    logOut(request);
+    console.log("logging out");
+    const session = await getSession(request.headers.get("Cookie"));
+    // Destroys the session in the database
+    // Sends an unauthenticated cookie back to the user
+    const cookieString = await destroySession(session);
+    console.log("Destroy session cookie string", cookieString);
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": cookieString,
+      },
+    });
   }
 
   return "";

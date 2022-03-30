@@ -17,13 +17,13 @@ import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
-import { closeDb, connectDb } from "~/server/db";
 import { Photo, QuestionSchema, VoteAggregation } from "~/lib/schemas";
 import {
   fetchPhoto,
   questionBySearch,
   votesByQuestion,
 } from "~/server/queries";
+import { client } from "~/server/db.server";
 
 type Metadata = {
   pageStart: number;
@@ -47,9 +47,6 @@ export function links() {
 }
 
 export const action: ActionFunction = async ({ request }) => {
-  // Connect to db
-  await connectDb();
-
   // Parse form
   const body = await request.formData();
   const textParam = body.get("text");
@@ -68,6 +65,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   //  questions from database
   const allQuestions = await questionBySearch({
+    client,
     textSearch,
     dateSearch,
     idSearch,
@@ -85,7 +83,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (pageQuestions) {
     const votes = await Promise.all(
       pageQuestions.map(async (question) => {
-        return await votesByQuestion(question._id);
+        return await votesByQuestion(client, question._id);
       })
     );
     const photos = await Promise.all(
@@ -93,9 +91,6 @@ export const action: ActionFunction = async ({ request }) => {
         return await fetchPhoto(question);
       })
     );
-
-    // Close connection to database
-    await closeDb();
 
     // Return data
     const data = { pageQuestions, metadata, photos, votes };

@@ -9,18 +9,15 @@ import {
   useActionData,
 } from "remix";
 import { authorizeUser } from "~/server/authorize";
-import { closeDb, connectDb } from "~/server/db";
 import { getSession, commitSession } from "../../sessions";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // Connect to database
   // Upon visitng the page, gets the session from the headers
   // If the session has a user ID in it, redirects to home
   // If not, return nothing
   // Close connection to database
   // Return nothing
 
-  await connectDb();
   const session = await getSession(request.headers.get("Cookie"));
   if (session.has("_id")) {
     return redirect("/");
@@ -35,7 +32,6 @@ export const action: ActionFunction = async ({ request }) => {
   // If user is found, attaches the user ID to the session
   // Redirects user back to index page with updated session in the cookie
 
-  await connectDb();
   const session = await getSession(request.headers.get("Cookie"));
   console.log("Session data:", session.data);
   const nextWeek = dayjs().add(7, "day").toDate();
@@ -52,13 +48,12 @@ export const action: ActionFunction = async ({ request }) => {
   const { isAuthorized, userId } = await authorizeUser(email, password);
   if (!isAuthorized) {
     session.flash("error", "Invalid username/password");
-    await closeDb();
     return json({ message: "Invalid username/password" });
   }
 
   session.set("user", userId);
+  console.log("Session set userId:", userId);
   const cookieString = await commitSession(session, { expires: nextWeek });
-  console.log("Cookie string:", cookieString);
   return redirect("/", {
     headers: {
       "Set-Cookie": cookieString,

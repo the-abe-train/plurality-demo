@@ -2,21 +2,19 @@ import { json, LoaderFunction, Outlet, useLoaderData } from "remix";
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
 import { UserSchema } from "~/lib/schemas";
-import { closeDb, connectDb, usersCollection } from "~/server/db";
+import { userById } from "~/server/queries";
 import { getSession } from "~/sessions";
+import { client } from "~/server/db.server";
 
 type LoaderData = {
   user?: UserSchema;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // Connect to db
-  await connectDb();
-
   // // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("data")?.user;
-  const user = (await usersCollection.findOne({ _id: userId })) || undefined;
+  const user = (await userById(client, userId)) || undefined;
 
   // Close connection to database
   // await closeDb();

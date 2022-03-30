@@ -1,4 +1,3 @@
-import { closeDb, connectDb } from "~/server/db";
 import { registerUser } from "~/server/authorize";
 import {
   ActionFunction,
@@ -20,12 +19,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   // Close connection to database
   // Return nothing
 
-  await connectDb();
   const session = await getSession(request.headers.get("Cookie"));
   if (session.has("_id")) {
     return redirect("/");
   }
-  await closeDb();
   return "";
 };
 
@@ -40,7 +37,6 @@ export const action: ActionFunction = async ({ request }) => {
   // Respond to the client with the new session in cookie and redirect to home
 
   // Set-up
-  await connectDb();
   const session = await getSession(request.headers.get("Cookie"));
   const nextWeek = dayjs().add(7, "day").toDate();
 
@@ -67,7 +63,6 @@ export const action: ActionFunction = async ({ request }) => {
     expires: nextWeek,
   });
   console.log("Cookie string:", cookieString);
-  await closeDb();
   return redirect("/", {
     headers: {
       "Set-Cookie": cookieString,

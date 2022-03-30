@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 
 import { motion } from "framer-motion";
 import Counter from "~/components/Counter";
-import { connectDb } from "~/server/db";
+import { client } from "~/server/db.server";
 import {
   addGuess,
   fetchPhoto,
@@ -51,9 +51,6 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-  // TODO figure out how to deal with db connections in loader functions
-  await connectDb();
-
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("data")?.user;
@@ -61,13 +58,13 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const questionId = Number(params.slug);
 
   // Get data from db and apis
-  const question = await questionById(questionId);
-  const votes = await votesByQuestion(questionId);
+  const question = await questionById(client, questionId);
+  const votes = await votesByQuestion(client, questionId);
   invariant(question, "No question found!");
   const photo = await fetchPhoto(question);
 
   // TODO need a "fake" game for when players are not signed in
-  const game = await gameByQuestionUser(questionId, userId);
+  const game = await gameByQuestionUser(client, questionId, userId);
   invariant(game, "Game upsert failed");
   console.log(game);
   const data = { question, votes, photo, game };
@@ -80,9 +77,6 @@ type ActionData = {
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
-  // Connect to db
-  await connectDb();
-
   // Parse form
   const body = await request.formData();
   const guess = body.get("guess");
@@ -97,7 +91,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("data")?.user;
   const questionId = Number(params.slug);
-  const game = await gameByQuestionUser(questionId, userId);
+  const game = await gameByQuestionUser(client, questionId, userId);
   invariant(game, "Game upsert failed");
   const trimmedGuess = guess.trim().toLowerCase();
 
@@ -109,7 +103,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   // Pull in more relevant data
-  const answers = await votesByQuestion(questionId);
+  const answers = await votesByQuestion(client, questionId);
   console.log("Answers:", answers);
   const correctGuess = answers.find((ans) => {
     const text = ans._id;
@@ -127,7 +121,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   // Accept correct guess
   const message = "";
   const newGuess = correctGuess._id;
-  const updatedGame = await addGuess(game._id, newGuess);
+  const updatedGame = await addGuess(client, game._id, newGuess);
   invariant(updatedGame, "Game update failed");
 
   return json<ActionData>({ message, newGuess });
