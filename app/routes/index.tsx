@@ -61,7 +61,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   const yesterday = await questionBySurveyClose(client, yesterdaySc);
   const today = await questionBySurveyClose(client, todaySc);
   const tomorrow = await questionBySurveyClose(client, tomorrowSc);
-
   invariant(today, "Today's question not fetched from database");
 
   // Get photo for each question from Unsplash and votes from database

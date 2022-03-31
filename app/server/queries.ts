@@ -9,6 +9,8 @@ import {
 import { UNSPLASH_ACCESS_KEY, DATABASE_NAME } from "./env";
 import { MongoClient, ObjectId } from "mongodb";
 import { SessionData } from "remix";
+import invariant from "tiny-invariant";
+import { THRESHOLD } from "~/util/gameplay";
 
 // Connect database
 async function connectDb(client: MongoClient) {
@@ -112,7 +114,7 @@ export async function questionBySearch({
     .find({
       $or: [
         { text: { $regex: textSearch } },
-        { id: idSearch },
+        { _id: idSearch },
         { surveyClose: dateSearch },
       ],
     })
@@ -164,7 +166,7 @@ export async function gameByQuestionUser(
 export async function addGuess(
   client: MongoClient,
   gameId: ObjectId,
-  guess: string
+  guess: VoteAggregation
 ) {
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
@@ -173,6 +175,22 @@ export async function addGuess(
     { $set: { lastUpdated: new Date() }, $push: { guesses: guess } },
     { upsert: true }
   );
+
+  // DOESN'T WORK BECAUSE GAME DOESN'T KNOW TOTAL POSSIBLE SCORE
+  // Check if player won
+  // const updatedGame = result.value;
+  // invariant(updatedGame?.guesses, "Game update failed to add guess");
+  // const points = updatedGame.guesses.reduce((sum, guess) => {
+  //   return sum + guess.votes;
+  // }, 0);
+
+  // if (points > THRESHOLD) {
+  //   const result = await gamesCollection.findOneAndUpdate(
+  //     { _id: gameId },
+  //     { $set: { win: true } }
+  //   );
+  //   return result.value;
+  // }
   return result.value;
 }
 

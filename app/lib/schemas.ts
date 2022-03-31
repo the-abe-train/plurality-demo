@@ -28,39 +28,17 @@ export type QuestionSchema = {
   drafted: Date;
 };
 
-// export type VoteSchema = {
-//   _id: ObjectId;
-//   question: number;
-//   user: ObjectId;
-//   text: string;
-//   date: Date;
-// };
-
 export type GameSchema = {
   _id: ObjectId;
   question: number;
   user: ObjectId;
-  guesses: string[];
-  win?: Date;
+  guesses?: VoteAggregation[];
+  win?: boolean;
   vote?: {
     text: string;
     date: Date;
   };
   lastUpdated: Date;
-};
-
-export type AnswerOld = {
-  text: string;
-  token: number;
-};
-
-export type QuestionOld = {
-  id: number;
-  text: string;
-  answers: AnswerOld[];
-  voters: number;
-  surveyClosed: number;
-  photoId: string;
 };
 
 export type Photo = {

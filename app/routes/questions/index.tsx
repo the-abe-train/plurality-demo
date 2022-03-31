@@ -4,19 +4,15 @@ import {
   Form,
   json,
   useActionData,
-  useLoaderData,
-  useMatches,
   useSubmit,
   useTransition,
 } from "remix";
 import dayjs from "dayjs";
 
 import Question from "~/components/Question";
-
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
-
 import { Photo, QuestionSchema, VoteAggregation } from "~/lib/schemas";
 import {
   fetchPhoto,
@@ -25,15 +21,13 @@ import {
 } from "~/server/queries";
 import { client } from "~/server/db.server";
 
-type Metadata = {
-  pageStart: number;
-  pageEnd: number;
-  total: number;
-};
-
 type ActionData = {
   pageQuestions: QuestionSchema[];
-  metadata: Metadata;
+  metadata: {
+    pageStart: number;
+    pageEnd: number;
+    total: number;
+  };
   photos: Photo[];
   votes: VoteAggregation[][];
 };
@@ -63,7 +57,7 @@ export const action: ActionFunction = async ({ request }) => {
   const pageStart = pageParam ? (Number(pageParam) - 1) * perPage : 0;
   const pageEnd = pageParam ? Number(pageParam) * perPage : perPage;
 
-  //  questions from database
+  // Questions from database
   const allQuestions = await questionBySearch({
     client,
     textSearch,
@@ -106,6 +100,7 @@ export default function Index() {
   const transition = useTransition();
 
   const data = useActionData<ActionData>();
+  const showData = data?.metadata.total ? data.metadata.total > 0 : false;
 
   useEffect(() => {
     if (data?.metadata) {
@@ -198,7 +193,7 @@ export default function Index() {
         </div>
       </Form>
       <div className="px-4">
-        {data?.metadata?.total && (
+        {showData && data?.metadata && (
           <section className="my-4">
             <div className="m-4 flex justify-between">
               <span>

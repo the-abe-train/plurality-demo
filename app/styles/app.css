@@ -538,6 +538,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   right: 5%;
 }
 
+.right-\[20\%\]{
+  right: 20%;
+}
+
 .z-10{
   z-index: 10;
 }

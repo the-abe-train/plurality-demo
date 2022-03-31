@@ -1,5 +1,3 @@
-import { IAnswer } from "~/lib/question";
-
 export function statFormat(number: number) {
   if (number >= 1000) {
     const newNum = (number / 1000).toPrecision(3);
@@ -15,10 +13,6 @@ export function statFormat(number: number) {
 
 export function trim(str: string) {
   return str.trim().toLowerCase();
-}
-
-export function trimListText(items: IAnswer[]) {
-  return items.map((a) => trim(a.text));
 }
 
 export function parseAnswer(ans: string) {

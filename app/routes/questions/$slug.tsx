@@ -3,21 +3,24 @@ import {
   Form,
   json,
   LoaderFunction,
+  redirect,
   useActionData,
   useLoaderData,
 } from "remix";
+import invariant from "tiny-invariant";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+
 import Answers from "~/components/Answers";
 import Question from "~/components/Question";
+import Counter from "~/components/Counter";
+
 import { parseAnswer, statFormat, trim } from "~/util/text";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
-import { useEffect, useState } from "react";
-
-import { motion } from "framer-motion";
-import Counter from "~/components/Counter";
 import { client } from "~/server/db.server";
 import {
   addGuess,
@@ -33,7 +36,8 @@ import {
   VoteAggregation,
 } from "~/lib/schemas";
 import { getSession } from "~/sessions";
-import invariant from "tiny-invariant";
+
+import { MAX_GUESSES, THRESHOLD } from "~/util/gameplay";
 
 export function links() {
   return [
@@ -57,13 +61,16 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   console.log("User ID", userId);
   const questionId = Number(params.slug);
 
+  // Redirect not signed-in users to home page
+  if (!userId) {
+    return redirect("/user/login");
+  }
+
   // Get data from db and apis
   const question = await questionById(client, questionId);
   const votes = await votesByQuestion(client, questionId);
   invariant(question, "No question found!");
   const photo = await fetchPhoto(question);
-
-  // TODO need a "fake" game for when players are not signed in
   const game = await gameByQuestionUser(client, questionId, userId);
   invariant(game, "Game upsert failed");
   console.log(game);
@@ -73,7 +80,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 type ActionData = {
   message: string;
-  newGuess?: string;
+  correctGuess?: VoteAggregation;
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -96,10 +103,12 @@ export const action: ActionFunction = async ({ request, params }) => {
   const trimmedGuess = guess.trim().toLowerCase();
 
   // Reject already guessed answers
-  const userGuesses = game.guesses;
-  if (userGuesses.includes(guess)) {
-    const message = "Already guessed";
-    return json<ActionData>({ message });
+  if (game.guesses) {
+    const userGuesses = game.guesses.map((guess) => guess._id);
+    if (userGuesses.includes(guess)) {
+      const message = "Already guessed";
+      return json<ActionData>({ message });
+    }
   }
 
   // Pull in more relevant data
@@ -118,13 +127,21 @@ export const action: ActionFunction = async ({ request, params }) => {
     return json<ActionData>({ message });
   }
 
+  // Update game with new guess
+  // TODO add winning to game update. Requires knowing total votes of the question
+  const updatedGame = await addGuess(client, game._id, correctGuess);
+
+  // Check if user won
+  if (updatedGame?.win) {
+    const message = "You win!";
+    return json<ActionData>({ message, correctGuess });
+  }
+
   // Accept correct guess
   const message = "";
-  const newGuess = correctGuess._id;
-  const updatedGame = await addGuess(client, game._id, newGuess);
   invariant(updatedGame, "Game update failed");
 
-  return json<ActionData>({ message, newGuess });
+  return json<ActionData>({ message, correctGuess });
 };
 
 export default function QuestionSlug() {
@@ -132,12 +149,14 @@ export default function QuestionSlug() {
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
 
-  const [guesses, setGuesses] = useState(loaderData.game.guesses);
+  const [guesses, setGuesses] = useState(loaderData.game.guesses || []);
+  const [guess, setGuess] = useState("");
   const [message, setMessage] = useState(actionData?.message || "");
 
   useEffect(() => {
-    if (actionData?.newGuess) {
-      setGuesses([...guesses, actionData.newGuess]);
+    if (actionData?.correctGuess) {
+      setGuesses([...guesses, actionData.correctGuess]);
+      setGuess("");
     }
   }, [actionData]);
 
@@ -145,12 +164,9 @@ export default function QuestionSlug() {
   const totalVotes = answers.reduce((sum, vote) => {
     return sum + vote.votes;
   }, 0);
+  const remainingGuesses = MAX_GUESSES - guesses.length;
   const points = guesses.reduce((sum, guess) => {
-    const newPoints = answers.find((ans) => ans._id === guess);
-    if (newPoints) {
-      return sum + newPoints.votes;
-    }
-    return 0;
+    return sum + guess.votes;
   }, 0);
   const score = points / totalVotes;
 
@@ -177,6 +193,8 @@ export default function QuestionSlug() {
             type="text"
             name="guess"
             placeholder="Guess survey responses"
+            value={guess}
+            onChange={(e) => setGuess(e.target.value)}
           />
           <button
             className="px-2 py-1 rounded-sm border-button text-button 
@@ -199,7 +217,10 @@ export default function QuestionSlug() {
             animate={{ width: `${score * 100}%` }}
             transition={{ duration: 1 }}
           ></motion.div>
-          <div className="h-full w-1 z-10 bg-black absolute right-[5%] top-0"></div>
+          <div
+            className="h-full w-1 z-10 bg-black absolute top-0"
+            style={{ left: `${THRESHOLD}%` }}
+          ></div>
         </div>
         <div className="flex justify-center w-full space-x-12">
           <div className="flex flex-col items-center">
@@ -207,8 +228,8 @@ export default function QuestionSlug() {
             <p>Points</p>
           </div>
           <div className="flex flex-col items-center">
-            <Counter value={totalVotes} />
-            <p>Votes</p>
+            <Counter value={remainingGuesses} />
+            <p>Guesses left</p>
           </div>
           <div className="flex flex-col items-center">
             <Counter value={score * 100} percent />

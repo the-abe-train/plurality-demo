@@ -5,14 +5,15 @@ import { VoteAggregation } from "~/lib/schemas";
 
 type Props = {
   answers: VoteAggregation[];
-  guesses: string[];
+  guesses: VoteAggregation[];
 };
 
 export default function Answers({ answers, guesses }: Props) {
   const nodeRef = useRef<HTMLDivElement>(null!);
+  const guessNames = guesses.map((guess) => guess._id);
   let sortedAnswers = answers
     .sort((a, b) => b.votes - a.votes)
-    .filter((answer) => guesses.includes(answer._id));
+    .filter((answer) => guessNames.includes(answer._id));
 
   const answerTokens = answers.map((a) => a.votes);
   const threshold = answerTokens.sort((a, b) => b - a).at(5);
