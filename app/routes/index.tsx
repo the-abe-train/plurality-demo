@@ -18,7 +18,7 @@ import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
-import { client, db } from "~/server/db.server";
+import { client } from "~/server/db.server";
 import { getSession } from "~/sessions";
 import {
   fetchPhoto,
@@ -44,17 +44,6 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // await affirmConnection(db);
-  // let isConnected = false;
-  // while (!isConnected) {
-  //   try {
-  //     db.command({ ping: 1 });
-  //     isConnected = true;
-  //   } catch (e) {
-  //     console.log("Affirming connection.");
-  //   }
-  // }
-
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   console.log("Index page session data:", session.get("data"));
@@ -64,20 +53,20 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   // Get datetime objects
   const midnight = dayjs().endOf("day");
-  const todaySc = midnight.toDate();
   const yesterdaySc = midnight.subtract(1, "day").toDate();
+  const todaySc = midnight.toDate();
   const tomorrowSc = midnight.add(1, "day").toDate();
 
   // Get questions from db
-  const today = await questionBySurveyClose(client, todaySc);
   const yesterday = await questionBySurveyClose(client, yesterdaySc);
+  const today = await questionBySurveyClose(client, todaySc);
   const tomorrow = await questionBySurveyClose(client, tomorrowSc);
 
   invariant(today, "Today's question not fetched from database");
 
   // Get photo for each question from Unsplash and votes from database
-  if (today && yesterday && tomorrow) {
-    const questions = [today, yesterday, tomorrow];
+  if (yesterday && today && tomorrow) {
+    const questions = [yesterday, today, tomorrow];
     // TODO Apply for production from Unsplash
     const photos = await Promise.all(
       [yesterday, today, tomorrow].map(async (question) => {
