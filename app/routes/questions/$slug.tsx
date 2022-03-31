@@ -52,6 +52,7 @@ type LoaderData = {
   votes: VoteAggregation[];
   photo: Photo;
   game: GameSchema;
+  message: string;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -69,18 +70,24 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Get data from db and apis
   const question = await questionById(client, questionId);
   const votes = await votesByQuestion(client, questionId);
+  const totalVotes = votes.reduce((sum, ans) => {
+    return sum + ans.votes;
+  }, 0);
   invariant(question, "No question found!");
   const photo = await fetchPhoto(question);
-  const game = await gameByQuestionUser(client, questionId, userId);
+  const game = await gameByQuestionUser(client, questionId, userId, totalVotes);
   invariant(game, "Game upsert failed");
-  console.log(game);
-  const data = { question, votes, photo, game };
+
+  const message = game.win ? "You win!" : "";
+
+  const data = { question, votes, photo, game, message };
   return json<LoaderData>(data);
 };
 
 type ActionData = {
   message: string;
   correctGuess?: VoteAggregation;
+  gameOver?: boolean;
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -104,8 +111,13 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Reject already guessed answers
   if (game.guesses) {
-    const userGuesses = game.guesses.map((guess) => guess._id);
-    if (userGuesses.includes(guess)) {
+    const alreadyGuessed = game.guesses.find((ans) => {
+      const text = ans._id;
+      return (
+        trim(text) === trimmedGuess || parseAnswer(text).includes(trimmedGuess)
+      );
+    });
+    if (alreadyGuessed) {
       const message = "Already guessed";
       return json<ActionData>({ message });
     }
@@ -128,36 +140,48 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   // Update game with new guess
-  // TODO add winning to game update. Requires knowing total votes of the question
   const updatedGame = await addGuess(client, game._id, correctGuess);
+  invariant(updatedGame, "Game update failed");
 
   // Check if user won
-  if (updatedGame?.win) {
+  if (updatedGame.win) {
     const message = "You win!";
-    return json<ActionData>({ message, correctGuess });
+    return json<ActionData>({ message, correctGuess, gameOver: true });
+  }
+
+  // Check if user lost
+  if (updatedGame.guesses.length >= MAX_GUESSES) {
+    const message = "No more guesses";
+    return json<ActionData>({ message, correctGuess, gameOver: true });
   }
 
   // Accept correct guess
-  const message = "";
-  invariant(updatedGame, "Game update failed");
-
+  const message = "Great guess!";
   return json<ActionData>({ message, correctGuess });
 };
 
 export default function QuestionSlug() {
-  // TODO Is all the question data, including answers, visible in the client?
+  // Data from server
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
+  const loaderGame = loaderData.game;
 
+  // Initial states are from loader data
   const [guesses, setGuesses] = useState(loaderData.game.guesses || []);
   const [guess, setGuess] = useState("");
-  const [message, setMessage] = useState(actionData?.message || "");
+  const initialGameState = loaderGame.win || loaderGame.guesses?.length >= 6;
+  const [gameOver, setGameOver] = useState(initialGameState);
+  const initialMessage = loaderData.game.win ? "You win!" : "";
+  const [message, setMessage] = useState(initialMessage);
 
+  // Updates from action data
   useEffect(() => {
     if (actionData?.correctGuess) {
       setGuesses([...guesses, actionData.correctGuess]);
       setGuess("");
     }
+    setMessage(actionData?.message || message);
+    setGameOver(actionData?.gameOver || gameOver);
   }, [actionData]);
 
   const answers = loaderData.votes;
@@ -187,24 +211,26 @@ export default function QuestionSlug() {
             <span>{`${statFormat(totalVotes - points)}B`}</span>
           </div>
         </div>
+        <p>{gameOver}</p>
         <Form className="text-center space-x-2" method="post">
           <input
-            className="border-[1px] border-black py-1 px-2"
+            className="border-[1px] border-black py-1 px-2 disabled:bg-gray-300"
             type="text"
             name="guess"
             placeholder="Guess survey responses"
             value={guess}
+            disabled={gameOver}
             onChange={(e) => setGuess(e.target.value)}
           />
           <button
             className="px-2 py-1 rounded-sm border-button text-button 
       bg-[#F9F1F0] font-bold border-2 shadow"
+            disabled={gameOver}
           >
             Enter
           </button>
         </Form>
         {message !== "" && <p>{message}</p>}
-        <p>{actionData?.message}</p>
       </section>
       <section className="flex flex-col space-y-4">
         <div

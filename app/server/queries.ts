@@ -7,7 +7,7 @@ import {
   SessionSchema,
 } from "../lib/schemas";
 import { UNSPLASH_ACCESS_KEY, DATABASE_NAME } from "./env";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient, ObjectId, UpdateFilter } from "mongodb";
 import { SessionData } from "remix";
 import invariant from "tiny-invariant";
 import { THRESHOLD } from "~/util/gameplay";
@@ -151,13 +151,18 @@ export async function votesByQuestion(client: MongoClient, questionId: number) {
 export async function gameByQuestionUser(
   client: MongoClient,
   questionId: number,
-  userId: ObjectId
+  userId: ObjectId,
+  totalVotes?: number
 ) {
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
   const result = await gamesCollection.findOneAndUpdate(
     { question: questionId, user: userId },
-    { $set: { lastUpdated: new Date() }, $setOnInsert: { guesses: [] } },
+    {
+      $set: { lastUpdated: new Date() },
+      $setOnInsert: { guesses: [], win: false },
+      $max: { totalVotes },
+    },
     { upsert: true, returnDocument: "after" }
   );
   return result.value;
@@ -170,28 +175,31 @@ export async function addGuess(
 ) {
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
-  const result = await gamesCollection.findOneAndUpdate(
+  const updatedGameResult = await gamesCollection.findOneAndUpdate(
     { _id: gameId },
     { $set: { lastUpdated: new Date() }, $push: { guesses: guess } },
-    { upsert: true }
+    { upsert: true, returnDocument: "after" }
   );
+  const updatedGame = updatedGameResult.value;
+  console.log("Updated game in query:", updatedGame);
 
-  // DOESN'T WORK BECAUSE GAME DOESN'T KNOW TOTAL POSSIBLE SCORE
   // Check if player won
-  // const updatedGame = result.value;
-  // invariant(updatedGame?.guesses, "Game update failed to add guess");
-  // const points = updatedGame.guesses.reduce((sum, guess) => {
-  //   return sum + guess.votes;
-  // }, 0);
-
-  // if (points > THRESHOLD) {
-  //   const result = await gamesCollection.findOneAndUpdate(
-  //     { _id: gameId },
-  //     { $set: { win: true } }
-  //   );
-  //   return result.value;
-  // }
-  return result.value;
+  invariant(updatedGame?.guesses, "Game update failed to add guess");
+  const points = updatedGame.guesses.reduce((sum, guess) => {
+    return sum + guess.votes;
+  }, 0);
+  const absThreshold = updatedGame.totalVotes * (THRESHOLD / 100);
+  console.log("Threshold:", absThreshold);
+  console.log("Points:", points);
+  if (points >= absThreshold) {
+    const wonGameResult = await gamesCollection.findOneAndUpdate(
+      { _id: gameId },
+      { $set: { win: true } },
+      { upsert: false, returnDocument: "after" }
+    );
+    return wonGameResult.value;
+  }
+  return updatedGame;
 }
 
 // Session queries

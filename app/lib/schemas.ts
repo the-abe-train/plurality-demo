@@ -32,12 +32,13 @@ export type GameSchema = {
   _id: ObjectId;
   question: number;
   user: ObjectId;
-  guesses?: VoteAggregation[];
+  guesses: VoteAggregation[];
   win?: boolean;
   vote?: {
     text: string;
     date: Date;
   };
+  totalVotes: number;
   lastUpdated: Date;
 };
 
