@@ -619,16 +619,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-bottom: 0.5rem;
 }
 
-.mt-8{
-  margin-top: 2rem;
-}
-
 .mt-16{
   margin-top: 4rem;
 }
 
 .mt-4{
   margin-top: 1rem;
+}
+
+.mt-8{
+  margin-top: 2rem;
 }
 
 .block{
@@ -695,6 +695,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 50%;
 }
 
+.w-5{
+  width: 1.25rem;
+}
+
+.w-40{
+  width: 10rem;
+}
+
 .w-44{
   width: 11rem;
 }
@@ -709,14 +717,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .w-1{
   width: 0.25rem;
-}
-
-.w-5{
-  width: 1.25rem;
-}
-
-.w-40{
-  width: 10rem;
 }
 
 .max-w-4xl{
@@ -958,14 +958,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(255 236 236 / var(--tw-bg-opacity));
 }
 
-.bg-gray-200{
-  --tw-bg-opacity: 1;
-  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
-}
-
 .bg-blue-600{
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
+}
+
+.bg-gray-200{
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 
 .object-cover{
@@ -1158,11 +1158,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 .active\:bg-blue-600:active{
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
-}
-
-.disabled\:bg-gray-500:disabled{
-  --tw-bg-opacity: 1;
-  background-color: rgb(107 114 128 / var(--tw-bg-opacity));
 }
 
 .disabled\:bg-gray-300:disabled{

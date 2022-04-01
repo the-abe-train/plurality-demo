@@ -33,7 +33,6 @@ export const action: ActionFunction = async ({ request }) => {
   // Redirects user back to index page with updated session in the cookie
 
   const session = await getSession(request.headers.get("Cookie"));
-  console.log("Session data:", session.data);
   const nextWeek = dayjs().add(7, "day").toDate();
 
   const form = await request.formData();

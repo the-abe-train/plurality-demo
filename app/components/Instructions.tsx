@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import play from "~/images/play.svg";
+import vote from "~/images/play.svg";
+import draft from "~/images/play.svg";
 
 const instructions = [
   {
     name: "Play",
-    icon: "./icons/play.svg",
+    icon: play,
     text: "Guess the most popular answers to surveys with respondants from around the world.",
   },
   {
     name: "Vote",
-    icon: "./icons/vote.svg",
+    icon: vote,
     text: "Use the Ballot token to participate in tomorrow’s surveys.",
   },
   {
     name: "Draft",
-    icon: "./icons/draft.svg",
+    icon: draft,
     text: "Submit custom questions to be a part of upcoming surveys.",
   },
 ];

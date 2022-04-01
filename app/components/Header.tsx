@@ -1,4 +1,6 @@
 import { Link } from "remix";
+import logo from "~/images/logo.svg";
+import wallet from "~/images/wallet.svg";
 
 type Props = {
   name?: string;
@@ -13,11 +15,7 @@ export default function Header({ name }: Props) {
             className="text-2xl text-center font-header font-bold flex items-center 
           justify-center gap-x-2"
           >
-            <img
-              className="inline h-6 object-fill"
-              src="../icons/logo.svg"
-              alt="logo"
-            />
+            <img className="inline h-6 object-fill" src={logo} alt="logo" />
             <span className="hidden sm:inline">Plurality</span>
           </h1>
         </Link>
@@ -38,11 +36,7 @@ export default function Header({ name }: Props) {
               className="px-2 py-1 rounded-sm border-button text-button 
       bg-[#F9F1F0] font-bold border-2 shadow"
             >
-              <img
-                className="inline mr-2"
-                src="../icons/wallet.svg"
-                alt="wallet"
-              />
+              <img className="inline mr-2" src={wallet} alt="wallet" />
               {name || "Connect wallet"}
             </button>
           </Link>

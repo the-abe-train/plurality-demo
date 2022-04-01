@@ -20,7 +20,7 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("data")?.user;
+  const userId = session.get("user")?.user;
   const user = (await userById(client, userId)) || undefined;
   // Redirect to log-in page if user not signed in
   if (!user) {
@@ -41,7 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (_action === "changeName" && typeof newName === "string") {
     console.log("changing the name, changing the game");
     const session = await getSession(request.headers.get("Cookie"));
-    const userId = session.get("data")?.user;
+    const userId = session.get("user")?.user;
     const modified = await userUpdateName(client, userId, newName);
   }
 

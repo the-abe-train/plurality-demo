@@ -210,6 +210,7 @@ export async function createSession(
 ) {
   const db = await connectDb(client);
   const sessionsCollection = db.collection<SessionSchema>("sessions");
+  console.log("Create session data:", data);
   const result = await sessionsCollection.insertOne({ data, expiry });
   const id = result.insertedId.toString();
   return id;
@@ -229,10 +230,11 @@ export async function updateSession(
 ) {
   const db = await connectDb(client);
   const sessionsCollection = db.collection<SessionSchema>("sessions");
+  console.log("Update session data:", data);
   await sessionsCollection.findOneAndUpdate(
     { _id: new ObjectId(id) },
-    { $set: { user: data.user, expiry } },
-    { upsert: false }
+    { $set: { ...data, expiry } },
+    { upsert: true }
   );
 }
 

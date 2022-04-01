@@ -12,7 +12,6 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 import Answers from "~/components/Answers";
-import Question from "~/components/Question";
 import Counter from "~/components/Counter";
 
 import { parseAnswer, statFormat, trim } from "~/util/text";
@@ -24,20 +23,14 @@ import animations from "~/styles/animations.css";
 import { client } from "~/server/db.server";
 import {
   addGuess,
-  fetchPhoto,
   gameByQuestionUser,
-  questionById,
   votesByQuestion,
 } from "~/server/queries";
-import {
-  GameSchema,
-  Photo,
-  QuestionSchema,
-  VoteAggregation,
-} from "~/lib/schemas";
-import { getSession } from "~/sessions";
+import { GameSchema, VoteAggregation } from "~/lib/schemas";
+import { commitSession, getSession } from "~/sessions";
 
 import { MAX_GUESSES, THRESHOLD } from "~/util/gameplay";
+import dayjs from "dayjs";
 
 export function links() {
   return [
@@ -48,9 +41,7 @@ export function links() {
 }
 
 type LoaderData = {
-  question: QuestionSchema;
   votes: VoteAggregation[];
-  photo: Photo;
   game: GameSchema;
   message: string;
 };
@@ -58,30 +49,38 @@ type LoaderData = {
 export const loader: LoaderFunction = async ({ params, request }) => {
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("data")?.user;
+  const userId = session.get("user");
+  const surveyClose = session.get("surveyClose");
   console.log("User ID", userId);
-  const questionId = Number(params.slug);
+  console.log("Survey Close", surveyClose);
+  const questionId = Number(params.questionId);
 
   // Redirect not signed-in users to home page
   if (!userId) {
     return redirect("/user/login");
   }
 
+  // Redirect to vote if survey close hasn't happened yet
+  if (dayjs(surveyClose) >= dayjs()) {
+    return redirect(`/questions/${questionId}/vote`);
+  }
+
   // Get data from db and apis
-  const question = await questionById(client, questionId);
   const votes = await votesByQuestion(client, questionId);
   const totalVotes = votes.reduce((sum, ans) => {
     return sum + ans.votes;
   }, 0);
-  invariant(question, "No question found!");
-  const photo = await fetchPhoto(question);
   const game = await gameByQuestionUser(client, questionId, userId, totalVotes);
   invariant(game, "Game upsert failed");
 
   const message = game.win ? "You win!" : "";
 
-  const data = { question, votes, photo, game, message };
-  return json<LoaderData>(data);
+  const data = { votes, game, message };
+  return json<LoaderData>(data, {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
 };
 
 type ActionData = {
@@ -103,8 +102,8 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Pull in relevant data
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("data")?.user;
-  const questionId = Number(params.slug);
+  const userId = session.get("user")?.user;
+  const questionId = Number(params.questionId);
   const game = await gameByQuestionUser(client, questionId, userId);
   invariant(game, "Game upsert failed");
   const trimmedGuess = guess.trim().toLowerCase();
@@ -160,7 +159,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   return json<ActionData>({ message, correctGuess });
 };
 
-export default function QuestionSlug() {
+export default function Play() {
   // Data from server
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -195,9 +194,9 @@ export default function QuestionSlug() {
   const score = points / totalVotes;
 
   return (
-    <main className="container space-y-4 my-4 max-w-lg">
+    <div className="container space-y-4 my-4 max-w-lg">
       <section className="p-4 space-y-4">
-        <Question question={loaderData.question} photo={loaderData.photo} />
+        {/* <Question question={loaderData.question} photo={loaderData.photo} /> */}
         <Answers answers={answers} guesses={guesses} />
         <div
           className="block mx-auto w-44 border-[1px] border-black 
@@ -214,7 +213,7 @@ export default function QuestionSlug() {
         <p>{gameOver}</p>
         <Form className="text-center space-x-2" method="post">
           <input
-            className="border-[1px] border-black py-1 px-2 disabled:bg-gray-300"
+            className="border-[1px] border-black py-1 px-2 bg-white disabled:bg-gray-300"
             type="text"
             name="guess"
             placeholder="Guess survey responses"
@@ -226,6 +225,7 @@ export default function QuestionSlug() {
             className="px-2 py-1 rounded-sm border-button text-button 
       bg-[#F9F1F0] font-bold border-2 shadow"
             disabled={gameOver}
+            type="submit"
           >
             Enter
           </button>
@@ -269,6 +269,6 @@ export default function QuestionSlug() {
           Share results
         </button>
       </section>
-    </main>
+    </div>
   );
 }

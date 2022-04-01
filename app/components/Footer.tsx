@@ -1,4 +1,5 @@
 import styles from "~/styles/app.css";
+import whiteLogo from "~/images/white_logo.svg";
 
 export function links() {
   return [{ rel: "stylesheet", href: styles }];
@@ -13,11 +14,7 @@ export default function Footer() {
       >
         <section>
           <div className="font-header text-xl space-x-1 flex items-center">
-            <img
-              className="inline h-5"
-              src="../icons/white_logo.svg"
-              alt="logo"
-            />
+            <img className="inline h-5" src={whiteLogo} alt="logo" />
             <span>Plurality</span>
           </div>
           <p>© Plurality {new Date().getFullYear()}</p>

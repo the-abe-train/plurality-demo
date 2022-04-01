@@ -11,7 +11,7 @@ type Props = {
 
 export default function Question({ question, photo }: Props) {
   return (
-    <Link to={`/questions/${question._id}`}>
+    <Link to={`/questions/${question._id}/play`}>
       <div
         className="border-2 border-black rounded-lg 
     drop-shadow-block z-20 bg-white floating my-3 max-w-md mx-auto"

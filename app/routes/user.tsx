@@ -29,7 +29,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("data")?.user;
+  const userId = session.get("user")?.user;
   const user = (await userById(client, userId)) || null;
   if (userId) {
     data["user"] = user;

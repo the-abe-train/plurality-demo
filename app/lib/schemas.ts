@@ -16,7 +16,8 @@ export type UserSchema = {
 
 export type SessionSchema = {
   _id?: ObjectId;
-  data: any;
+  data?: any;
+  user?: string;
   expiry?: Date;
 };
 
