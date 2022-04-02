@@ -32,13 +32,13 @@ type ActionData = {
   votes: VoteAggregation[][];
 };
 
-export function links() {
+export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: backgrounds },
     { rel: "stylesheet", href: animations },
   ];
-}
+};
 
 export const action: ActionFunction = async ({ request }) => {
   // Parse form

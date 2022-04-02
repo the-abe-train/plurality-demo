@@ -1,9 +1,10 @@
 import styles from "~/styles/app.css";
 import whiteLogo from "~/images/white_logo.svg";
+import { LinksFunction } from "remix";
 
-export function links() {
+export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
-}
+};
 
 export default function Footer() {
   return (
