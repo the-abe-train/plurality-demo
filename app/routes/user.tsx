@@ -18,24 +18,16 @@ export function links() {
 }
 
 type LoaderData = {
-  user: UserSchema | null;
+  user?: UserSchema;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // Data variables
-  const data: LoaderData = {
-    user: null,
-  };
-
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("user")?.user;
-  const user = (await userById(client, userId)) || null;
-  if (userId) {
-    data["user"] = user;
-  }
-
-  return json(data);
+  const userId = session.get("user");
+  const user = (await userById(client, userId)) || undefined;
+  const data = { user };
+  return json<LoaderData>(data);
 };
 
 export default function User() {

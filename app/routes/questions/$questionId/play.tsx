@@ -102,7 +102,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Pull in relevant data
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("user")?.user;
+  const userId = session.get("user");
   const questionId = Number(params.questionId);
   const game = await gameByQuestionUser(client, questionId, userId);
   invariant(game, "Game upsert failed");

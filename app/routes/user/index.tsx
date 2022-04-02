@@ -20,7 +20,7 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("user")?.user;
+  const userId = session.get("user");
   const user = (await userById(client, userId)) || undefined;
   // Redirect to log-in page if user not signed in
   if (!user) {
@@ -35,13 +35,12 @@ export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
   const { _action, ...values } = Object.fromEntries(form);
   const newName = form.get("name");
-  console.log(values);
 
   // Handle name change form
   if (_action === "changeName" && typeof newName === "string") {
     console.log("changing the name, changing the game");
     const session = await getSession(request.headers.get("Cookie"));
-    const userId = session.get("user")?.user;
+    const userId = session.get("user");
     const modified = await userUpdateName(client, userId, newName);
   }
 
@@ -69,16 +68,16 @@ export default function LogoutRoute() {
 
   const [name, setName] = useState(user.name || "");
   return (
-    <main className="flex-grow">
+    <main className="flex-grow container max-w-4xl my-8 space-y-4">
       <p>Email: {user.email.address}</p>
-      <p>Are you sure you want to log out?</p>
-      <Form method="post">
+      <Form method="post" className="space-x-4">
         <label>
           Change name:{" "}
           <input
             type="text"
             value={name}
             name="name"
+            className="w-1/4 px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
             onChange={(e) => setName(e.target.value)}
           />
         </label>
@@ -91,7 +90,8 @@ export default function LogoutRoute() {
           Change
         </button>
       </Form>
-      <Form method="post">
+      <Form method="post" className="space-x-4">
+        <label>Are you sure you want to log out?</label>
         <button
           type="submit"
           name="_action"

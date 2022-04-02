@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import play from "~/images/play.svg";
-import vote from "~/images/play.svg";
-import draft from "~/images/play.svg";
+import vote from "~/images/vote.svg";
+import draft from "~/images/draft.svg";
 
 const instructions = [
   {

@@ -48,10 +48,13 @@ export async function userUpdateName(
 ) {
   const db = await connectDb(client);
   const usersCollection = db.collection<UserSchema>("users");
-  return await usersCollection.findOneAndUpdate(
+  const modifiedUser = await usersCollection.findOneAndUpdate(
     { _id: id },
-    { $set: { name: newName } }
+    { $set: { name: newName } },
+    { upsert: false, returnDocument: "after" }
   );
+  console.log(modifiedUser.value);
+  return modifiedUser.value;
 }
 
 export async function createUser(
@@ -202,6 +205,31 @@ export async function addGuess(
   return updatedGame;
 }
 
+export async function addVote(
+  client: MongoClient,
+  gameId: ObjectId,
+  voteText: string
+) {
+  const db = await connectDb(client);
+  const gamesCollection = db.collection<GameSchema>("games");
+  const updatedGameResult = await gamesCollection.findOneAndUpdate(
+    { _id: gameId },
+    {
+      $set: {
+        lastUpdated: new Date(),
+        vote: {
+          text: voteText,
+          date: new Date(),
+        },
+      },
+    },
+    { upsert: true, returnDocument: "after" }
+  );
+  const updatedGame = updatedGameResult.value;
+  console.log("Updated game in query:", updatedGame);
+  return updatedGame;
+}
+
 // Session queries
 export async function createSession(
   client: MongoClient,
@@ -211,7 +239,7 @@ export async function createSession(
   const db = await connectDb(client);
   const sessionsCollection = db.collection<SessionSchema>("sessions");
   console.log("Create session data:", data);
-  const result = await sessionsCollection.insertOne({ data, expiry });
+  const result = await sessionsCollection.insertOne({ ...data, expiry });
   const id = result.insertedId.toString();
   return id;
 }

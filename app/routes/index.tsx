@@ -46,9 +46,7 @@ type LoaderData = {
 export const loader: LoaderFunction = async ({ request }) => {
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
-
   const userId = session.get("user");
-  // console.log("Index page User ID:", userId);
   const user = (await userById(client, userId)) || undefined;
 
   // Get datetime objects

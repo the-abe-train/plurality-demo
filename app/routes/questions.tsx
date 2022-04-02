@@ -11,15 +11,10 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // // Get user info
+  // Get user info
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("user")?.user;
+  const userId = session.get("user");
   const user = (await userById(client, userId)) || undefined;
-
-  // Close connection to database
-  // await closeDb();
-
-  // Return data
   const data = { user };
   return json<LoaderData>(data);
 };
@@ -30,7 +25,7 @@ export default function questions() {
     <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
       <Header name={data.user ? data.user.name : "Connect wallet"} />
       <div className="flex-grow">
-        <Outlet context={"test context"} />
+        <Outlet />
       </div>
       <Footer />
     </div>

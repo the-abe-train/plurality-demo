@@ -1,7 +1,5 @@
-import { ObjectId } from "mongodb";
 import { Cookie, createSessionStorage } from "remix";
 import { userCookie } from "./cookies";
-import { SessionSchema } from "./lib/schemas";
 import { client } from "./server/db.server";
 import {
   createSession,
@@ -9,8 +7,6 @@ import {
   readSession,
   updateSession,
 } from "./server/queries";
-
-// const sc = db.collection<SessionSchema>("sessions");
 
 function createDatabaseSessionStorage(cookie: Cookie) {
   return createSessionStorage({
@@ -25,7 +21,7 @@ function createDatabaseSessionStorage(cookie: Cookie) {
       return await readSession(client, id);
     },
     async updateData(id, data, expiry) {
-      console.log("Session udpate data");
+      console.log("Session update data");
       await updateSession(client, id, data, expiry);
     },
     async deleteData(id) {

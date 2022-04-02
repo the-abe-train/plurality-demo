@@ -9,7 +9,7 @@ type Props = {
 export default function Header({ name }: Props) {
   return (
     <div className="px-4 py-2 border-0 shadow-md light z-10 w-full">
-      <nav className="flex justify-between items-center container max-w-4xl container">
+      <nav className="flex justify-between items-center container max-w-4xl">
         <Link to="/">
           <h1
             className="text-2xl text-center font-header font-bold flex items-center 

@@ -8,19 +8,9 @@ import {
 } from "remix";
 import invariant from "tiny-invariant";
 import { client } from "~/server/db.server";
-import {
-  fetchPhoto,
-  gameByQuestionUser,
-  questionById,
-  votesByQuestion,
-} from "~/server/queries";
+import { fetchPhoto, questionById } from "~/server/queries";
 import { commitSession, getSession } from "~/sessions";
-import {
-  GameSchema,
-  Photo,
-  QuestionSchema,
-  VoteAggregation,
-} from "~/lib/schemas";
+import { Photo, QuestionSchema } from "~/lib/schemas";
 import Question from "~/components/Question";
 
 type LoaderData = {

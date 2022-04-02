@@ -14,7 +14,7 @@ export default function Question({ question, photo }: Props) {
     <Link to={`/questions/${question._id}/play`}>
       <div
         className="border-2 border-black rounded-lg 
-    drop-shadow-block z-20 bg-white floating my-3 max-w-md mx-auto"
+    drop-shadow-block z-20 bg-white my-3 max-w-md mx-auto"
       >
         <div className="z-0 h-40 overflow-hidden rounded-t-md bg-black">
           <img
