@@ -8,6 +8,9 @@ import {
   ScrollRestoration,
 } from "remix";
 import type { MetaFunction } from "remix";
+import appleFavicon from "~/images/favicon/apple-touch-icon.png";
+import favicon16 from "~/images/favicon/favicon-16x16.png";
+import favicon32 from "~/images/favicon/favicon-32x32.png";
 
 import styles from "./styles/app.css";
 
@@ -16,22 +19,18 @@ export const links: LinksFunction = () => {
     { rel: "stylesheet", href: styles },
     {
       rel: "icon",
-      href: "../favicon/apple-touch-icon.png",
+      href: appleFavicon,
       type: "image/png",
     },
     {
       rel: "icon",
-      href: "../favicon/favicon-32x32.png",
+      href: favicon16,
       type: "image/png",
     },
     {
       rel: "icon",
-      href: "../favicon/favicon-16x16.png",
+      href: favicon32,
       type: "image/png",
-    },
-    {
-      rel: "../manifest",
-      href: "favicon/site.webmanifest",
     },
   ];
 };
