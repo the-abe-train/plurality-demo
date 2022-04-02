@@ -258,7 +258,6 @@ export async function updateSession(
 ) {
   const db = await connectDb(client);
   const sessionsCollection = db.collection<SessionSchema>("sessions");
-  console.log("Update session data:", data);
   await sessionsCollection.findOneAndUpdate(
     { _id: new ObjectId(id) },
     { $set: { ...data, expiry } },

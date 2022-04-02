@@ -5,26 +5,37 @@ import {
   Form,
   json,
   LoaderFunction,
-  Outlet,
   redirect,
   useActionData,
   useLoaderData,
 } from "remix";
 import invariant from "tiny-invariant";
-import { GameSchema, VoteAggregation } from "~/lib/schemas";
+import Question from "~/components/Question";
+import {
+  GameSchema,
+  Photo,
+  QuestionSchema,
+  VoteAggregation,
+} from "~/lib/schemas";
 import { client } from "~/server/db.server";
-import { addVote, gameByQuestionUser, votesByQuestion } from "~/server/queries";
+import {
+  addVote,
+  fetchPhoto,
+  gameByQuestionUser,
+  questionById,
+} from "~/server/queries";
 import { commitSession, getSession } from "~/sessions";
 
 type LoaderData = {
   game: GameSchema;
+  question: QuestionSchema;
+  photo: Photo;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
-  const surveyClose = session.get("surveyClose");
   const questionId = Number(params.questionId);
 
   // Redirect not signed-in users to home page
@@ -32,7 +43,15 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     return redirect("/user/login");
   }
 
+  // Get data from db and apis
+  const question = await questionById(client, questionId);
+  invariant(question, "No question found!");
+  console.log(question);
+  const photo = await fetchPhoto(question);
+  invariant(photo, "No photo found!");
+
   // Redirect to vote if survey close hasn't happened yet
+  const surveyClose = question.surveyClose;
   if (dayjs(surveyClose) < dayjs()) {
     return redirect(`/questions/${questionId}/play`);
   }
@@ -41,12 +60,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const game = await gameByQuestionUser(client, questionId, userId);
   invariant(game, "Game upsert failed");
 
-  const data = { game };
-  return json<LoaderData>(data, {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
-  });
+  const data = { game, question, photo };
+  return json<LoaderData>(data);
 };
 
 type ActionData = {
@@ -97,7 +112,10 @@ export default function vote() {
   }, [actionData]);
 
   return (
-    <div>
+    <main className="container space-y-4 my-4 max-w-lg">
+      <section className="p-4 space-y-2">
+        <Question question={loaderData.question} photo={loaderData.photo} />
+      </section>
       <Form method="post">
         <label>
           <p>Respond to suvey</p>
@@ -124,6 +142,6 @@ export default function vote() {
         </p>
       )}
       {msg && <p>{msg}</p>}
-    </div>
+    </main>
   );
 }

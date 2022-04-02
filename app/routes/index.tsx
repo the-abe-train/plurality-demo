@@ -28,13 +28,13 @@ import {
 } from "~/server/queries";
 import invariant from "tiny-invariant";
 
-export function links() {
+export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: backgrounds },
     { rel: "stylesheet", href: animations },
   ];
-}
+};
 
 type LoaderData = {
   questions: QuestionSchema[];
@@ -51,9 +51,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   // Get datetime objects
   const midnight = dayjs().endOf("day");
-  const yesterdaySc = midnight.subtract(1, "day").toDate();
-  const todaySc = midnight.toDate();
-  const tomorrowSc = midnight.add(1, "day").toDate();
+  const yesterdaySc = midnight.subtract(2, "day").toDate();
+  const todaySc = midnight.subtract(1, "day").toDate();
+  const tomorrowSc = midnight.toDate();
 
   // Get questions from db
   const yesterday = await questionBySurveyClose(client, yesterdaySc);
@@ -131,12 +131,6 @@ export default function Index() {
         <section className="self-end justify-self-start p-8">
           <h2 className="font-header text-2xl mb-2">More</h2>
           <div className="flex space-x-4">
-            <button
-              className="shadow px-2 py-1 rounded-sm border-button 
-            text-button bg-[#F9F1F0] font-bold border-2"
-            >
-              Buy Ballot
-            </button>
             <button
               className="shadow px-2 py-1 rounded-sm border-button 
             text-button bg-[#F9F1F0] font-bold border-2"

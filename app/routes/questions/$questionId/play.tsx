@@ -2,6 +2,7 @@ import {
   ActionFunction,
   Form,
   json,
+  LinksFunction,
   LoaderFunction,
   redirect,
   useActionData,
@@ -23,36 +24,54 @@ import animations from "~/styles/animations.css";
 import { client } from "~/server/db.server";
 import {
   addGuess,
+  fetchPhoto,
   gameByQuestionUser,
+  questionById,
   votesByQuestion,
 } from "~/server/queries";
-import { GameSchema, VoteAggregation } from "~/lib/schemas";
-import { commitSession, getSession } from "~/sessions";
+import {
+  GameSchema,
+  Photo,
+  QuestionSchema,
+  VoteAggregation,
+} from "~/lib/schemas";
+import { getSession } from "~/sessions";
 
 import { MAX_GUESSES, THRESHOLD } from "~/util/gameplay";
 import dayjs from "dayjs";
+import Question from "~/components/Question";
 
-export function links() {
+export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: backgrounds },
     { rel: "stylesheet", href: animations },
   ];
-}
+};
+
+type Message =
+  | "You win! Keep guessing to improve your score."
+  | "You win! No more guesses."
+  | "No more guesses."
+  | "Great guess!"
+  | "Incorrect survey response."
+  | "Already guessed."
+  | "Please enter a guess."
+  | "";
 
 type LoaderData = {
   votes: VoteAggregation[];
   game: GameSchema;
-  message: string;
+  message: Message;
+  gameOver: boolean;
+  question: QuestionSchema;
+  photo: Photo;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
-  const surveyClose = session.get("surveyClose");
-  console.log("User ID", userId);
-  console.log("Survey Close", surveyClose);
   const questionId = Number(params.questionId);
 
   // Redirect not signed-in users to home page
@@ -60,7 +79,15 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     return redirect("/user/login");
   }
 
+  // Get data from db and apis
+  const question = await questionById(client, questionId);
+  invariant(question, "No question found!");
+  console.log(question);
+  const photo = await fetchPhoto(question);
+  invariant(photo, "No photo found!");
+
   // Redirect to vote if survey close hasn't happened yet
+  const surveyClose = question.surveyClose;
   if (dayjs(surveyClose) >= dayjs()) {
     return redirect(`/questions/${questionId}/vote`);
   }
@@ -72,21 +99,28 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }, 0);
   const game = await gameByQuestionUser(client, questionId, userId, totalVotes);
   invariant(game, "Game upsert failed");
+  console.log(votes);
 
-  const message = game.win ? "You win!" : "";
+  // Set initial message for player
+  const gameOver = game.guesses.length >= 6;
+  let message: Message = "";
+  if (game.win && !gameOver) {
+    message = "You win! Keep guessing to improve your score.";
+  } else if (game.win && gameOver) {
+    message = "You win! No more guesses.";
+  } else if (!game.win && gameOver) {
+    message = "No more guesses.";
+  }
 
-  const data = { votes, game, message };
-  return json<LoaderData>(data, {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
-  });
+  const data = { votes, game, message, gameOver, question, photo };
+  return json<LoaderData>(data);
 };
 
 type ActionData = {
-  message: string;
+  message: Message;
   correctGuess?: VoteAggregation;
   gameOver?: boolean;
+  updatedGame?: GameSchema;
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -96,7 +130,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Reject empty form submissions
   if (typeof guess !== "string") {
-    const message = "Please enter a guess";
+    const message = "Please enter a guess.";
     return json<ActionData>({ message });
   }
 
@@ -117,7 +151,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       );
     });
     if (alreadyGuessed) {
-      const message = "Already guessed";
+      const message = "Already guessed.";
       return json<ActionData>({ message });
     }
   }
@@ -134,7 +168,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Reject incorrect guesses
   if (!correctGuess) {
-    const message = "Incorrect guess";
+    const message = "Incorrect survey response.";
     return json<ActionData>({ message });
   }
 
@@ -143,35 +177,34 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(updatedGame, "Game update failed");
 
   // Check if user won
-  if (updatedGame.win) {
-    const message = "You win!";
-    return json<ActionData>({ message, correctGuess, gameOver: true });
+  if (updatedGame.win && updatedGame.guesses.length < 6) {
+    const message = "You win! Keep guessing to improve your score.";
+    return json<ActionData>({ message, correctGuess, gameOver: false });
   }
 
   // Check if user lost
-  if (updatedGame.guesses.length >= MAX_GUESSES) {
-    const message = "No more guesses";
+  if (updatedGame.win && updatedGame.guesses.length >= 6) {
+    const message = "You win! No more guesses.";
     return json<ActionData>({ message, correctGuess, gameOver: true });
   }
 
   // Accept correct guess
   const message = "Great guess!";
-  return json<ActionData>({ message, correctGuess });
+  return json<ActionData>({ message, correctGuess, updatedGame });
 };
 
 export default function Play() {
   // Data from server
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
-  const loaderGame = loaderData.game;
 
   // Initial states are from loader data
   const [guesses, setGuesses] = useState(loaderData.game.guesses || []);
   const [guess, setGuess] = useState("");
-  const initialGameState = loaderGame.win || loaderGame.guesses?.length >= 6;
-  const [gameOver, setGameOver] = useState(initialGameState);
-  const initialMessage = loaderData.game.win ? "You win!" : "";
-  const [message, setMessage] = useState(initialMessage);
+  const [gameOver, setGameOver] = useState(loaderData.gameOver);
+  const [message, setMessage] = useState<Message>(loaderData.message);
+  const [win, setWin] = useState(loaderData.game.win || false);
+  const answers = loaderData.votes;
 
   // Updates from action data
   useEffect(() => {
@@ -180,10 +213,11 @@ export default function Play() {
       setGuess("");
     }
     setMessage(actionData?.message || message);
+    setWin(actionData?.updatedGame?.win || win);
     setGameOver(actionData?.gameOver || gameOver);
   }, [actionData]);
 
-  const answers = loaderData.votes;
+  // Calculated values
   const totalVotes = answers.reduce((sum, vote) => {
     return sum + vote.votes;
   }, 0);
@@ -194,7 +228,10 @@ export default function Play() {
   const score = points / totalVotes;
 
   return (
-    <div className="container space-y-4 my-4 max-w-lg">
+    <main className="container space-y-4 my-4 max-w-lg">
+      <section className="p-4 space-y-2">
+        <Question question={loaderData.question} photo={loaderData.photo} />
+      </section>
       <section className="p-4 space-y-4">
         {/* <Question question={loaderData.question} photo={loaderData.photo} /> */}
         <Answers answers={answers} guesses={guesses} />
@@ -238,14 +275,15 @@ export default function Play() {
         dark:bg-gray-700 relative"
         >
           <motion.div
-            className="bg-blue-600 h-2.5 rounded-full"
+            className="h-2.5 rounded-full"
+            style={{ backgroundColor: win ? "green" : "blue" }}
             initial={{ width: 0 }}
             animate={{ width: `${score * 100}%` }}
             transition={{ duration: 1 }}
           ></motion.div>
           <div
             className="h-full w-1 z-10 bg-black absolute top-0"
-            style={{ left: `${THRESHOLD}%` }}
+            style={{ left: `calc(${THRESHOLD}% - 2px)` }}
           ></div>
         </div>
         <div className="flex justify-center w-full space-x-12">
@@ -269,6 +307,6 @@ export default function Play() {
           Share results
         </button>
       </section>
-    </div>
+    </main>
   );
 }

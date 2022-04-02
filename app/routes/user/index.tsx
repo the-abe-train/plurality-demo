@@ -101,9 +101,6 @@ export default function LogoutRoute() {
           Logout
         </button>
       </Form>
-      <Link to="/" className="underline">
-        Never mind
-      </Link>
     </main>
   );
 }
