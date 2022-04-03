@@ -3,10 +3,8 @@ import {
   ActionFunction,
   Form,
   json,
-  Link,
   LoaderFunction,
   redirect,
-  useActionData,
   useLoaderData,
 } from "remix";
 import { UserSchema } from "~/lib/schemas";
@@ -64,7 +62,6 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function LogoutRoute() {
   const { user } = useLoaderData<LoaderData>();
-  const newName = useActionData();
 
   const [name, setName] = useState(user.name || "");
   return (

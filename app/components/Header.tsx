@@ -25,7 +25,7 @@ export default function Header({ name }: Props) {
               <Link to="/questions">Questions</Link>
             </li>
             <li>
-              <Link to="/">Help</Link>
+              <Link to="/help/what-is-plurality">Help</Link>
             </li>
             <li>
               <Link to="/">Contact Us</Link>
