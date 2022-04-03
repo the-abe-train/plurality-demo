@@ -1,4 +1,10 @@
-import { json, LinksFunction, LoaderFunction, useLoaderData } from "remix";
+import {
+  json,
+  Link,
+  LinksFunction,
+  LoaderFunction,
+  useLoaderData,
+} from "remix";
 import dayjs from "dayjs";
 
 import Footer from "~/components/Footer";
@@ -131,12 +137,14 @@ export default function Index() {
         <section className="self-end justify-self-start p-8">
           <h2 className="font-header text-2xl mb-2">More</h2>
           <nav className="flex space-x-4">
-            <button
-              className="shadow px-2 py-1 rounded-sm border-button 
+            <Link to="/draft">
+              <button
+                className="shadow px-2 py-1 rounded-sm border-button 
             text-button bg-[#F9F1F0] font-bold border-2"
-            >
-              Draft a question
-            </button>
+              >
+                Draft a question
+              </button>
+            </Link>
           </nav>
         </section>
       </main>

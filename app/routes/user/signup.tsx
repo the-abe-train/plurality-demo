@@ -76,7 +76,9 @@ export default function signup() {
     <main className="container flex-grow px-4">
       <Form className="max-w-md mx-auto my-8" method="post">
         <div className="mt-16">
-          <label className="block text-sm">Email</label>
+          <label className="block text-sm" htmlFor="email">
+            Email
+          </label>
           <input
             type="email"
             name="email"
@@ -87,7 +89,9 @@ export default function signup() {
           />
         </div>
         <div>
-          <label className="block mt-4 text-sm">Password</label>
+          <label htmlFor="password" className="block mt-4 text-sm">
+            Password
+          </label>
           <input
             className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
             placeholder="Password"

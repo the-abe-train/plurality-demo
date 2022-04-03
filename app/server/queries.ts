@@ -11,6 +11,7 @@ import { MongoClient, ObjectId, UpdateFilter } from "mongodb";
 import { SessionData } from "remix";
 import invariant from "tiny-invariant";
 import { THRESHOLD } from "~/util/gameplay";
+import dayjs from "dayjs";
 
 // Connect database
 async function connectDb(client: MongoClient) {
@@ -124,11 +125,47 @@ export async function questionBySearch({
     .toArray();
 }
 
+// export async function lastQuestionId(client: MongoClient) {
+//   const db = await connectDb(client);
+//   const questionsCollection = db.collection<QuestionSchema>("questions");
+//   const lastQuestion = await questionsCollection
+//     .aggregate([
+//       {
+//         $group: {
+//           _id: "",
+//           last: {
+//             $max: "$_id",
+//           },
+//         },
+//       },
+//     ])
+//     .toArray();
+//   return lastQuestion[0].last as number;
+// }
+
+// export async function submitQuestion(
+//   client: MongoClient,
+//   _id: number,
+//   photo: string,
+//   text: string
+// ) {
+//   const db = await connectDb(client);
+//   const questionsCollection = db.collection<QuestionSchema>("questions");
+//   const newQuestion = await questionsCollection.insertOne({
+//     _id,
+//     photo,
+//     text,
+//     surveyClose: dayjs().add(30, "day").toDate(),
+//     drafted: new Date(),
+//   });
+//   return newQuestion;
+// }
+
 // Games collection
 export async function votesByQuestion(client: MongoClient, questionId: number) {
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
-  const votes: unknown = await gamesCollection
+  const votes = await gamesCollection
     .aggregate([
       {
         $match: {
