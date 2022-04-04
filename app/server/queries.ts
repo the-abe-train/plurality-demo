@@ -18,8 +18,13 @@ async function connectDb(client: MongoClient) {
     console.log("Checking DB connection");
     await client.db(DATABASE_NAME).command({ ping: 1 });
   } catch {
-    await client.connect();
-    console.log("Connected to DB success 🗃");
+    try {
+      await client.connect();
+      console.log("Connected to DB success 🗃");
+    } catch (e) {
+      console.log("Failed to connect to DB");
+      console.error(e);
+    }
   }
   const db = client.db(DATABASE_NAME);
   return db;
