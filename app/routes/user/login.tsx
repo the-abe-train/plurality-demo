@@ -60,7 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Login() {
   const data = useActionData();
   return (
-    <main className="container flex-grow px-4 my-8">
+    <main className="container max-w-md flex-grow px-4 my-8">
       <h1 className="font-header text-3xl">Log in</h1>
       <Form className="max-w-md mx-auto space-y-6 my-6" method="post">
         <input
