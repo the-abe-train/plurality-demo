@@ -49,7 +49,10 @@ export const action: ActionFunction = async ({ request }) => {
   const pageParam = body.get("page");
 
   // Parse query parameters
-  const dateSearch = dayjs(String(dateParam)).endOf("day").toDate();
+  const dateSearch = dayjs(String(dateParam))
+    .tz("America/Toronto")
+    .endOf("day")
+    .toDate();
   const idSearch = Number(textParam);
   const textSearch = textParam
     ? new RegExp(String.raw`${textParam}`, "g")
