@@ -16,7 +16,7 @@ export default function Answers({ answers, guesses }: Props) {
     .filter((answer) => guessNames.includes(answer._id));
 
   const answerTokens = answers.map((a) => a.votes);
-  const threshold = answerTokens.sort((a, b) => b - a).at(5);
+  const threshold = answerTokens.sort((a, b) => b - a)[5];
   if (threshold) {
     answers = answers.filter((a) => a.votes >= threshold);
   }
