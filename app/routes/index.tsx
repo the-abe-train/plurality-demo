@@ -65,6 +65,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   const yesterday = await questionBySurveyClose(client, yesterdaySc);
   const today = await questionBySurveyClose(client, todaySc);
   const tomorrow = await questionBySurveyClose(client, tomorrowSc);
+  console.log("Midnight", midnight);
+  console.log("Today survey close", todaySc);
   console.log("Today:", today);
   invariant(today, "Today's question not fetched from database");
 
