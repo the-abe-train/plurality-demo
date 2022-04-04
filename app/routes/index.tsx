@@ -36,11 +36,6 @@ import {
   votesByQuestion,
 } from "~/server/queries";
 
-// Set the timezone to Toronto
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault("America/Toronto");
-
 export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
@@ -63,7 +58,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const user = (await userById(client, userId)) || undefined;
 
   // Get datetime objects
-  const midnight = dayjs().endOf("day");
+  const midnight = dayjs().tz("America/Toronto").endOf("day");
   const yesterdaySc = midnight.subtract(2, "day").toDate();
   const todaySc = midnight.subtract(1, "day").toDate();
   const tomorrowSc = midnight.toDate();
@@ -72,9 +67,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const yesterday = await questionBySurveyClose(client, yesterdaySc);
   const today = await questionBySurveyClose(client, todaySc);
   const tomorrow = await questionBySurveyClose(client, tomorrowSc);
-  console.log("Midnight", midnight);
   console.log("Today survey close", todaySc);
-  console.log("Today:", today);
   invariant(today, "Today's question not fetched from database");
 
   // Get photo for each question from Unsplash and votes from database
