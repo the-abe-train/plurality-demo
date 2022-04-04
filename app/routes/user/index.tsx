@@ -9,7 +9,7 @@ import {
 } from "remix";
 import { UserSchema } from "~/lib/schemas";
 import { client } from "~/server/db.server";
-import { userById, userUpdateName } from "~/server/queries";
+import { deleteUser, userById, userUpdateName } from "~/server/queries";
 import { getSession, destroySession } from "../../sessions";
 
 type LoaderData = {
@@ -29,6 +29,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  // Get user info from cookie
+  const session = await getSession(request.headers.get("Cookie"));
+  const userId = session.get("user");
+
   // Parse forms
   const form = await request.formData();
   const { _action, ...values } = Object.fromEntries(form);
@@ -36,7 +40,6 @@ export const action: ActionFunction = async ({ request }) => {
 
   // Handle name change form
   if (_action === "changeName" && typeof newName === "string") {
-    console.log("changing the name, changing the game");
     const session = await getSession(request.headers.get("Cookie"));
     const userId = session.get("user");
     const modified = await userUpdateName(client, userId, newName);
@@ -44,12 +47,22 @@ export const action: ActionFunction = async ({ request }) => {
 
   // Handle log-out form
   if (_action === "logOut") {
-    console.log("logging out");
     const session = await getSession(request.headers.get("Cookie"));
     // Destroys the session in the database
     // Sends an unauthenticated cookie back to the user
     const cookieString = await destroySession(session);
-    console.log("Destroy session cookie string", cookieString);
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": cookieString,
+      },
+    });
+  }
+
+  // Handle delete account
+  if (_action === "delete") {
+    await deleteUser(client, userId);
+    const session = await getSession(request.headers.get("Cookie"));
+    const cookieString = await destroySession(session);
     return redirect("/", {
       headers: {
         "Set-Cookie": cookieString,
@@ -65,39 +78,55 @@ export default function LogoutRoute() {
 
   const [name, setName] = useState(user.name || "");
   return (
-    <main className="flex-grow container max-w-4xl my-8 space-y-4">
-      <p>Email: {user.email.address}</p>
-      <Form method="post" className="space-x-4">
-        <label>
-          Change name:{" "}
+    <main className="container max-w-4xl flex-grow px-4">
+      <section className="my-8 space-y-4">
+        <h1 className="text-2xl my-3">Profile</h1>
+        <p>Email: {user.email.address}</p>
+        <Form method="post" className="space-x-4 max-w-xs flex items-center">
+          <label htmlFor="name">Name:</label>
           <input
             type="text"
             value={name}
             name="name"
-            className="w-1/4 px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+            className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
             onChange={(e) => setName(e.target.value)}
           />
-        </label>
-        <button
-          type="submit"
-          name="_action"
-          value="changeName"
-          className="border-2 p-2 border-black rounded-sm"
-        >
-          Change
-        </button>
-      </Form>
-      <Form method="post" className="space-x-4">
-        <label>Are you sure you want to log out?</label>
-        <button
-          type="submit"
-          name="_action"
-          value="logOut"
-          className="border-2 p-2 border-black rounded-sm"
-        >
-          Logout
-        </button>
-      </Form>
+          <button
+            type="submit"
+            name="_action"
+            value="changeName"
+            className="border-2 px-2 border-black rounded-sm"
+          >
+            Change
+          </button>
+        </Form>
+      </section>
+      <section className="my-8">
+        <h1 className="text-2xl my-3">Account</h1>
+        <div className="flex space-x-3">
+          <Form method="post" className="space-x-4">
+            <button
+              type="submit"
+              name="_action"
+              value="logOut"
+              className="border-2 px-2 border-black rounded-sm"
+            >
+              Logout
+            </button>
+          </Form>
+          <Form method="post" className="space-x-4">
+            <button
+              type="submit"
+              name="_action"
+              value="delete"
+              className="border-2 px-2 border-red-700 border-opacity-100 
+              text-red-700 rounded-sm"
+            >
+              Delete
+            </button>
+          </Form>
+        </div>
+      </section>
     </main>
   );
 }

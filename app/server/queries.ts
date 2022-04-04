@@ -78,6 +78,12 @@ export async function createUser(
   return user;
 }
 
+export async function deleteUser(client: MongoClient, id: ObjectId) {
+  const db = await connectDb(client);
+  const usersCollection = db.collection<UserSchema>("users");
+  return await usersCollection.deleteOne({ _id: id });
+}
+
 // Questions collection
 export async function questionById(client: MongoClient, id: number) {
   const db = await connectDb(client);
