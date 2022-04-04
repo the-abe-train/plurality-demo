@@ -44,7 +44,6 @@ export async function sendEmail({ email, user, question, id, photo }: Props) {
       },
       body: JSON.stringify(body),
     });
-    console.log(resp);
     if (resp.status === 202) {
       const init = {
         status: 200,

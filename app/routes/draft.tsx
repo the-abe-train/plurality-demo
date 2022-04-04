@@ -75,8 +75,6 @@ export const action: ActionFunction = async ({ request }) => {
   const user = session.get("user");
 
   // Verify the that the data entered exists
-  console.log(id, question, photo, email);
-  console.log("Question type", typeof question);
   if (
     typeof id !== "string" ||
     id.length <= 0 ||
@@ -148,7 +146,6 @@ export default function draft() {
   const [showForm, setShowForm] = useState(true);
 
   useEffect(() => {
-    console.log(actionData?.message);
     if (actionData?.success) {
       setShowForm(false);
     }

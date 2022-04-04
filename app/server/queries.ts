@@ -53,7 +53,6 @@ export async function userUpdateName(
     { $set: { name: newName } },
     { upsert: false, returnDocument: "after" }
   );
-  console.log(modifiedUser.value);
   return modifiedUser.value;
 }
 
@@ -226,7 +225,6 @@ export async function addGuess(
     { upsert: true, returnDocument: "after" }
   );
   const updatedGame = updatedGameResult.value;
-  console.log("Updated game in query:", updatedGame);
 
   // Check if player won
   invariant(updatedGame?.guesses, "Game update failed to add guess");
@@ -234,8 +232,6 @@ export async function addGuess(
     return sum + guess.votes;
   }, 0);
   const absThreshold = updatedGame.totalVotes * (THRESHOLD / 100);
-  console.log("Threshold:", absThreshold);
-  console.log("Points:", points);
   if (points >= absThreshold) {
     const wonGameResult = await gamesCollection.findOneAndUpdate(
       { _id: gameId },
@@ -268,7 +264,6 @@ export async function addVote(
     { upsert: true, returnDocument: "after" }
   );
   const updatedGame = updatedGameResult.value;
-  console.log("Updated game in query:", updatedGame);
   return updatedGame;
 }
 
@@ -280,7 +275,6 @@ export async function createSession(
 ) {
   const db = await connectDb(client);
   const sessionsCollection = db.collection<SessionSchema>("sessions");
-  console.log("Create session data:", data);
   const result = await sessionsCollection.insertOne({ ...data, expiry });
   const id = result.insertedId.toString();
   return id;

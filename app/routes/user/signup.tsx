@@ -52,7 +52,6 @@ export const action: ActionFunction = async ({ request }) => {
   // Check if username is already taken
   const { isAuthorized, userId } = await registerUser(email, password);
   if (!isAuthorized) {
-    console.log("running into problems");
     session.flash("error", "Username already taken");
     return json({ message: "Username already taken" });
   }
@@ -62,7 +61,6 @@ export const action: ActionFunction = async ({ request }) => {
   const cookieString = await commitSession(session, {
     expires: nextWeek,
   });
-  console.log("Cookie string:", cookieString);
   return redirect("/", {
     headers: {
       "Set-Cookie": cookieString,

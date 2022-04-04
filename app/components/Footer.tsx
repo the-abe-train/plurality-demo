@@ -9,10 +9,7 @@ export const links: LinksFunction = () => {
 export default function Footer() {
   return (
     <footer className="bg-[#292929] p-4 text-white text-sm">
-      <div
-        className="grid grid-flow-row md:grid-flow-col auto-rows-min gap-4 sm:gap-6
-     md:grid-rows-1 md:grid-cols-6 max-w-4xl container"
-      >
+      <div className="flex justify-between flex-wrap max-w-4xl container space-y-2">
         <section>
           <div className="font-header text-xl space-x-1 flex items-center">
             <img className="inline h-5" src={whiteLogo} alt="logo" />
@@ -37,19 +34,30 @@ export default function Footer() {
             </li>
           </ul>
         </section>
+        <section className="col-start-2">
+          <h3 className="font-bold">Resources</h3>
+          <ul>
+            <li>
+              <Link to="/">Privacy policy</Link>
+            </li>
+            <li>
+              <Link to="/">Environmental assesment</Link>
+            </li>
+            <li>
+              <Link to="/">Open-source code</Link>
+            </li>
+          </ul>
+        </section>
         <section className="col-start-3">
           <h3 className="font-bold">Created by</h3>
           <ul>
-            <li>The Abe Train</li>
-            <li>El Enrique Olivo</li>
-            <li>Contact Us</li>
+            <li>
+              <a href="https://twitter.com/theAbeTrain">The Abe Train</a>
+            </li>
+            <li>
+              <a href="https://twitter.com/enriqueolivojr">El Enrique Olivo</a>
+            </li>
           </ul>
-        </section>
-        <section className="col-span-3">
-          <span>
-            Plurality™ is an open source project. We encourage players to raise
-            issues and contribute with pull requests!
-          </span>
         </section>
       </div>
     </footer>

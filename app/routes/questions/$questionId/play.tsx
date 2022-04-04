@@ -82,7 +82,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Get data from db and apis
   const question = await questionById(client, questionId);
   invariant(question, "No question found!");
-  console.log(question);
   const photo = await fetchPhoto(question.photo);
   invariant(photo, "No photo found!");
 
@@ -99,7 +98,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }, 0);
   const game = await gameByQuestionUser(client, questionId, userId, totalVotes);
   invariant(game, "Game upsert failed");
-  console.log(votes);
 
   // Set initial message for player
   const gameOver = game.guesses.length >= 6;
@@ -158,7 +156,6 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Pull in more relevant data
   const answers = await votesByQuestion(client, questionId);
-  console.log("Answers:", answers);
   const correctGuess = answers.find((ans) => {
     const text = ans._id;
     return (

@@ -49,7 +49,6 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   session.set("user", userId);
-  console.log("Session set userId:", userId);
   const cookieString = await commitSession(session, { expires: nextWeek });
   return redirect("/", {
     headers: {

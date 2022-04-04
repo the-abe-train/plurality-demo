@@ -129,7 +129,6 @@ export default function Index() {
         method="post"
         className="m-8 flex flex-col space-y-4 max-w-xl mx-auto px-4"
         ref={formRef}
-        onSubmit={() => console.log(page)}
       >
         <h2 className="font-header text-2xl">Search</h2>
         <input

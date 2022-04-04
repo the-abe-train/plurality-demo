@@ -10,8 +10,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const surveyClose = session.get("surveyClose");
   const questionId = Number(params.questionId);
 
-  console.log("Request", request);
-
   // Redirect not signed-in users to home page
   if (!userId) {
     return redirect("/user/login");

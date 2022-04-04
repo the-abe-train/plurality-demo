@@ -145,6 +145,14 @@ export default function Index() {
                 Draft a question
               </button>
             </Link>
+            <a href="https://opensea.io">
+              <button
+                className="shadow px-2 py-1 rounded-sm border-button 
+            text-button bg-[#F9F1F0] font-bold border-2"
+              >
+                Buy a draft token
+              </button>
+            </a>
           </nav>
         </section>
       </main>

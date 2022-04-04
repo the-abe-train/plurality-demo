@@ -10,11 +10,9 @@ export async function registerUser(email: string, password: string) {
 
   // Generate salt
   const salt = await genSalt(10);
-  console.log("salt", salt);
 
   // Hash with salt
   const hashedPassword = await hash(password, salt);
-  console.log("hash", hashedPassword);
 
   // Store in database
   const user = await createUser(client, email, hashedPassword);
@@ -31,7 +29,6 @@ export async function authorizeUser(email: string, password: string) {
 
   const userData = await userByEmail(client, email);
   if (userData) {
-    console.log(userData);
     const savedPassword = userData.password;
     const isAuthorized = await compare(password, savedPassword);
     return { isAuthorized, userId: userData._id };
