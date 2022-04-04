@@ -36,6 +36,9 @@ import {
   votesByQuestion,
 } from "~/server/queries";
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
