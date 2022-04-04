@@ -73,7 +73,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     // TODO Apply for production from Unsplash
     const photos = await Promise.all(
       [yesterday, today, tomorrow].map(async (question) => {
-        return await fetchPhoto(question);
+        return await fetchPhoto(question.photo);
       })
     );
     const votes = await Promise.all(
@@ -108,7 +108,7 @@ export default function Index() {
         >
           <article
             className="p-4 border-2 border-black rounded-md space-y-3 
-          bg-[#EFEFFF] max-w-md"
+          bg-[#EFEFFF] max-w-md h-fit"
           >
             <h2 className="font-header text-2xl">Today</h2>
             <p className="mb-2">Can you figure out the most popular answers?</p>
@@ -117,7 +117,7 @@ export default function Index() {
           </article>
           <article
             className="p-4 border-2 border-black rounded-md space-y-3 
-          bg-[#EBFAEB] max-w-md"
+          bg-[#EBFAEB] max-w-md h-fit"
           >
             <h2 className="font-header text-2xl">Tomorrow</h2>
             <p>Participate in the survey for tomorrow's game!</p>
@@ -126,7 +126,7 @@ export default function Index() {
           </article>
           <article
             className="p-4 border-2 border-black rounded-md space-y-3 
-            bg-[#FFECEC] max-w-md lg:order-first"
+            bg-[#FFECEC] max-w-md h-fit lg:order-first"
           >
             <h2 className="font-header text-2xl">Yesterday</h2>
             <p>Take a look at how you did yesterday's questions!</p>

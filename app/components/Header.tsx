@@ -27,9 +27,6 @@ export default function Header({ name }: Props) {
             <li>
               <Link to="/help/what-is-plurality">Help</Link>
             </li>
-            <li>
-              <Link to="/">Contact Us</Link>
-            </li>
           </ul>
           <Link to="/user">
             <button

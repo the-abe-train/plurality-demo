@@ -47,7 +47,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const question = await questionById(client, questionId);
   invariant(question, "No question found!");
   console.log(question);
-  const photo = await fetchPhoto(question);
+  const photo = await fetchPhoto(question.photo);
   invariant(photo, "No photo found!");
 
   // Redirect to vote if survey close hasn't happened yet

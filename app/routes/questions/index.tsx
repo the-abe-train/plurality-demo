@@ -3,6 +3,7 @@ import {
   ActionFunction,
   Form,
   json,
+  LinksFunction,
   useActionData,
   useSubmit,
   useTransition,
@@ -82,7 +83,7 @@ export const action: ActionFunction = async ({ request }) => {
     );
     const photos = await Promise.all(
       pageQuestions.map(async (question) => {
-        return await fetchPhoto(question);
+        return await fetchPhoto(question.photo);
       })
     );
 

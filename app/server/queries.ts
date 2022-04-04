@@ -7,11 +7,10 @@ import {
   SessionSchema,
 } from "../lib/schemas";
 import { UNSPLASH_ACCESS_KEY, DATABASE_NAME } from "./env";
-import { MongoClient, ObjectId, UpdateFilter } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { SessionData } from "remix";
 import invariant from "tiny-invariant";
 import { THRESHOLD } from "~/util/gameplay";
-import dayjs from "dayjs";
 
 // Connect database
 async function connectDb(client: MongoClient) {
@@ -309,9 +308,9 @@ export async function deleteSession(client: MongoClient, id: string) {
 }
 
 // Unsplash API
-export async function fetchPhoto(question: QuestionSchema): Promise<Photo> {
+export async function fetchPhoto(photoId: string): Promise<Photo> {
   const baseApi = "https://api.unsplash.com/photos/";
-  const api = baseApi + question.photo + "/?client_id=" + UNSPLASH_ACCESS_KEY;
+  const api = baseApi + photoId + "/?client_id=" + UNSPLASH_ACCESS_KEY;
   const response = await fetch(api);
   const photo = await response.json();
   return photo;

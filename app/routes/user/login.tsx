@@ -40,13 +40,11 @@ export const action: ActionFunction = async ({ request }) => {
   const password = form.get("password");
 
   if (typeof email !== "string" || typeof password !== "string") {
-    session.flash("error", "Invalid username/password");
     return json({ message: "Invalid username/password" });
   }
 
   const { isAuthorized, userId } = await authorizeUser(email, password);
   if (!isAuthorized) {
-    session.flash("error", "Invalid username/password");
     return json({ message: "Invalid username/password" });
   }
 

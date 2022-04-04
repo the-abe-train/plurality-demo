@@ -53,6 +53,7 @@ export type Photo = {
     username: string;
     name: string;
   };
+  errors?: string[];
 };
 
 export type VoteAggregation = {
