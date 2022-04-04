@@ -3,6 +3,7 @@ import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import play from "~/images/play.svg";
 import vote from "~/images/vote.svg";
 import draft from "~/images/draft.svg";
+import logo from "~/images/logo.svg";
 
 const instructions = [
   {
@@ -71,11 +72,7 @@ export default function Instructions() {
     w-full justify-center gap-x-2 mt-6"
         onClick={() => setShowPopup(false)}
       >
-        <img
-          className="inline h-8 object-fill"
-          src="./icons/logo.svg"
-          alt="logo"
-        />
+        <img className="inline h-8 object-fill" src={logo} alt="logo" />
         <span>Plurality</span>
       </h1>
       <div className="flex w-full justify-around my-4">
