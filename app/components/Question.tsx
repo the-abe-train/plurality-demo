@@ -18,7 +18,7 @@ export default function Question({ question, photo }: Props) {
       >
         <div className="z-0 h-40 overflow-hidden rounded-t-md bg-black">
           <img
-            src={photo.urls.raw}
+            src={photo.urls.small}
             alt="question image"
             className="object-cover w-full h-full"
           />
