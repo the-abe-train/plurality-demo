@@ -5,7 +5,10 @@ import {
   LoaderFunction,
   useLoaderData,
 } from "remix";
+import invariant from "tiny-invariant";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
@@ -32,7 +35,11 @@ import {
   userById,
   votesByQuestion,
 } from "~/server/queries";
-import invariant from "tiny-invariant";
+
+// Set the timezone to Toronto
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("America/Toronto");
 
 export const links: LinksFunction = () => {
   return [
