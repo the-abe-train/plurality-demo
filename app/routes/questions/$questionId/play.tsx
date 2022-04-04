@@ -11,6 +11,7 @@ import {
 import invariant from "tiny-invariant";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { isMobile, isFirefox } from "react-device-detect";
 
 import Answers from "~/components/Answers";
 import Counter from "~/components/Counter";
@@ -231,6 +232,29 @@ export default function Play() {
   }, 0);
   const score = points / totalVotes;
 
+  // Sharing your score
+  const [msg, setMsg] = useState("");
+  async function shareScore() {
+    let shareString = `${dayjs()}
+Score: ${score}
+`;
+
+    if ("canShare" in navigator && isMobile && !isFirefox) {
+      return await navigator.share({
+        title: "Plurality Stats",
+        text: shareString,
+      });
+    } else {
+      setMsg("Copied to clipboard!");
+      setTimeout(() => setMsg(""), 2000);
+      if ("clipboard" in navigator) {
+        return await navigator.clipboard.writeText(shareString);
+      } else {
+        return document.execCommand("copy", true, shareString);
+      }
+    }
+  }
+
   return (
     <main className="container space-y-4 my-4 max-w-lg">
       <section className="py-1 px-4 space-y-2">
@@ -306,9 +330,15 @@ export default function Play() {
         </div>
       </section>
       <section className="px-4 space-y-4 pt-6">
-        <button className="shadow px-2 py-1 rounded-sm border-button text-button bg-[#F9F1F0] font-bold border-2">
-          Share results
-        </button>
+        <div className="flex items-center space-x-2">
+          <button
+            className="shadow px-2 py-1 rounded-sm border-button text-button bg-[#F9F1F0] font-bold border-2"
+            onClick={shareScore}
+          >
+            Share results
+          </button>
+          {msg && <p>{msg}</p>}
+        </div>
         <p>Survey closed on 26 February 2022</p>
       </section>
     </main>
