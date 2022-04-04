@@ -15,6 +15,7 @@ import { THRESHOLD } from "~/util/gameplay";
 // Connect database
 async function connectDb(client: MongoClient) {
   try {
+    console.log("Checking DB connection");
     await client.db(DATABASE_NAME).command({ ping: 1 });
   } catch {
     await client.connect();
