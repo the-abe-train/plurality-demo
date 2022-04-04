@@ -134,7 +134,7 @@ export default function Index() {
             <Summary question={yesterday} votes={yesterdayVotes} />
           </article>
         </section>
-        <section className="self-end justify-self-start p-8">
+        <section className="self-end justify-self-start py-8 px-4">
           <h2 className="font-header text-2xl mb-2">More</h2>
           <nav className="flex space-x-4">
             <Link to="/draft">

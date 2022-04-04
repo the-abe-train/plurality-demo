@@ -13,7 +13,7 @@ const instructions = [
   {
     name: "Vote",
     icon: vote,
-    text: "Use the Ballot token to participate in tomorrow’s surveys.",
+    text: "Use the Ballot token to participate in tomorrow's surveys.",
   },
   {
     name: "Draft",

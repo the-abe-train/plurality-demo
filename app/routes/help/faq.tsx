@@ -6,7 +6,7 @@ export default function faq() {
         <h2 className="mt-3 text-2xl font-header">What is a DApp?</h2>
         <p>
           A decentralized application, or DApp, is an app that relies to any
-          extent on crypto technology. Crypto’s role in the app may vary from
+          extent on crypto technology. Crypto's role in the app may vary from
           giving users a say in the function of the app to letting users make a
           profit by engaging with NFTs.
         </p>
@@ -26,29 +26,33 @@ export default function faq() {
       <article className="space-y-2">
         <h2 className="mt-3 text-2xl font-header">What is an NFT?</h2>
         <p>
-          Here’s a super brief rundown of crypto technology: All crypto depends
+          Here's a super brief rundown of crypto technology: All crypto depends
           on blockchains. A blockchain is a ledger (i.e. a list of a
           transactions) that, because of complex cryptographic algorithms and
           decentralization, cannot be tampered with, thus everyone always agrees
-          on the information they contain. There are 3 types of assets that can
-          be traded on a blockchain: a coin (the fundamental currency of the
-          blockchain that keeps it running), a token (an additional currency
-          that can piggyback on a blockchain) and a non-fungible token, or NFT.
-          NFTs are not a currency like tokens and coins because each NFT is
-          unique (i.e. non-fungible). Since NFTs are unique and, due to the
-          infallibility of the blockchain, their ownership is indisputable, they
-          have become popular trade-able and collectible assets, usually taking
-          the form of digital art.
+          on the information they contain.{" "}
+        </p>
+        <p>
+          There are 3 types of assets that can be traded on a blockchain: a coin
+          (the fundamental currency of the blockchain that keeps it running), a
+          token (an additional currency that can piggyback on a blockchain) and
+          a non-fungible token, or NFT. NFTs are not a currency like tokens and
+          coins because each NFT is unique (i.e. non-fungible).
+        </p>
+        <p>
+          Since NFTs are unique and, due to the infallibility of the blockchain,
+          their ownership is indisputable, they have become popular trade-able
+          and collectible assets, usually taking the form of digital art.
         </p>
       </article>
       <article className="space-y-2">
         <h2 className="mt-3 text-2xl font-header">
-          What’s so cool about having a Survey NFT?
+          What's so cool about having a Survey NFT?
         </h2>
         <p>
           Plurality sells NFTs on OpenSea that provide the right to choose the
           survey question for a given day. Additionally, the owner of a Survey
-          NFT is the only person who can see all of that survey’s responses, as
+          NFT is the only person who can see all of that survey's responses, as
           opposed to players who can only see the answers they guess. Survey
           NFTs, like all NFTs, can be bought and sold at different prices.
         </p>

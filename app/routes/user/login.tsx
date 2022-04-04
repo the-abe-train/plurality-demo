@@ -61,28 +61,24 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Login() {
   const data = useActionData();
   return (
-    <main className="container flex-grow px-4">
-      <Form className="max-w-md mx-auto my-8" method="post">
-        <div className="mt-16">
-          <label className="block text-sm">Email</label>
-          <input
-            type="email"
-            name="email"
-            className="w-full px-4 py-2 text-sm border rounded-md 
+    <main className="container flex-grow px-4 my-8">
+      <h1 className="font-header text-3xl">Log in</h1>
+      <Form className="max-w-md mx-auto space-y-6 my-6" method="post">
+        <input
+          type="email"
+          name="email"
+          className="w-full px-4 py-2 text-sm border rounded-md 
         focus:border-blue-400 focus:outline-none focus:ring-1 
         focus:ring-blue-600"
-            placeholder="Email Address"
-          />
-        </div>
-        <div>
-          <label className="block mt-4 text-sm">Password</label>
-          <input
-            className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
-            placeholder="Password"
-            type="password"
-            name="password"
-          />
-        </div>
+          placeholder="Email Address"
+        />
+
+        <input
+          className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+          placeholder="Password"
+          type="password"
+          name="password"
+        />
         <button
           className="block w-40 mx-auto px-4 py-2 mt-4 text-sm 
     font-medium leading-5 text-center text-white transition-colors 

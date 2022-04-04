@@ -113,35 +113,37 @@ export default function vote() {
 
   return (
     <main className="container space-y-4 my-4 max-w-lg">
-      <section className="p-4 space-y-2">
+      <section className="px-4 py-2 space-y-2">
         <Question question={loaderData.question} photo={loaderData.photo} />
       </section>
-      <Form method="post">
-        <label>
-          <p>Respond to suvey</p>
-          <input
-            type="text"
-            name="vote"
-            className="border-[1px] border-black py-1 px-2 
+      <section className="px-4 py-2 space-y-2">
+        <Form method="post">
+          <label>
+            <p>Respond to suvey</p>
+            <input
+              type="text"
+              name="vote"
+              className="border-[1px] border-black py-1 px-2 
             bg-white disabled:bg-gray-300"
-            disabled={!!yourVote}
-          />
-        </label>
-        <button
-          className="px-2 py-1 rounded-sm border-button text-button 
+              disabled={!!yourVote}
+            />
+          </label>
+          <button
+            className="px-2 py-1 rounded-sm border-button text-button 
       bg-[#F9F1F0] font-bold border-2 shadow disabled:bg-gray-300"
-          type="submit"
-          disabled={!!yourVote}
-        >
-          Enter
-        </button>
-      </Form>
-      {yourVote && (
-        <p>
-          Your vote is: <b>{yourVote}</b>
-        </p>
-      )}
-      {msg && <p>{msg}</p>}
+            type="submit"
+            disabled={!!yourVote}
+          >
+            Enter
+          </button>
+        </Form>
+        {yourVote && (
+          <p>
+            Your vote is: <b>{yourVote}</b>
+          </p>
+        )}
+        {msg && <p>{msg}</p>}
+      </section>
     </main>
   );
 }

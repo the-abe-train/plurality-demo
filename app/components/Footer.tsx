@@ -1,6 +1,6 @@
 import styles from "~/styles/app.css";
 import whiteLogo from "~/images/white_logo.svg";
-import { LinksFunction } from "remix";
+import { Link, LinksFunction } from "remix";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
@@ -23,10 +23,18 @@ export default function Footer() {
         <section className="col-start-2">
           <h3 className="font-bold">Pages</h3>
           <ul>
-            <li>Home</li>
-            <li>Profile</li>
-            <li>Help</li>
-            <li>Questions</li>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/user">Profile</Link>
+            </li>
+            <li>
+              <Link to="/help/what-is-plurality">Help</Link>
+            </li>
+            <li>
+              <Link to="/questions">Questions</Link>
+            </li>
           </ul>
         </section>
         <section className="col-start-3">

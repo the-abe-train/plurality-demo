@@ -120,7 +120,7 @@ type ActionData = {
   message: Message;
   correctGuess?: VoteAggregation;
   gameOver?: boolean;
-  updatedGame?: GameSchema;
+  win?: boolean;
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -175,22 +175,29 @@ export const action: ActionFunction = async ({ request, params }) => {
   // Update game with new guess
   const updatedGame = await addGuess(client, game._id, correctGuess);
   invariant(updatedGame, "Game update failed");
+  const { win } = updatedGame;
 
-  // Check if user won
+  // Check if user won and can keep guessing
   if (updatedGame.win && updatedGame.guesses.length < 6) {
     const message = "You win! Keep guessing to improve your score.";
-    return json<ActionData>({ message, correctGuess, gameOver: false });
+    return json<ActionData>({ message, correctGuess, win, gameOver: false });
   }
 
-  // Check if user lost
+  // Check if user won but cannot guess anymore
   if (updatedGame.win && updatedGame.guesses.length >= 6) {
     const message = "You win! No more guesses.";
+    return json<ActionData>({ message, correctGuess, win, gameOver: true });
+  }
+
+  // Check if user did not win and ran out of guesses
+  if (!updatedGame.win && updatedGame.guesses.length >= 6) {
+    const message = "No more guesses.";
     return json<ActionData>({ message, correctGuess, gameOver: true });
   }
 
   // Accept correct guess
   const message = "Great guess!";
-  return json<ActionData>({ message, correctGuess, updatedGame });
+  return json<ActionData>({ message, correctGuess, win });
 };
 
 export default function Play() {
@@ -213,7 +220,7 @@ export default function Play() {
       setGuess("");
     }
     setMessage(actionData?.message || message);
-    setWin(actionData?.updatedGame?.win || win);
+    setWin(actionData?.win || win);
     setGameOver(actionData?.gameOver || gameOver);
   }, [actionData]);
 
@@ -229,10 +236,10 @@ export default function Play() {
 
   return (
     <main className="container space-y-4 my-4 max-w-lg">
-      <section className="p-4 space-y-2">
+      <section className="py-1 px-4 space-y-2">
         <Question question={loaderData.question} photo={loaderData.photo} />
       </section>
-      <section className="p-4 space-y-4">
+      <section className="px-4 space-y-4">
         {/* <Question question={loaderData.question} photo={loaderData.photo} /> */}
         <Answers answers={answers} guesses={guesses} />
         <div
@@ -260,7 +267,7 @@ export default function Play() {
           />
           <button
             className="px-2 py-1 rounded-sm border-button text-button 
-      bg-[#F9F1F0] font-bold border-2 shadow"
+       bg-[#F9F1F0] font-bold border-2 shadow"
             disabled={gameOver}
             type="submit"
           >
@@ -269,7 +276,7 @@ export default function Play() {
         </Form>
         {message !== "" && <p>{message}</p>}
       </section>
-      <section className="flex flex-col space-y-4">
+      <section className="flex flex-col space-y-4 py-4">
         <div
           className="w-3/4 mx-auto bg-gray-200 rounded-full h-2.5 
         dark:bg-gray-700 relative"
@@ -301,11 +308,11 @@ export default function Play() {
           </div>
         </div>
       </section>
-      <section className="px-4 space-y-4 mt-8">
-        <p>Survey closed on 26 February 2022</p>
+      <section className="px-4 space-y-4 pt-6">
         <button className="shadow px-2 py-1 rounded-sm border-button text-button bg-[#F9F1F0] font-bold border-2">
           Share results
         </button>
+        <p>Survey closed on 26 February 2022</p>
       </section>
     </main>
   );

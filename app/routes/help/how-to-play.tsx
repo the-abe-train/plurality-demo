@@ -29,7 +29,7 @@ export default function howToPlay() {
           the survey said it.
         </p>
         <p>
-          If you guess an answer nobody said, don’t worry, it doesn’t count. The
+          If you guess an answer nobody said, don't worry, it doesn't count. The
           danger is in guessing answers that very few people gave because you
           will run out of guesses before you hit the threshold.
         </p>

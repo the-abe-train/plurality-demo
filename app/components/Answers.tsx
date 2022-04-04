@@ -73,13 +73,12 @@ export default function Answers({ answers, guesses }: Props) {
             variants={variants}
           >
             <span
-              className="text-sm font-bold w-[50%] overflow-hidden 
+              className="text-sm font-bold flex-grow overflow-hidden 
             overflow-ellipsis"
             >
               {answer._id}
             </span>
-            <span className="ml-1 text-sm flex-grow">{`${score}%`}</span>
-            <span>{`${statFormat(answer.votes)}B`}</span>
+            <span className="mx-2 text-sm">{`${score}%`}</span>
           </motion.div>
         );
       })}
