@@ -8,3 +8,5 @@ node_modules
 questions old.json
 
 app/styles/app.css
+
+api/_build/index.js
