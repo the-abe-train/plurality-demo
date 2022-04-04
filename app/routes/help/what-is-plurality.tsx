@@ -3,9 +3,9 @@ export default function whatIsPlurality() {
     <section className="my-4 space-y-2">
       <h1 className="my-4 text-3xl font-header">What is Plurality?</h1>
       <p>
-        In a divided world, many of us have lost touch with the thoughts and
-        feelings of the people outside our bubbles. Plurality is a response to
-        these fractures.
+        In an increasingly divided world, many of us long to feel closer to the
+        thoughts and feelings of the people outside our bubbles. Plurality is a
+        response to this desire for community.
       </p>
       <p className="italic">But seriously, what IS Plurality?</p>
       <ul className="list-disc list-inside">
@@ -18,9 +18,8 @@ export default function whatIsPlurality() {
           rest of the world.{" "}
         </li>
         <li>
-          Plurality is a <b>decentralized</b> application that uses crypto
-          technologies to explore the role of decentralization in gaming and
-          economics.
+          Plurality is a <b>decentralized</b> application that uses Crypto
+          technologies to explore the role of decentralization in gaming.
         </li>
       </ul>
       <p>

@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function howToPlay() {
   return (
     <section className="my-4 space-y-4">
@@ -8,11 +6,11 @@ export default function howToPlay() {
         <h2 className="mt-3 text-2xl font-header">Connecting to Plurality</h2>
         <p>
           The first thing you need to do to interact with Plurality is connect
-          via your crypto wallet. Plurality relies on the Metamask wallet
-          protocol for authentication. if you already have an Ethereum wallet
-          with Metamask, click the “Connect wallet” button in the header to
-          log-in. If you don't, you can make one using the Metamask browser
-          extension or mobile app.
+          via your Crypto wallet. Plurality relies on your Crypto wallet's
+          authentication protocol. If you already have an Ethereum wallet
+          associated with your browser, click the “Connect wallet” button in the
+          header to log-in. If you don't, you can make one using the Metamask
+          browser extension or mobile app.
         </p>
         <p className="italic">
           What can I do now that I'm conected? Play a survey!

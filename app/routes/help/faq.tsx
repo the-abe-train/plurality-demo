@@ -6,7 +6,7 @@ export default function faq() {
         <h2 className="mt-3 text-2xl font-header">What is a DApp?</h2>
         <p>
           A decentralized application, or DApp, is an app that relies to any
-          extent on crypto technology. Crypto's role in the app may vary from
+          extent on Crypto technology. Crypto's role in the app may vary from
           giving users a say in the function of the app to letting users make a
           profit by engaging with NFTs.
         </p>
@@ -14,23 +14,23 @@ export default function faq() {
           There is no single definition for a DApp, but they do tend to have
           many fundamental principles in common, including the following:
         </p>
-        <ol>
+        <ol className="list-decimal list-inside">
           <li>
-            The operation of the website relies on blockchain smart contracts
+            The operation of the website relies on blockchain smart contracts.
           </li>
-          <li>The code for the app is open source</li>
+          <li>The code for the app is open source.</li>
           <li>Users have a say in what the application looks like.</li>
-          <li>Authentication depends on a crypto wallet</li>
+          <li>Authentication depends on a Crypto wallet.</li>
         </ol>
       </article>
       <article className="space-y-2">
         <h2 className="mt-3 text-2xl font-header">What is an NFT?</h2>
         <p>
-          Here's a super brief rundown of crypto technology: All crypto depends
+          Here's a super brief rundown of Crypto technology: All Crypto depends
           on blockchains. A blockchain is a ledger (i.e. a list of a
-          transactions) that, because of complex cryptographic algorithms and
+          transactions) that, because of complex Cryptographic algorithms and
           decentralization, cannot be tampered with, thus everyone always agrees
-          on the information they contain.{" "}
+          on the information they contain.
         </p>
         <p>
           There are 3 types of assets that can be traded on a blockchain: a coin
