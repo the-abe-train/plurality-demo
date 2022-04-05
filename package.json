@@ -5,12 +5,13 @@
   "license": "",
   "sideEffects": false,
   "scripts": {
-    "build": "cross-env NODE_ENV=production npm run build:css && remix build",
-    "build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
-    "dev": "cross-env NODE_ENV=development concurrently \"npm run dev:css\" \"remix dev\"",
     "postinstall": "remix setup node",
-    "start": "cross-env NODE_ENV=production remix-serve build",
-    "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css"
+    "dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
+    "dev": "cross-env NODE_ENV=development concurrently \"npm run dev:css\" \"remix dev\"",
+    "build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
+    "build": "cross-env NODE_ENV=production npm run build:css && remix build",
+    "test": "vitest",
+    "start": "cross-env NODE_ENV=production remix-serve build"
   },
   "dependencies": {
     "@remix-run/react": "^1.2.3",
@@ -30,16 +31,23 @@
   "devDependencies": {
     "@remix-run/dev": "^1.2.3",
     "@remix-run/eslint-config": "^1.2.3",
+    "@testing-library/jest-dom": "^5.16.3",
     "@types/bcryptjs": "^2.4.2",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/react": "^17.0.24",
     "@types/react-dom": "^17.0.9",
+    "@vitejs/plugin-react": "^1.3.0",
     "autoprefixer": "^10.4.2",
     "concurrently": "^7.0.0",
+    "dotenv": "^16.0.0",
     "eslint": "^8.9.0",
+    "happy-dom": "^2.55.0",
     "postcss": "^8.4.8",
     "tailwindcss": "^3.0.23",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "vite": "^2.9.1",
+    "vite-tsconfig-paths": "^3.4.1",
+    "vitest": "^0.8.4"
   },
   "engines": {
     "node": ">=14"
