@@ -6,7 +6,7 @@ export default function useAttachWallet() {
   return async function attachWallet() {
     const { ethereum } = window;
     let message = "";
-    if (!ethereum || !ethereum.isConnected()) {
+    if (!ethereum) {
       message =
         "Please install a crypto wallet browser extension to connect with a wallet.";
     }

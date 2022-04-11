@@ -16,12 +16,8 @@ import Question from "~/components/Question";
 import Instructions from "~/components/Instructions";
 import Summary from "~/components/Summary";
 
-import {
-  Photo,
-  QuestionSchema,
-  UserSchema,
-  VoteAggregation,
-} from "~/lib/schemas";
+import { QuestionSchema, UserSchema, VoteAggregation } from "~/lib/db_schemas";
+import { Photo } from "~/lib/api_schemas";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";

@@ -5,7 +5,7 @@ import {
   UserSchema,
   GameSchema,
   SessionSchema,
-} from "../lib/schemas";
+} from "../lib/db_schemas";
 import { UNSPLASH_ACCESS_KEY, DATABASE_NAME } from "./env";
 import { MongoClient, ObjectId } from "mongodb";
 import { SessionData } from "remix";

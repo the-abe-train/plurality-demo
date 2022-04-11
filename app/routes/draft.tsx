@@ -11,7 +11,7 @@ import {
 } from "remix";
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
-import { UserSchema } from "~/lib/schemas";
+import { UserSchema } from "~/lib/db_schemas";
 import { client } from "~/server/db.server";
 import { fetchPhoto, userById } from "~/server/queries";
 import { getSession } from "~/sessions";
@@ -22,7 +22,9 @@ import animations from "~/styles/animations.css";
 import { sendEmail } from "~/server/sendgrid";
 import { useEffect, useState } from "react";
 
-import helpIcon from "~/images/icons/help.svg";
+import { OPENSEA_API_KEY } from "~/server/env";
+import Tooltip from "~/components/Tooltip";
+import { NFT } from "~/lib/api_schemas";
 
 export const links: LinksFunction = () => {
   return [
@@ -32,9 +34,13 @@ export const links: LinksFunction = () => {
   ];
 };
 
+// TODO email must be verified and wallet must be active connected to send
+// TODO link to buy NFT question for players without question in wallet
+
 type LoaderData = {
   user: UserSchema;
   ids: number[];
+  nfts?: NFT[];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -46,6 +52,32 @@ export const loader: LoaderFunction = async ({ request }) => {
   // Redirect not signed-in users to home page
   if (!user) {
     return redirect("/user/login");
+  }
+
+  // Get list of NFTs on account using OpenSea API
+  const { wallet } = user;
+  if (wallet) {
+    try {
+      const options = {
+        method: "GET",
+        headers: { Accept: "application/json", "X-API-KEY": OPENSEA_API_KEY },
+      };
+
+      const url = new URL("https://api.opensea.io/api/v1/assets");
+      url.searchParams.set("order_direction", "desc");
+      url.searchParams.set("limit", "20");
+      url.searchParams.set("include_orders", "false");
+      url.searchParams.set("owner", wallet);
+
+      const response = await fetch(url, options);
+      const output = await response.json();
+      const nfts = output.assets;
+      const ids = [100];
+      const data = { user, ids, nfts };
+      return json<LoaderData>(data);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   // Get list of IDs that this user is allow to submit questions for
@@ -85,7 +117,7 @@ export const action: ActionFunction = async ({ request }) => {
     typeof email !== "string" ||
     email.length <= 0
   ) {
-    const message = "Please fill out all fields";
+    const message = "Please fill out all fields.";
     const success = false;
     return json<ActionData>({ message, success });
   }
@@ -121,29 +153,17 @@ export const action: ActionFunction = async ({ request }) => {
   return json<ActionData>({ message, success });
 };
 
-function Tooltip({ text }: { text: string }) {
-  return (
-    <div className="relative flex flex-col items-center group h-fit">
-      <img src={helpIcon} alt="Help Icon" className="w-5 h-5" />
-      <div className="absolute bottom-0 flex-col items-center hidden mb-6 group-hover:flex">
-        <span
-          className="relative z-10 p-2 text-xs leading-none 
-      text-white whitespace-no-wrap bg-black shadow-lg w-36"
-        >
-          {text}
-        </span>
-        <div className="w-3 h-3 -mt-2 rotate-45 bg-black"></div>
-      </div>
-    </div>
-  );
-}
-
 export default function draft() {
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const transition = useTransition();
 
   const [showForm, setShowForm] = useState(true);
+
+  let nftNames: string[] = [];
+  if (loaderData.nfts) {
+    nftNames = loaderData.nfts.map((nft) => nft.name);
+  }
 
   useEffect(() => {
     if (actionData?.success) {
@@ -156,6 +176,11 @@ export default function draft() {
       <Header name={loaderData.user ? loaderData.user.name : "Connect"} />
       <main className="container max-w-sm flex-grow px-4">
         <h1 className="font-header text-2xl my-4">Submit a survey question</h1>
+        <h2 className="font-bold text-lg">Your NFTs</h2>
+        <ul className="list-inside list-disc">
+          {nftNames.length > 0 &&
+            nftNames.map((name, idx) => <li key={idx}>{name}</li>)}
+        </ul>
         {showForm && (
           <Form method="post" className="m-4 space-y-3">
             <label htmlFor="id" className="space-x-4">
@@ -224,7 +249,6 @@ export default function draft() {
         Note: while we work out the Web3 aspect of the game, everyone is assumed
         to have the survey token for question #100
       </p>
-
       <Footer />
     </div>
   );

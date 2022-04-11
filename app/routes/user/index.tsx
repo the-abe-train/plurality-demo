@@ -9,7 +9,7 @@ import {
   useLoaderData,
 } from "remix";
 import useAttachWallet from "~/hooks/useAttachWallet";
-import { UserSchema } from "~/lib/schemas";
+import { UserSchema } from "~/lib/db_schemas";
 import { authorizeWallet } from "~/server/authorize";
 import { client } from "~/server/db.server";
 import {
@@ -25,7 +25,7 @@ type LoaderData = {
   user: UserSchema;
 };
 
-// TODO add "detach wallet" button
+// TODO Verify email address button
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));

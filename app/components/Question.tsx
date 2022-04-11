@@ -1,5 +1,6 @@
 import { Link } from "remix";
-import { Photo, QuestionSchema } from "~/lib/schemas";
+import { Photo } from "~/lib/api_schemas";
+import { QuestionSchema } from "~/lib/db_schemas";
 
 type Props = {
   question: QuestionSchema;

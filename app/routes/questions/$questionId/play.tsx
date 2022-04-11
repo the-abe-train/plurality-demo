@@ -2,6 +2,7 @@ import {
   ActionFunction,
   Form,
   json,
+  Link,
   LinksFunction,
   LoaderFunction,
   redirect,
@@ -30,12 +31,8 @@ import {
   questionById,
   votesByQuestion,
 } from "~/server/queries";
-import {
-  GameSchema,
-  Photo,
-  QuestionSchema,
-  VoteAggregation,
-} from "~/lib/schemas";
+import { GameSchema, QuestionSchema, VoteAggregation } from "~/lib/db_schemas";
+import { Photo } from "~/lib/api_schemas";
 import { getSession } from "~/sessions";
 
 import { MAX_GUESSES, THRESHOLD } from "~/util/gameplay";
@@ -337,6 +334,14 @@ Score: ${score}
           >
             Share results
           </button>
+          <Link to="/questions">
+            <button
+              className="shadow px-2 py-1 rounded-sm border-button text-button bg-[#F9F1F0] font-bold border-2"
+              onClick={shareScore}
+            >
+              More questions
+            </button>
+          </Link>
           {msg && <p>{msg}</p>}
         </div>
         <p>Survey closed on 26 February 2022</p>
