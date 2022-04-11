@@ -1,7 +1,6 @@
 import {
   QuestionSchema,
   VoteAggregation,
-  Photo,
   UserSchema,
   GameSchema,
   SessionSchema,
@@ -13,6 +12,9 @@ import invariant from "tiny-invariant";
 import { THRESHOLD } from "~/util/gameplay";
 import { truncateEthAddress } from "~/util/text";
 import { randomPassword } from "./authorize";
+import { Photo } from "~/lib/api_schemas";
+
+// TODO split out queries into db and api files
 
 // Connect database
 async function connectDb(client: MongoClient) {
@@ -131,6 +133,19 @@ export async function connectUserWallet(client: MongoClient, wallet: string) {
       },
     },
     { upsert: true, returnDocument: "after" }
+  );
+  return user;
+}
+
+export async function verifyUser(client: MongoClient, address: string) {
+  const db = await connectDb(client);
+  const usersCollection = db.collection<UserSchema>("users");
+  const user = await usersCollection.findOneAndUpdate(
+    { "email.address": address },
+    {
+      $set: { lastUpdated: new Date(), "email.verified": true },
+    },
+    { upsert: false, returnDocument: "after" }
   );
   return user;
 }

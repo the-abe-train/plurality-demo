@@ -1,36 +1,20 @@
-import { FROM_EMAIL, SENDGRID_API_KEY, TO_EMAIL } from "./env";
+import { FROM_EMAIL, SENDGRID_API_KEY } from "./env";
 
 type Props = {
-  email: string;
-  user: string;
-  question: string;
-  id: string;
-  photo: string;
+  emailBody: string;
+  emailTo: string;
+  subject: string;
 };
 
-export async function sendEmail({ email, user, question, id, photo }: Props) {
-  const output = `
-  <h3>Contact Details</h3>
-  <ul>
-    <li>User ID: ${user}</li>
-    <li>Email: ${email}</li>
-  </ul>
-  <h3>Question id</h3>
-  <p>${id}</p>
-  <h3>Question text</h3>
-  <p>${question}</p>
-  <h3>Unsplash photo</h3>
-  <p>https://unsplash.com/photos/${photo}</p>
-  `;
-
+export async function sendEmail({ emailBody, emailTo, subject }: Props) {
   const body = {
-    personalizations: [{ to: [{ email: TO_EMAIL }] }],
+    personalizations: [{ to: [{ email: emailTo }] }],
     from: { email: FROM_EMAIL },
-    subject: "Plurality Question Submission",
+    subject,
     content: [
       {
         type: "text/html",
-        value: output,
+        value: emailBody,
       },
     ],
   };

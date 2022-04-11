@@ -19,13 +19,13 @@ import {
   userUpdateName,
   userUpdateWallet,
 } from "~/server/queries";
+import { sendEmail } from "~/server/sendgrid.server";
+import { createVerifyEmailLink } from "~/server/verify.server";
 import { getSession, destroySession } from "../../sessions";
 
 type LoaderData = {
   user: UserSchema;
 };
-
-// TODO Verify email address button
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
@@ -53,6 +53,21 @@ export const action: ActionFunction = async ({ request }) => {
   const { _action, ...values } = Object.fromEntries(form);
   const newName = form.get("name");
   const wallet = form.get("wallet");
+
+  // Handle verify email
+  if (_action === "verifyEmail") {
+    const user = await userById(client, userId);
+    if (user) {
+      const emailTo = user.email.address;
+      const emailLink = await createVerifyEmailLink(emailTo);
+      const emailBody = `<a href="${emailLink}">Click to verify your email</a>`;
+      const subject = "Verify Email for Plurality";
+      const response = await sendEmail({ emailTo, emailBody, subject });
+      if (response.ok) {
+        console.log(`Verification email sent to ${emailTo}!`);
+      }
+    }
+  }
 
   // Handle name change form
   if (_action === "changeName" && typeof newName === "string") {
@@ -126,7 +141,20 @@ export default function LogoutRoute() {
     <main className="container max-w-4xl flex-grow px-4">
       <section className="my-8 space-y-4">
         <h1 className="text-2xl my-3">Profile</h1>
-        <p>Email: {user.email.address}</p>
+        <Form method="post" className="space-x-4 max-w-xs flex items-center">
+          <p>Email: {user.email.address}</p>
+          {user.email.verified && <p>Email verified</p>}
+          {!user.email.verified && (
+            <button
+              type="submit"
+              name="_action"
+              value="verifyEmail"
+              className="border-2 px-2 border-black rounded-sm"
+            >
+              Verify email
+            </button>
+          )}
+        </Form>
         <Form method="post" className="space-x-4 max-w-xs flex items-center">
           <label htmlFor="name">Name:</label>
           <input

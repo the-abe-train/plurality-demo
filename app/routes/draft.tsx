@@ -9,22 +9,25 @@ import {
   useLoaderData,
   useTransition,
 } from "remix";
+import { useEffect, useState } from "react";
+
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
+import Tooltip from "~/components/Tooltip";
+
 import { UserSchema } from "~/lib/db_schemas";
+import { NFT } from "~/lib/api_schemas";
+
 import { client } from "~/server/db.server";
 import { fetchPhoto, userById } from "~/server/queries";
+import { ADMIN_EMAIL, OPENSEA_API_KEY } from "~/server/env";
+import { sendEmail } from "~/server/sendgrid.server";
+
 import { getSession } from "~/sessions";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
-import { sendEmail } from "~/server/sendgrid";
-import { useEffect, useState } from "react";
-
-import { OPENSEA_API_KEY } from "~/server/env";
-import Tooltip from "~/components/Tooltip";
-import { NFT } from "~/lib/api_schemas";
 
 export const links: LinksFunction = () => {
   return [
@@ -138,8 +141,23 @@ export const action: ActionFunction = async ({ request }) => {
     return json<ActionData>({ message, success });
   }
 
-  // Send email to me
-  const sendGridResp = await sendEmail({ email, user, question, id, photo });
+  // Send email with info from the user
+  const emailBody = `
+  <h3>Contact Details</h3>
+  <ul>
+    <li>User ID: ${user}</li>
+    <li>Email: ${email}</li>
+  </ul>
+  <h3>Question id</h3>
+  <p>${id}</p>
+  <h3>Question text</h3>
+  <p>${question}</p>
+  <h3>Unsplash photo</h3>
+  <p>https://unsplash.com/photos/${photo}</p>
+  `;
+  const subject = "Question Submission";
+  const emailTo = ADMIN_EMAIL;
+  const sendGridResp = await sendEmail({ emailBody, emailTo, subject });
   if (sendGridResp.status === 200) {
     const message = "Question submitted successfully!";
     const success = true;
