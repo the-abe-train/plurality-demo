@@ -771,12 +771,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   list-style-position: inside;
 }
 
-.list-decimal{
-  list-style-type: decimal;
-}
-
 .list-disc{
   list-style-type: disc;
+}
+
+.list-decimal{
+  list-style-type: decimal;
 }
 
 .grid-cols-2{
