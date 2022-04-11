@@ -14,6 +14,7 @@ import { authorizeWallet } from "~/server/authorize";
 import { client } from "~/server/db.server";
 import {
   deleteUser,
+  removeWallet,
   userById,
   userUpdateName,
   userUpdateWallet,
@@ -23,6 +24,8 @@ import { getSession, destroySession } from "../../sessions";
 type LoaderData = {
   user: UserSchema;
 };
+
+// TODO add "detach wallet" button
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
@@ -66,6 +69,12 @@ export const action: ActionFunction = async ({ request }) => {
       return json<ActionData>({ message });
     }
     return await userUpdateWallet(client, userId, wallet);
+  }
+
+  // Handle detach wallet form
+  if (_action === "detachWallet") {
+    console.log("Remove wallet");
+    return await removeWallet(client, userId);
   }
 
   // Handle log-out form
@@ -136,15 +145,24 @@ export default function LogoutRoute() {
             Change
           </button>
         </Form>
-        <Form className="space-x-4 max-w-xs flex items-center">
+        <Form className="space-x-4 max-w-xs flex items-center" method="post">
           <p>Ethereum wallet: {user.wallet}</p>
           {!user.wallet && (
             <button
-              type="submit"
               className="border-2 px-2 border-black rounded-sm"
               onClick={clickAttachWallet}
             >
               Connect wallet
+            </button>
+          )}
+          {user.wallet && (
+            <button
+              type="submit"
+              name="_action"
+              value="detachWallet"
+              className="border-2 px-2 border-black rounded-sm"
+            >
+              Disconnect wallet
             </button>
           )}
         </Form>

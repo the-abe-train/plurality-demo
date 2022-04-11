@@ -64,6 +64,17 @@ export async function userUpdateWallet(
   return modifiedUser.value;
 }
 
+export async function removeWallet(client: MongoClient, id: ObjectId) {
+  const db = await connectDb(client);
+  const usersCollection = db.collection<UserSchema>("users");
+  const modifiedUser = await usersCollection.findOneAndUpdate(
+    { _id: id },
+    { $set: { wallet: "" } },
+    { upsert: false, returnDocument: "after" }
+  );
+  return modifiedUser.value;
+}
+
 export async function userUpdateName(
   client: MongoClient,
   id: ObjectId,
