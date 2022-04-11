@@ -7,7 +7,8 @@ export default function useAttachWallet() {
     const { ethereum } = window;
     let message = "";
     if (!ethereum || !ethereum.isConnected()) {
-      message = "Please install Metamask to attach wallet.";
+      message =
+        "Please install a crypto wallet browser extension to connect with a wallet.";
     }
     try {
       const result = await ethereum.request<string[]>({
@@ -26,7 +27,7 @@ export default function useAttachWallet() {
         });
       }
     } catch (e) {
-      message = "Error connecting to MetaMask";
+      message = "Error connecting to wallet";
       console.error(e);
     }
     return message;
