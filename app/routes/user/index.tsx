@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActionFunction,
   Form,
   json,
   LoaderFunction,
   redirect,
+  useActionData,
   useLoaderData,
 } from "remix";
+import useAttachWallet from "~/hooks/useAttachWallet";
 import { UserSchema } from "~/lib/schemas";
+import { authorizeWallet } from "~/server/authorize";
 import { client } from "~/server/db.server";
-import { deleteUser, userById, userUpdateName } from "~/server/queries";
+import {
+  deleteUser,
+  userById,
+  userUpdateName,
+  userUpdateWallet,
+} from "~/server/queries";
 import { getSession, destroySession } from "../../sessions";
 
 type LoaderData = {
@@ -28,6 +36,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json(data);
 };
 
+type ActionData = {
+  message: string;
+};
+
 export const action: ActionFunction = async ({ request }) => {
   // Get user info from cookie
   const session = await getSession(request.headers.get("Cookie"));
@@ -37,12 +49,23 @@ export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
   const { _action, ...values } = Object.fromEntries(form);
   const newName = form.get("name");
+  const wallet = form.get("wallet");
 
   // Handle name change form
   if (_action === "changeName" && typeof newName === "string") {
-    const session = await getSession(request.headers.get("Cookie"));
-    const userId = session.get("user");
-    const modified = await userUpdateName(client, userId, newName);
+    return await userUpdateName(client, userId, newName);
+  }
+
+  // Handle attach wallet form
+  if (_action === "attachWallet" && typeof wallet === "string") {
+    // Check if wallet is already attached to another account
+    const { isAuthorized } = await authorizeWallet(userId, wallet);
+    console.log("is authorized", isAuthorized);
+    if (!isAuthorized) {
+      const message = "Wallet is already attached to another account";
+      return json<ActionData>({ message });
+    }
+    return await userUpdateWallet(client, userId, wallet);
   }
 
   // Handle log-out form
@@ -69,12 +92,25 @@ export const action: ActionFunction = async ({ request }) => {
       },
     });
   }
-
   return "";
 };
 
 export default function LogoutRoute() {
+  const [message, setMessage] = useState("");
   const { user } = useLoaderData<LoaderData>();
+  const actionData = useActionData<ActionData>();
+  const attachWallet = useAttachWallet();
+
+  useEffect(() => {
+    if (actionData?.message) {
+      setMessage(actionData.message);
+    }
+  }, [actionData]);
+
+  async function clickAttachWallet() {
+    const newMessage = await attachWallet();
+    setMessage(newMessage);
+  }
 
   const [name, setName] = useState(user.name || "");
   return (
@@ -100,6 +136,19 @@ export default function LogoutRoute() {
             Change
           </button>
         </Form>
+        <Form className="space-x-4 max-w-xs flex items-center">
+          <p>Ethereum wallet: {user.wallet}</p>
+          {!user.wallet && (
+            <button
+              type="submit"
+              className="border-2 px-2 border-black rounded-sm"
+              onClick={clickAttachWallet}
+            >
+              Connect wallet
+            </button>
+          )}
+        </Form>
+        {message && <p className="text-red-700">{message}</p>}
       </section>
       <section className="my-8">
         <h1 className="text-2xl my-3">Account</h1>

@@ -11,6 +11,8 @@ import { MongoClient, ObjectId } from "mongodb";
 import { SessionData } from "remix";
 import invariant from "tiny-invariant";
 import { THRESHOLD } from "~/util/gameplay";
+import { truncateEthAddress } from "~/util/text";
+import { randomPassword } from "./authorize";
 
 // Connect database
 async function connectDb(client: MongoClient) {
@@ -41,6 +43,27 @@ export async function userByEmail(client: MongoClient, email: string) {
   });
 }
 
+export async function userByWallet(client: MongoClient, wallet: string) {
+  const db = await connectDb(client);
+  const usersCollection = db.collection<UserSchema>("users");
+  return await usersCollection.findOne({ wallet });
+}
+
+export async function userUpdateWallet(
+  client: MongoClient,
+  id: ObjectId,
+  wallet: string
+) {
+  const db = await connectDb(client);
+  const usersCollection = db.collection<UserSchema>("users");
+  const modifiedUser = await usersCollection.findOneAndUpdate(
+    { _id: id },
+    { $set: { wallet } },
+    { upsert: false, returnDocument: "after" }
+  );
+  return modifiedUser.value;
+}
+
 export async function userUpdateName(
   client: MongoClient,
   id: ObjectId,
@@ -64,6 +87,7 @@ export async function createUser(
   const db = await connectDb(client);
   const usersCollection = db.collection<UserSchema>("users");
   const user = await usersCollection.insertOne({
+    _id: new ObjectId(),
     email: {
       address: email,
       verified: false,
@@ -72,8 +96,31 @@ export async function createUser(
     password,
     createdDate: new Date(),
     lastUpdated: new Date(),
-    _id: new ObjectId(),
   });
+  return user;
+}
+
+export async function connectUserWallet(client: MongoClient, wallet: string) {
+  const db = await connectDb(client);
+  const usersCollection = db.collection<UserSchema>("users");
+  const password = await randomPassword(8);
+  const user = await usersCollection.findOneAndUpdate(
+    { wallet },
+    {
+      $set: { lastUpdated: new Date() },
+      $setOnInsert: {
+        _id: new ObjectId(),
+        email: {
+          address: "example@walletholder.com",
+          verified: false,
+        },
+        name: truncateEthAddress(wallet),
+        password,
+        createdDate: new Date(),
+      },
+    },
+    { upsert: true, returnDocument: "after" }
+  );
   return user;
 }
 

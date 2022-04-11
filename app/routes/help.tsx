@@ -44,7 +44,7 @@ export default function help() {
   const data = useLoaderData<LoaderData>();
   return (
     <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
-      <Header name={data.user ? data.user.name : "Connect wallet"} />
+      <Header name={data.user ? data.user.name : "Connect"} />
       <main className="container max-w-4xl flex-grow px-4">
         <Outlet />
         <section className="my-8">

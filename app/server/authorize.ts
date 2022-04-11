@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
+import { ObjectId } from "mongodb";
 import { client } from "~/server/db.server";
-import { createUser, userByEmail } from "./queries";
+import { createUser, userByEmail, userById, userByWallet } from "./queries";
 const { genSalt, hash, compare } = bcrypt;
 
 export async function registerUser(email: string, password: string) {
@@ -34,4 +35,32 @@ export async function authorizeUser(email: string, password: string) {
     return { isAuthorized, userId: userData._id };
   }
   return { isAuthorized: false, userId: null };
+}
+
+export async function authorizeWallet(userId: ObjectId, wallet: string) {
+  const userData = await userByWallet(client, wallet);
+  if (userData) {
+    const isAuthorized = userId === userData._id;
+    return { isAuthorized, userId: userData._id };
+  }
+  return { isAuthorized: true, userId: null };
+}
+
+export async function randomPassword(length: number) {
+  // Borrowed from stack overflow
+  let password = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    password += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
+  // Generate salt
+  const salt = await genSalt(10);
+
+  // Hash with salt
+  const hashedPassword = await hash(password, salt);
+
+  return hashedPassword;
 }

@@ -8,9 +8,9 @@ export default function howToPlay() {
           The first thing you need to do to interact with Plurality is connect
           via your Crypto wallet. Plurality relies on your Crypto wallet's
           authentication protocol. If you already have an Ethereum wallet
-          associated with your browser, click the “Connect wallet” button in the
-          header to log-in. If you don't, you can make one using the Metamask
-          browser extension or mobile app.
+          associated with your browser, click the “Connect” button in the header
+          to log-in. If you don't, you can make one using the Metamask browser
+          extension or mobile app.
         </p>
         <p className="italic">
           What can I do now that I'm conected? Play a survey!

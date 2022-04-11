@@ -1,4 +1,6 @@
 import dayjs from "dayjs";
+import { ObjectId } from "mongodb";
+import { useEffect, useState } from "react";
 import {
   ActionFunction,
   Form,
@@ -8,7 +10,10 @@ import {
   redirect,
   useActionData,
 } from "remix";
+import useConnectWithWallet from "~/hooks/useConnectWithWallet";
 import { authorizeUser } from "~/server/authorize";
+import { client } from "~/server/db.server";
+import { connectUserWallet } from "~/server/queries";
 import { getSession, commitSession } from "../../sessions";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -25,6 +30,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   return "";
 };
 
+type ActionData = {
+  message: string;
+};
+
 export const action: ActionFunction = async ({ request }) => {
   // Creates a session object from the POST request headers
   // Validates the login info using the database
@@ -32,33 +41,76 @@ export const action: ActionFunction = async ({ request }) => {
   // If user is found, attaches the user ID to the session
   // Redirects user back to index page with updated session in the cookie
 
+  // Set-up
   const session = await getSession(request.headers.get("Cookie"));
   const nextWeek = dayjs().add(7, "day").toDate();
 
+  // Parse form data
   const form = await request.formData();
   const email = form.get("email");
   const password = form.get("password");
+  const wallet = form.get("wallet");
 
-  if (typeof email !== "string" || typeof password !== "string") {
-    return json({ message: "Invalid username/password" });
+  // Successful redirect function
+  async function successfulRedirect(userId: ObjectId) {
+    session.set("user", userId);
+    const cookieString = await commitSession(session, {
+      expires: nextWeek,
+    });
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": cookieString,
+      },
+    });
+  }
+
+  // Connect with wallet
+  if (wallet && typeof wallet === "string") {
+    const user = await connectUserWallet(client, wallet);
+    if (user.value?._id) {
+      return await successfulRedirect(user.value?._id);
+    }
+  }
+
+  if (
+    !email ||
+    !password ||
+    typeof email !== "string" ||
+    typeof password !== "string"
+  ) {
+    return json<ActionData>({ message: "Invalid username/password" });
   }
 
   const { isAuthorized, userId } = await authorizeUser(email, password);
   if (!isAuthorized) {
-    return json({ message: "Invalid username/password" });
+    return json<ActionData>({ message: "Invalid username/password" });
   }
 
-  session.set("user", userId);
-  const cookieString = await commitSession(session, { expires: nextWeek });
-  return redirect("/", {
-    headers: {
-      "Set-Cookie": cookieString,
-    },
-  });
+  if (userId) {
+    return await successfulRedirect(userId);
+  }
+
+  return "";
 };
 
 export default function Login() {
-  const data = useActionData();
+  // const { activateBrowserWallet } = useEthers();
+  const actionData = useActionData<ActionData>();
+  const connectWallet = useConnectWithWallet();
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (actionData?.message) {
+      setMessage(actionData.message);
+    }
+  }, [actionData]);
+
+  // Create account using Ethereum wallet
+  async function clickWalletConnect() {
+    const message = await connectWallet();
+    setMessage(message);
+  }
+
   return (
     <main className="container max-w-md flex-grow px-4 my-8">
       <h1 className="font-header text-3xl">Log in</h1>
@@ -71,9 +123,10 @@ export default function Login() {
         focus:ring-blue-600"
           placeholder="Email Address"
         />
-
         <input
-          className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+          className="w-full px-4 py-2 text-sm border rounded-md 
+          focus:border-blue-400 focus:outline-none focus:ring-1 
+          focus:ring-blue-600"
           placeholder="Password"
           type="password"
           name="password"
@@ -89,13 +142,25 @@ export default function Login() {
           Log-in
         </button>
       </Form>
+      <div className="my-4">
+        <button
+          className="block w-40 mx-auto px-4 py-2 mt-4 text-sm 
+    font-medium leading-5 text-center text-white transition-colors 
+    duration-150 bg-blue-600 border border-transparent rounded-lg 
+    active:bg-blue-600 hover:bg-blue-700 focus:outline-none 
+    focus:shadow-outline-blue"
+          onClick={clickWalletConnect}
+        >
+          Connect with Wallet
+        </button>
+      </div>
       <p>
         Don't have an account?{" "}
         <Link to="/user/signup" className="underline">
           Sign-up
         </Link>
       </p>
-      {data?.message && <p className="text-red-700">{data.message}</p>}
+      {message && <p className="text-red-700">{message}</p>}
     </main>
   );
 }

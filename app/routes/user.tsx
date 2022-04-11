@@ -40,7 +40,7 @@ export default function User() {
   const data = useLoaderData<LoaderData>();
   return (
     <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
-      <Header name={data.user ? data.user.name : "Connect wallet"} />
+      <Header name={data.user ? data.user.name : "Connect"} />
       <Outlet />
       <p className="m-4 container max-w-xl mx-auto block">
         Note: while we work out the Web3 aspect of the game, connecting to

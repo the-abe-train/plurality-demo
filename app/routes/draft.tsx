@@ -153,9 +153,7 @@ export default function draft() {
 
   return (
     <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
-      <Header
-        name={loaderData.user ? loaderData.user.name : "Connect wallet"}
-      />
+      <Header name={loaderData.user ? loaderData.user.name : "Connect"} />
       <main className="container max-w-sm flex-grow px-4">
         <h1 className="font-header text-2xl my-4">Submit a survey question</h1>
         {showForm && (

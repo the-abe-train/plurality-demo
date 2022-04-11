@@ -10,6 +10,7 @@ export type UserSchema = {
   email: Email;
   password: string;
   name: string;
+  wallet?: string;
   createdDate: Date;
   lastUpdated: Date;
 };

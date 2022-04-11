@@ -14,6 +14,7 @@
     "start": "cross-env NODE_ENV=production remix-serve build"
   },
   "dependencies": {
+    "@metamask/providers": "^8.1.1",
     "@remix-run/react": "^1.2.3",
     "@remix-run/serve": "^1.2.3",
     "@remix-run/vercel": "^1.3.4",

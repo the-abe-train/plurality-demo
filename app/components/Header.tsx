@@ -34,7 +34,7 @@ export default function Header({ name }: Props) {
       bg-[#F9F1F0] font-bold border-2 shadow"
             >
               <img className="inline mr-2" src={wallet} alt="wallet" />
-              {name || "Connect wallet"}
+              {name || "Connect"}
             </button>
           </Link>
         </div>
