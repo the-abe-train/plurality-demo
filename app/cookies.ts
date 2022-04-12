@@ -1,4 +1,4 @@
-import { createCookie } from "remix";
+import { createCookie } from "@remix-run/vercel/node_modules/@remix-run/node";
 import { COOKIE_SIGNATURE } from "./util/env";
 
 export const userCookie = createCookie("user", {
