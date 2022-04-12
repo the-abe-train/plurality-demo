@@ -1,10 +1,10 @@
 import { json, LoaderFunction, Outlet, useLoaderData } from "remix";
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
-import { UserSchema } from "~/lib/schemas";
-import { userById } from "~/server/queries";
+import { UserSchema } from "~/db/schemas";
+import { userById } from "~/db/queries";
 import { getSession } from "~/sessions";
-import { client } from "~/server/db.server";
+import { client } from "~/db/connect.server";
 
 type LoaderData = {
   user?: UserSchema;

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import { client } from "~/server/db.server";
-import { createUser, deleteUser, userById } from "~/server/queries";
+import { client } from "~/db/db.server";
+import { createUser, deleteUser, userById } from "~/db/queries";
 
 // Test variables
 const email = "fake.abe@gmail.com";

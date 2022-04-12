@@ -23,21 +23,21 @@ import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
-import { client } from "~/server/db.server";
+import { client } from "~/db/connect.server";
 import {
   addGuess,
-  fetchPhoto,
   gameByQuestionUser,
   questionById,
   votesByQuestion,
-} from "~/server/queries";
-import { GameSchema, QuestionSchema, VoteAggregation } from "~/lib/db_schemas";
-import { Photo } from "~/lib/api_schemas";
+} from "~/db/queries";
+import { GameSchema, QuestionSchema, VoteAggregation } from "~/db/schemas";
+import { Photo } from "~/api/schemas";
 import { getSession } from "~/sessions";
 
 import { MAX_GUESSES, THRESHOLD } from "~/util/gameplay";
 import dayjs from "dayjs";
 import Question from "~/components/Question";
+import { fetchPhoto } from "~/api/unsplash";
 
 export const links: LinksFunction = () => {
   return [

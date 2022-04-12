@@ -1,4 +1,4 @@
-import { registerUser } from "~/server/authorize";
+import { registerUser } from "~/util/authorize";
 import {
   ActionFunction,
   Form,
@@ -11,8 +11,8 @@ import {
 import { commitSession, getSession } from "~/sessions";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { connectUserWallet } from "~/server/queries";
-import { client } from "~/server/db.server";
+import { connectUserWallet } from "~/db/queries";
+import { client } from "~/db/connect.server";
 import { ObjectId } from "mongodb";
 import useConnectWithWallet from "~/hooks/useConnectWithWallet";
 

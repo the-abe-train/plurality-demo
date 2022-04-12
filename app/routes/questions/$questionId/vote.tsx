@@ -11,20 +11,13 @@ import {
 } from "remix";
 import invariant from "tiny-invariant";
 import Question from "~/components/Question";
-import {
-  GameSchema,
-  Photo,
-  QuestionSchema,
-  VoteAggregation,
-} from "~/lib/schemas";
-import { client } from "~/server/db.server";
-import {
-  addVote,
-  fetchPhoto,
-  gameByQuestionUser,
-  questionById,
-} from "~/server/queries";
-import { commitSession, getSession } from "~/sessions";
+import { GameSchema, QuestionSchema } from "~/db/schemas";
+import { client } from "~/db/connect.server";
+import { addVote, gameByQuestionUser, questionById } from "~/db/queries";
+
+import { getSession } from "~/sessions";
+import { Photo } from "~/api/schemas";
+import { fetchPhoto } from "~/api/unsplash";
 
 type LoaderData = {
   game: GameSchema;

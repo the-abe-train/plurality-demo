@@ -1,5 +1,5 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
-import { MONGO_URL } from "./env";
+import { MONGO_URL } from "../util/env";
 
 interface Options extends MongoClientOptions {
   useNewUrlParser: boolean;

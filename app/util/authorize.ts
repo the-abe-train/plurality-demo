@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { ObjectId } from "mongodb";
-import { client } from "~/server/db.server";
-import { createUser, userByEmail, userById, userByWallet } from "./queries";
+import { client } from "~/db/connect.server";
+import { createUser, userByEmail, userByWallet } from "../db/queries";
 const { genSalt, hash, compare } = bcrypt;
 
 export async function registerUser(email: string, password: string) {

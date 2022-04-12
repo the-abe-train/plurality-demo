@@ -15,19 +15,22 @@ import Footer from "~/components/Footer";
 import Header from "~/components/Header";
 import Tooltip from "~/components/Tooltip";
 
-import { UserSchema } from "~/lib/db_schemas";
-import { NFT } from "~/lib/api_schemas";
+import { UserSchema } from "~/db/schemas";
+import { NFT } from "~/api/schemas";
 
-import { client } from "~/server/db.server";
-import { fetchPhoto, userById } from "~/server/queries";
-import { ADMIN_EMAIL, OPENSEA_API_KEY } from "~/server/env";
-import { sendEmail } from "~/server/sendgrid.server";
+import { client } from "~/db/connect.server";
+import { userById } from "~/db/queries";
+
+import { sendEmail } from "~/api/sendgrid.server";
 
 import { getSession } from "~/sessions";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
+import { fetchPhoto } from "~/api/unsplash";
+import { getNfts } from "~/api/opensea";
+import { ADMIN_EMAIL } from "~/util/env";
 
 export const links: LinksFunction = () => {
   return [
@@ -61,20 +64,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const { wallet } = user;
   if (wallet) {
     try {
-      const options = {
-        method: "GET",
-        headers: { Accept: "application/json", "X-API-KEY": OPENSEA_API_KEY },
-      };
-
-      const url = new URL("https://api.opensea.io/api/v1/assets");
-      url.searchParams.set("order_direction", "desc");
-      url.searchParams.set("limit", "20");
-      url.searchParams.set("include_orders", "false");
-      url.searchParams.set("owner", wallet);
-
-      const response = await fetch(url, options);
-      const output = await response.json();
-      const nfts = output.assets;
+      const nfts = await getNfts(wallet);
       const ids = [100];
       const data = { user, ids, nfts };
       return json<LoaderData>(data);

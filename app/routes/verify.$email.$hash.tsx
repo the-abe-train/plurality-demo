@@ -1,8 +1,8 @@
 import { LoaderFunction, redirect } from "remix";
 import invariant from "tiny-invariant";
-import { client } from "~/server/db.server";
-import { verifyUser } from "~/server/queries";
-import { createVerifyEmailToken } from "~/server/verify.server";
+import { client } from "~/db/connect.server";
+import { verifyUser } from "~/db/queries";
+import { createVerifyEmailToken } from "~/util/verify.server";
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   console.log("Email:", params.email);

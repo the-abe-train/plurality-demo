@@ -11,9 +11,9 @@ import {
   useActionData,
 } from "remix";
 import useConnectWithWallet from "~/hooks/useConnectWithWallet";
-import { authorizeUser } from "~/server/authorize";
-import { client } from "~/server/db.server";
-import { connectUserWallet } from "~/server/queries";
+import { authorizeUser } from "~/util/authorize";
+import { client } from "~/db/connect.server";
+import { connectUserWallet } from "~/db/queries";
 import { getSession, commitSession } from "../../sessions";
 
 export const loader: LoaderFunction = async ({ request }) => {

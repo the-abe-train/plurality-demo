@@ -1,4 +1,4 @@
-import { FROM_EMAIL, SENDGRID_API_KEY } from "./env";
+import { FROM_EMAIL, SENDGRID_API_KEY } from "../util/env";
 
 type Props = {
   emailBody: string;

@@ -16,21 +16,17 @@ import Question from "~/components/Question";
 import Instructions from "~/components/Instructions";
 import Summary from "~/components/Summary";
 
-import { QuestionSchema, UserSchema, VoteAggregation } from "~/lib/db_schemas";
-import { Photo } from "~/lib/api_schemas";
+import { QuestionSchema, UserSchema, VoteAggregation } from "~/db/schemas";
+import { Photo } from "~/api/schemas";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
-import { client } from "~/server/db.server";
+import { client } from "~/db/connect.server";
 import { getSession } from "~/sessions";
-import {
-  fetchPhoto,
-  questionBySurveyClose,
-  userById,
-  votesByQuestion,
-} from "~/server/queries";
+import { questionBySurveyClose, userById, votesByQuestion } from "~/db/queries";
+import { fetchPhoto } from "~/api/unsplash";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

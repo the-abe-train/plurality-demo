@@ -4,17 +4,14 @@ import {
   UserSchema,
   GameSchema,
   SessionSchema,
-} from "../lib/db_schemas";
-import { UNSPLASH_ACCESS_KEY, DATABASE_NAME } from "./env";
+} from "./schemas";
+import { DATABASE_NAME } from "../util/env";
 import { MongoClient, ObjectId } from "mongodb";
 import { SessionData } from "remix";
 import invariant from "tiny-invariant";
 import { THRESHOLD } from "~/util/gameplay";
 import { truncateEthAddress } from "~/util/text";
-import { randomPassword } from "./authorize";
-import { Photo } from "~/lib/api_schemas";
-
-// TODO split out queries into db and api files
+import { randomPassword } from "../util/authorize";
 
 // Connect database
 async function connectDb(client: MongoClient) {
@@ -342,13 +339,4 @@ export async function deleteSession(client: MongoClient, id: string) {
   const db = await connectDb(client);
   const sessionsCollection = db.collection<SessionSchema>("sessions");
   await sessionsCollection.findOneAndDelete({ _id: new ObjectId(id) });
-}
-
-// Unsplash API
-export async function fetchPhoto(photoId: string): Promise<Photo> {
-  const baseApi = "https://api.unsplash.com/photos/";
-  const api = baseApi + photoId + "/?client_id=" + UNSPLASH_ACCESS_KEY;
-  const response = await fetch(api);
-  const photo = await response.json();
-  return photo;
 }

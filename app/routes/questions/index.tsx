@@ -14,14 +14,11 @@ import Question from "~/components/Question";
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
-import { QuestionSchema, VoteAggregation } from "~/lib/db_schemas";
-import {
-  fetchPhoto,
-  questionBySearch,
-  votesByQuestion,
-} from "~/server/queries";
-import { client } from "~/server/db.server";
-import { Photo } from "~/lib/api_schemas";
+import { QuestionSchema, VoteAggregation } from "~/db/schemas";
+import { questionBySearch, votesByQuestion } from "~/db/queries";
+import { client } from "~/db/connect.server";
+import { Photo } from "~/api/schemas";
+import { fetchPhoto } from "~/api/unsplash";
 
 type ActionData = {
   pageQuestions: QuestionSchema[];

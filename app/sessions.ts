@@ -1,12 +1,12 @@
 import { Cookie, createSessionStorage } from "remix";
 import { userCookie } from "./cookies";
-import { client } from "./server/db.server";
+import { client } from "./db/connect.server";
 import {
   createSession,
   deleteSession,
   readSession,
   updateSession,
-} from "./server/queries";
+} from "./db/queries";
 
 function createDatabaseSessionStorage(cookie: Cookie) {
   return createSessionStorage({

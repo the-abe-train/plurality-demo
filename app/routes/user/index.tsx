@@ -9,18 +9,18 @@ import {
   useLoaderData,
 } from "remix";
 import useAttachWallet from "~/hooks/useAttachWallet";
-import { UserSchema } from "~/lib/db_schemas";
-import { authorizeWallet } from "~/server/authorize";
-import { client } from "~/server/db.server";
+import { UserSchema } from "~/db/schemas";
+import { authorizeWallet } from "~/util/authorize";
+import { client } from "~/db/connect.server";
 import {
   deleteUser,
   removeWallet,
   userById,
   userUpdateName,
   userUpdateWallet,
-} from "~/server/queries";
-import { sendEmail } from "~/server/sendgrid.server";
-import { createVerifyEmailLink } from "~/server/verify.server";
+} from "~/db/queries";
+import { sendEmail } from "~/api/sendgrid.server";
+import { createVerifyEmailLink } from "~/util/verify.server";
 import { getSession, destroySession } from "../../sessions";
 
 type LoaderData = {
@@ -65,6 +65,8 @@ export const action: ActionFunction = async ({ request }) => {
       const response = await sendEmail({ emailTo, emailBody, subject });
       if (response.ok) {
         console.log(`Verification email sent to ${emailTo}!`);
+        const message = "Verification email sent.";
+        return json<ActionData>({ message });
       }
     }
   }
@@ -136,6 +138,9 @@ export default function LogoutRoute() {
     setMessage(newMessage);
   }
 
+  const dontShowVerifyButton =
+    actionData?.message === "Verification email sent." || user.email.verified;
+
   const [name, setName] = useState(user.name || "");
   return (
     <main className="container max-w-4xl flex-grow px-4">
@@ -144,7 +149,10 @@ export default function LogoutRoute() {
         <Form method="post" className="space-x-4 max-w-xs flex items-center">
           <p>Email: {user.email.address}</p>
           {user.email.verified && <p>Email verified</p>}
-          {!user.email.verified && (
+          {actionData?.message === "Verification email sent." && (
+            <p>{actionData.message}</p>
+          )}
+          {!dontShowVerifyButton && (
             <button
               type="submit"
               name="_action"
@@ -161,7 +169,9 @@ export default function LogoutRoute() {
             type="text"
             value={name}
             name="name"
-            className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+            className="w-full px-4 py-2 text-sm border rounded-md 
+            focus:border-blue-400 focus:outline-none focus:ring-1 
+            focus:ring-blue-600"
             onChange={(e) => setName(e.target.value)}
           />
           <button

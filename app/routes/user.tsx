@@ -11,9 +11,9 @@ import {
   useLoaderData,
 } from "remix";
 import { getSession } from "~/sessions";
-import { UserSchema } from "~/lib/schemas";
-import { userById } from "~/server/queries";
-import { client } from "~/server/db.server";
+import { UserSchema } from "~/db/schemas";
+import { userById } from "~/db/queries";
+import { client } from "~/db/connect.server";
 
 export const links: LinksFunction = () => {
   return [
