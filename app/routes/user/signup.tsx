@@ -11,7 +11,7 @@ import {
 import { commitSession, getSession } from "~/sessions";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { connectUserWallet } from "~/db/queries";
+import { connectUserWallet, gameByQuestionUser } from "~/db/queries";
 import { client } from "~/db/connect.server";
 import { ObjectId } from "mongodb";
 import useConnectWithWallet from "~/hooks/useConnectWithWallet";
@@ -25,7 +25,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   // Return nothing
 
   const session = await getSession(request.headers.get("Cookie"));
-  if (session.has("_id")) {
+  if (session.has("user")) {
     return redirect("/");
   }
   return "";
@@ -48,11 +48,12 @@ export const action: ActionFunction = async ({ request }) => {
   const nextWeek = dayjs().add(7, "day").toDate();
 
   // Parse form data
-  let form = await request.formData();
-  let email = form.get("email");
-  let password = form.get("password");
-  let verify = form.get("verify");
-  let wallet = form.get("wallet");
+  const form = await request.formData();
+  const email = form.get("email") as string;
+  const password = form.get("password") as string;
+  const verify = form.get("verify") as string;
+  const wallet = form.get("wallet") as string;
+  const localData = form.get("localData") as string;
 
   // Successful redirect function
   async function successfulRedirect(userId: ObjectId) {
@@ -76,14 +77,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   // Validate that all data was entered
-  if (
-    !email ||
-    !password ||
-    !verify ||
-    typeof email !== "string" ||
-    typeof password !== "string" ||
-    typeof verify !== "string"
-  ) {
+  if (!email || !password || !verify) {
     return json<ActionData>({ message: "Please fill out all fields" });
   }
 
@@ -94,21 +88,30 @@ export const action: ActionFunction = async ({ request }) => {
 
   // Check if username is already taken and register user
   const { isAuthorized, userId } = await registerUser(email, password);
-  if (!isAuthorized) {
+  if (!isAuthorized || !userId) {
     return json<ActionData>({ message: "Username already taken" });
   }
 
-  // Create user and redirect to home page
-  if (userId) {
-    return await successfulRedirect(userId);
+  // If there is a game in the local storage, uplaod it for the user.
+  if (localData) {
+    const { win, guesses, question } = JSON.parse(localData);
+    await gameByQuestionUser({
+      client,
+      userId,
+      questionId: Number(question),
+      win: win === "true",
+      guesses: JSON.parse(guesses),
+    });
   }
 
-  return "";
+  // Create user and redirect to home page
+  return await successfulRedirect(userId);
 };
 
 export default function signup() {
   const actionData = useActionData<ActionData>();
   const [message, setMessage] = useState("");
+  const [localData, setLocalData] = useState("");
   const connectWallet = useConnectWithWallet();
 
   useEffect(() => {
@@ -121,6 +124,14 @@ export default function signup() {
     const message = await connectWallet();
     setMessage(message);
   }
+
+  // If the player has already played a sample round, grag that data
+  useEffect(() => {
+    const question = localStorage.getItem("question");
+    const guesses = localStorage.getItem("guesses");
+    const win = localStorage.getItem("win");
+    setLocalData(JSON.stringify({ question, guesses, win }));
+  }, []);
 
   return (
     <main className="container max-w-md flex-grow px-4 my-8">
@@ -145,6 +156,13 @@ export default function signup() {
           placeholder="Verify password"
           type="password"
           name="verify"
+        />
+        <input
+          className="hidden"
+          type="text"
+          name="localData"
+          value={localData}
+          readOnly
         />
         {message && <p className="text-red-700">{message}</p>}
         <button

@@ -226,30 +226,30 @@ export async function votesByQuestion(client: MongoClient, questionId: number) {
   return votes as VoteAggregation[];
 }
 
-export async function gameByQuestionUser(
-  client: MongoClient,
-  questionId: number,
-  userId: ObjectId,
-  totalVotes?: number
-) {
-  if (!userId && totalVotes) {
-    console.log("Not signed in so using fake game.");
-    return {
-      _id: new ObjectId(),
-      question: questionId,
-      user: new ObjectId(),
-      guesses: [],
-      totalVotes: totalVotes,
-      lastUpdated: new Date(),
-    };
-  }
+type GameProps = {
+  client: MongoClient;
+  questionId: number;
+  userId: ObjectId;
+  totalVotes?: number;
+  win?: boolean;
+  guesses?: VoteAggregation[];
+};
+
+export async function gameByQuestionUser({
+  client,
+  questionId,
+  userId,
+  totalVotes,
+  win,
+  guesses,
+}: GameProps) {
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
   const result = await gamesCollection.findOneAndUpdate(
     { question: questionId, user: userId },
     {
       $set: { lastUpdated: new Date() },
-      $setOnInsert: { guesses: [], win: false },
+      $setOnInsert: { guesses: guesses || [], win: win || false },
       $max: { totalVotes },
     },
     { upsert: true, returnDocument: "after" }

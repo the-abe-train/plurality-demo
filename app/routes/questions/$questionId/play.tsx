@@ -114,7 +114,12 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const totalVotes = votes.reduce((sum, ans) => {
     return sum + ans.votes;
   }, 0);
-  const game = await gameByQuestionUser(client, questionId, userId, totalVotes);
+  const game = await gameByQuestionUser({
+    client,
+    questionId,
+    userId,
+    totalVotes,
+  });
   invariant(game, "Game upsert failed");
 
   // Set initial message for player
@@ -158,7 +163,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
   const questionId = Number(params.questionId);
-  const game = await gameByQuestionUser(client, questionId, userId);
+  const game = await gameByQuestionUser({ client, questionId, userId });
   invariant(game, "Game upsert failed");
   const trimmedGuess = guess.trim().toLowerCase();
 
