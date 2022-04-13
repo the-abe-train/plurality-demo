@@ -9,12 +9,17 @@ import {
   LoaderFunction,
   redirect,
   useActionData,
+  useLoaderData,
 } from "remix";
 import useConnectWithWallet from "~/hooks/useConnectWithWallet";
 import { authorizeUser } from "~/util/authorize";
 import { client } from "~/db/connect.server";
 import { connectUserWallet } from "~/db/queries";
 import { getSession, commitSession } from "../../sessions";
+
+type LoaderData = {
+  message: string;
+};
 
 export const loader: LoaderFunction = async ({ request }) => {
   // Upon visitng the page, gets the session from the headers
@@ -24,10 +29,23 @@ export const loader: LoaderFunction = async ({ request }) => {
   // Return nothing
 
   const session = await getSession(request.headers.get("Cookie"));
-  if (session.has("_id")) {
+  if (session.has("user")) {
     return redirect("/");
   }
-  return "";
+
+  const message = session.get("message") || null;
+  session.unset("message");
+  console.log(message);
+
+  return json<LoaderData>(
+    { message },
+    {
+      headers: {
+        // only necessary with cookieSessionStorage
+        "Set-Cookie": await commitSession(session),
+      },
+    }
+  );
 };
 
 type ActionData = {
@@ -94,10 +112,11 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Login() {
-  // const { activateBrowserWallet } = useEthers();
+  const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const connectWallet = useConnectWithWallet();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(loaderData?.message);
+  console.log("message", message);
 
   useEffect(() => {
     if (actionData?.message) {

@@ -1,4 +1,3 @@
-// import { Cookie, createSessionStorage } from "remix";
 import { Cookie } from "@remix-run/vercel/node_modules/@remix-run/server-runtime";
 import { createSessionStorage } from "@remix-run/vercel/node_modules/@remix-run/node";
 import { userCookie } from "./cookies";

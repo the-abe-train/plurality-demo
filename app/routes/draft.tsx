@@ -23,7 +23,7 @@ import { userById } from "~/db/queries";
 
 import { sendEmail } from "~/api/sendgrid.server";
 
-import { getSession } from "~/sessions";
+import { commitSession, getSession } from "~/sessions";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
@@ -54,10 +54,16 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
   const user = (await userById(client, userId)) || undefined;
+  console.log("user", user);
 
   // Redirect not signed-in users to home page
   if (!user) {
-    return redirect("/user/login");
+    session.flash("message", "You need to be logged-in to draft a question.");
+    return redirect("/user/login", {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
   }
 
   // Get list of NFTs on account using OpenSea API

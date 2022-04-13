@@ -526,6 +526,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   top: 0px;
 }
 
+.top-full{
+  top: 100%;
+}
+
+.left-0{
+  left: 0px;
+}
+
 .z-10{
   z-index: 10;
 }
@@ -622,6 +630,14 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .mt-3{
   margin-top: 0.75rem;
+}
+
+.mb-8{
+  margin-bottom: 2rem;
+}
+
+.mb-16{
+  margin-bottom: 4rem;
 }
 
 .block{
@@ -1072,6 +1088,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .pt-6{
   padding-top: 1.5rem;
+}
+
+.pb-16{
+  padding-bottom: 4rem;
 }
 
 .text-center{

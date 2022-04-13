@@ -15,7 +15,7 @@ import { GameSchema, QuestionSchema } from "~/db/schemas";
 import { client } from "~/db/connect.server";
 import { addVote, gameByQuestionUser, questionById } from "~/db/queries";
 
-import { getSession } from "~/sessions";
+import { commitSession, getSession } from "~/sessions";
 import { Photo } from "~/api/schemas";
 import { fetchPhoto } from "~/api/unsplash";
 
@@ -33,7 +33,12 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   // Redirect not signed-in users to home page
   if (!userId) {
-    return redirect("/user/login");
+    session.flash("message", "You need to be logged-in to vote on a survey.");
+    return redirect("/user/login", {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
   }
 
   // Get data from db and apis

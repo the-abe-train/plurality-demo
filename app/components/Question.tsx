@@ -1,6 +1,7 @@
+import dayjs from "dayjs";
 import { Link } from "remix";
-import { Photo } from "~/lib/api_schemas";
-import { QuestionSchema } from "~/lib/db_schemas";
+import { Photo } from "~/api/schemas";
+import { QuestionSchema } from "~/db/schemas";
 
 type Props = {
   question: QuestionSchema;
@@ -11,8 +12,10 @@ type Props = {
 // divs, but overflow on the main container was causing issues on firefox
 
 export default function Question({ question, photo }: Props) {
+  const surveyClose = dayjs(question.surveyClose);
+  const action = surveyClose > dayjs() ? "vote" : "play";
   return (
-    <Link to={`/questions/${question._id}/play`}>
+    <Link to={`/questions/${question._id}/${action}`}>
       <div
         className="border-2 border-black rounded-lg 
     drop-shadow-block z-20 bg-white my-3 max-w-md mx-auto"
@@ -24,7 +27,10 @@ export default function Question({ question, photo }: Props) {
             className="object-cover w-full h-full"
           />
         </div>
-        <h2 className="text-lg p-2 font-bold border-t-2 z-30 border-black bg-white rounded-b-lg">
+        <h2
+          className="text-lg p-2 font-bold border-t-2 z-30 border-black 
+        bg-white rounded-b-lg"
+        >
           #{question._id} {question.text}
         </h2>
       </div>

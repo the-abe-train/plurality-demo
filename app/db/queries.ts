@@ -9,7 +9,7 @@ import { DATABASE_NAME } from "../util/env";
 import { MongoClient, ObjectId } from "mongodb";
 import { SessionData } from "remix";
 import invariant from "tiny-invariant";
-import { THRESHOLD } from "~/util/gameplay";
+import { checkWin, THRESHOLD } from "~/util/gameplay";
 import { truncateEthAddress } from "~/util/text";
 import { randomPassword } from "../util/authorize";
 
@@ -232,6 +232,17 @@ export async function gameByQuestionUser(
   userId: ObjectId,
   totalVotes?: number
 ) {
+  if (!userId && totalVotes) {
+    console.log("Not signed in so using fake game.");
+    return {
+      _id: new ObjectId(),
+      question: questionId,
+      user: new ObjectId(),
+      guesses: [],
+      totalVotes: totalVotes,
+      lastUpdated: new Date(),
+    };
+  }
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
   const result = await gamesCollection.findOneAndUpdate(
@@ -243,7 +254,8 @@ export async function gameByQuestionUser(
     },
     { upsert: true, returnDocument: "after" }
   );
-  return result.value;
+  let game = result.value;
+  return game;
 }
 
 export async function addGuess(
@@ -262,14 +274,12 @@ export async function addGuess(
 
   // Check if player won
   invariant(updatedGame?.guesses, "Game update failed to add guess");
-  const points = updatedGame.guesses.reduce((sum, guess) => {
-    return sum + guess.votes;
-  }, 0);
-  const absThreshold = updatedGame.totalVotes * (THRESHOLD / 100);
-  if (points >= absThreshold) {
+  const { guesses, totalVotes } = updatedGame;
+  const win = checkWin(guesses, totalVotes);
+  if (win) {
     const wonGameResult = await gamesCollection.findOneAndUpdate(
       { _id: gameId },
-      { $set: { win: true } },
+      { $set: { win } },
       { upsert: false, returnDocument: "after" }
     );
     return wonGameResult.value;
