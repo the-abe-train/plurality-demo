@@ -10,7 +10,12 @@ dotenv.config();
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
-  define: { __MONGO_URL__: `'${process.env.MONGO_URL}'` },
+  define: {
+    __MONGO_URL__: `'${process.env.MONGO_URL}'`,
+    __TEST_WALLET__: `'${process.env.TEST_WALLET}'`,
+    __ADMIN_EMAIL__: `'${process.env.ADMIN_EMAIL}'`,
+    __FROM_EMAIL__: `'${process.env.FROM_EMAIL}'`,
+  },
   test: {
     globals: true,
     environment: "happy-dom",

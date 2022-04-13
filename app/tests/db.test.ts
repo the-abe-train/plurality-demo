@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { client } from "~/db/db.server";
+import { client } from "~/db/connect.server";
 import { createUser, deleteUser, userById } from "~/db/queries";
 
 // Test variables

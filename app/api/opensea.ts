@@ -1,4 +1,5 @@
 import { OPENSEA_API_KEY } from "~/util/env";
+import { NFT } from "./schemas";
 
 export async function getNfts(wallet: string) {
   const options = {
@@ -14,6 +15,6 @@ export async function getNfts(wallet: string) {
 
   const response = await fetch(url, options);
   const output = await response.json();
-  const nfts = output.assets;
+  const nfts = output.assets as NFT[];
   return nfts;
 }

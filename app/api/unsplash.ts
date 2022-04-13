@@ -1,5 +1,5 @@
 import { UNSPLASH_ACCESS_KEY } from "../util/env";
-import { Photo } from "~/lib/api_schemas";
+import { Photo } from "./schemas";
 
 // Unsplash API
 export async function fetchPhoto(photoId: string): Promise<Photo> {
