@@ -31,5 +31,5 @@ export default function Counter({ value, percent }: Props) {
     return () => controls.stop();
   }, [from, to]);
 
-  return <p className="font-bold font-header text-xl" ref={nodeRef} />;
+  return <p className="font-semibold font-header text-xl" ref={nodeRef} />;
 }

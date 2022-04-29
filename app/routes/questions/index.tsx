@@ -19,6 +19,7 @@ import { questionBySearch, votesByQuestion } from "~/db/queries";
 import { client } from "~/db/connect.server";
 import { Photo } from "~/api/schemas";
 import { fetchPhoto } from "~/api/unsplash";
+import { isMobile } from "react-device-detect";
 
 type ActionData = {
   pageQuestions: QuestionSchema[];
@@ -95,6 +96,8 @@ export const action: ActionFunction = async ({ request }) => {
   return "";
 };
 
+// TODO bug: If you search "when" and try to change pages you get weird happenings
+
 export default function Index() {
   const submit = useSubmit();
   const [page, setPage] = useState(1);
@@ -125,7 +128,7 @@ export default function Index() {
   }
 
   return (
-    <div className="container">
+    <main className="flex-grow mx-4 md:mx-auto max-w-6xl">
       <Form
         method="post"
         className="m-8 flex flex-col space-y-4 max-w-xl mx-auto px-4"
@@ -138,22 +141,49 @@ export default function Index() {
           placeholder="Search by keyword or question ID"
           className="border-[1px] border-black px-2"
         />
-        <input
-          type="date"
-          name="date"
-          id="date"
-          className="border-[1px] border-black flex-grow px-2"
-        />
+        <div
+          className="flex-grow flex flex-col justify-between space-y-3
+        md:flex-row md:space-y-0"
+        >
+          <input
+            type="date"
+            name="date"
+            id="date"
+            className="border-[1px] border-black px-2 min-w-[300px]"
+          />
+          <div>
+            <label>
+              Community
+              <input
+                className="mx-2"
+                type="checkbox"
+                name="community"
+                id="community"
+                defaultChecked
+              />
+            </label>
+            <label>
+              Standard
+              <input
+                className="mx-2"
+                type="checkbox"
+                name="standard"
+                id="standard"
+                defaultChecked
+              />
+            </label>
+          </div>
+        </div>
         <div className="flex justify-between border-black ">
-          <div className="flex">
+          <div className="flex items-center">
             <button
-              className="px-2 border-[1px] border-black rounded-full"
+              className="px-2 border-[1px] border-black rounded-full bg-white h-min"
               onClick={() => turnPage(-1)}
               type="button"
             >
               -
             </button>
-            <label className="flex mx-2">
+            <label className="flex mx-2 items-center">
               Page:{"  "}
               <input
                 type="text"
@@ -166,7 +196,7 @@ export default function Index() {
               />
             </label>
             <button
-              className="px-2 border-[1px] border-black rounded-full"
+              className="px-2 border-[1px] border-black rounded-full bg-white h-min"
               onClick={() => turnPage(1)}
               type="button"
               disabled={transition.state !== "idle"}
@@ -177,7 +207,7 @@ export default function Index() {
           <div className="space-x-4">
             <button
               type="reset"
-              className="text-red-700"
+              className="cancel px-3 py-2"
               onClick={() => setPage(1)}
               disabled={transition.state !== "idle"}
             >
@@ -185,7 +215,7 @@ export default function Index() {
             </button>
             <button
               type="submit"
-              className="rounded-sm border-[1px] px-4 border-black"
+              className="silver px-3 py-2"
               disabled={transition.state !== "idle"}
             >
               Search
@@ -193,7 +223,7 @@ export default function Index() {
           </div>
         </div>
       </Form>
-      <div className="px-4">
+      <div className="md:px-4">
         {showData && data?.metadata && (
           <section className="my-4">
             <div className="m-4 flex justify-between">
@@ -202,7 +232,14 @@ export default function Index() {
                 out of {data.metadata.total}
               </span>
             </div>
-            <div className="lg:grid lg:grid-cols-3 gap-4">
+            <div
+              className="grid md:justify-items-center"
+              style={{
+                gridTemplateColumns: isMobile
+                  ? "repeat(auto-fit, minmax(auto, 1fr))"
+                  : "repeat(auto-fit, minmax(358px, 1fr))",
+              }}
+            >
               {data.pageQuestions.map((q, idx) => {
                 const photo = data.photos[idx];
                 return <Question question={q} photo={photo} key={q._id} />;
@@ -211,6 +248,6 @@ export default function Index() {
           </section>
         )}
       </div>
-    </div>
+    </main>
   );
 }

@@ -9,8 +9,11 @@ module.exports = {
         sans: ['"Kanit"']
       },
       colors: {
-        accent: '#012733',
-        button: '#012733'
+        button: '#012733',
+        primary1: '#FDFAF6',
+        primary2: '#FFEAE0',
+        secondary: '#21092A',
+        outline: '#808080'
       },
       dropShadow: {
         'block': "0px 4px 4px rgba(0, 0, 0, 0.25)"
@@ -19,11 +22,6 @@ module.exports = {
         center: true
       }
     },
-    // extend: {
-    //   colors: {
-    //     accent: '#012A36'
-    //   }
-    // }
   },
   plugins: [],
 }

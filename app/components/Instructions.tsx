@@ -1,31 +1,43 @@
 import { useState } from "react";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
-import play from "~/images/play.svg";
-import vote from "~/images/vote.svg";
-import draft from "~/images/draft.svg";
-import logo from "~/images/logo.svg";
+import guess from "~/images/icons/guess.svg";
+import vote from "~/images/icons/vote.svg";
+import draft from "~/images/icons/draft.svg";
+import { Link } from "remix";
 
 const instructions = [
   {
-    name: "Play",
-    icon: play,
-    text: "Guess the most popular answers to surveys with respondants from around the world.",
+    name: "Guess",
+    icon: guess,
+    text: (
+      <>
+        <b>Guess</b> the most popular answers to surveys.
+      </>
+    ),
   },
   {
     name: "Vote",
     icon: vote,
-    text: "Use the Ballot token to participate in tomorrow's surveys.",
+    text: (
+      <>
+        <b>Respond</b> to survey questions for future games.
+      </>
+    ),
   },
   {
     name: "Draft",
     icon: draft,
-    text: "Submit custom questions to be a part of upcoming surveys.",
+    text: (
+      <>
+        <b>Draft</b> custom questions for future surveys.
+      </>
+    ),
   },
 ];
 
 export default function Instructions() {
   const [helper, setHelper] = useState(instructions[0]["text"]);
-  const [icon, setIcon] = useState(instructions[0]["icon"]);
+  const [icon, setIcon] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const control = useAnimation();
 
@@ -65,78 +77,72 @@ export default function Instructions() {
     },
   };
 
+  function togglePopup(text: JSX.Element, newIcon: string) {
+    if (icon === newIcon) {
+      setShowPopup(false);
+      setIcon("");
+      return;
+    }
+    setHelper(text);
+    setIcon(newIcon);
+    setShowPopup(true);
+    control.start({
+      opacity: [1, 0, 1],
+    });
+  }
+
   return (
-    <section className="m-4 pb-1 flex-grow">
-      <h1
-        className="text-4xl text-center font-header font-bold flex items-center 
-    w-full justify-center gap-x-2 mt-6"
-        onClick={() => setShowPopup(false)}
+    <div className="md:my-4 pb-1 w-full md:w-fit inline-block">
+      <h2 className="hidden md:block text-2xl font-header">Instructions</h2>
+      <div
+        className="flex justify-around my-2 space-x-4
+        md:flex-col md:bg-primary2 md:rounded-md md:w-80 md:p-3 md:space-y-4 
+        md:border-outline md:border-[1px] md:shadow-lg md:space-x-0"
       >
-        <img className="inline h-8 object-fill" src={logo} alt="logo" />
-        <span>Plurality</span>
-      </h1>
-      <div className="flex w-full justify-around my-4">
         {instructions.map((instr) => {
           return (
             <div
               key={instr.name}
               className="flex flex-col items-center pointer"
-              onClick={() => {
-                setHelper(instr.text);
-                setIcon(instr.icon);
-                setShowPopup(true);
-                control.start({
-                  opacity: [1, 0, 1],
-                });
-              }}
+              onClick={() => togglePopup(instr.text, instr.icon)}
             >
-              <h3 className="text-[#012A36] font-header text-2xl">
+              <h3 className="md:hidden text-black font-header text-2xl">
                 {instr.name}
               </h3>
-              <div
-                className="flex items-center bg-white sm:border-2 
-        border-black rounded-md p-2 space-x-3"
-              >
+              <div className="flex items-center  p-2 space-x-3">
                 <img
                   src={instr.icon}
-                  alt="play"
-                  className="h-9 sm:hidden lg:block"
+                  alt={instr.name}
+                  className="h-9 lg:block"
                 />
-                <p className="hidden sm:block sm:w-44 lg:w-60">{instr.text}</p>
+                <p className="hidden md:block text-black">{instr.text}</p>
               </div>
             </div>
           );
         })}
       </div>
-      <div className="sm:hidden">
-        <AnimatePresence initial={false}>
-          {showPopup && (
+      <AnimatePresence initial={false}>
+        {showPopup && (
+          <motion.div
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            variants={containerVariants}
+            className="bg-white border-2 border-black rounded-md md:hidden md:border-0"
+          >
             <motion.div
-              initial="collapsed"
-              animate="open"
-              exit="collapsed"
-              variants={containerVariants}
-              className="bg-white border-2 border-black rounded-md"
+              variants={childVariants}
+              className="flex p-2 bg-primary2 md:hidden"
             >
-              <motion.div
-                variants={childVariants}
-                // animate={control}
-                className="flex p-2"
-              >
-                <img src={icon} alt="Instruction symbol" className="mr-4" />
-                <p className="m-0">{helper}</p>
-              </motion.div>
+              <img src={icon} alt="Instruction symbol" className="mr-4" />
+              <p className="m-0">{helper}</p>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </section>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <Link className="underline text-sm" to="/help/what-is-plurality">
+        Full instructions
+      </Link>
+    </div>
   );
-}
-
-{
-  /* <div className="bg-white border-2 border-black p-2 rounded-md flex sm:hidden">
-<img src={icon} alt="" className="mr-4" />
-<p>{helper}</p>
-</div> */
 }

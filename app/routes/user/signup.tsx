@@ -134,66 +134,76 @@ export default function signup() {
   }, []);
 
   return (
-    <main className="container max-w-md flex-grow px-4 my-8">
-      <h1 className="font-header text-3xl">Sign up</h1>
-      <Form className="max-w-md mx-auto space-y-6 my-6" method="post">
-        <input
-          type="email"
-          name="email"
-          className="w-full px-4 py-2 text-sm border rounded-md 
+    <main className="container flex-grow px-4 sm:px-0 mx-auto w-full max-w-4xl">
+      <h1 className="font-header text-3xl text-center my-4">Sign up</h1>
+      <section className="flex justify-around flex-col md:flex-row">
+        <article className="max-w-sm ">
+          <h2 className="text-center text-2xl font-header">
+            Option 1: Email & Password
+          </h2>
+          <Form
+            className="max-w-md space-y-6 my-6 flex flex-col items-center"
+            method="post"
+          >
+            <input
+              type="email"
+              name="email"
+              className="w-full px-4 py-2 text-sm border rounded-md 
         focus:border-blue-400 focus:outline-none focus:ring-1 
         focus:ring-blue-600"
-          placeholder="Email Address"
-        />
-        <input
-          className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
-          placeholder="Password"
-          type="password"
-          name="password"
-        />
-        <input
-          className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
-          placeholder="Verify password"
-          type="password"
-          name="verify"
-        />
-        <input
-          className="hidden"
-          type="text"
-          name="localData"
-          value={localData}
-          readOnly
-        />
+              placeholder="Email Address"
+            />
+            <input
+              className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+              placeholder="Password"
+              type="password"
+              name="password"
+            />
+            <input
+              className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+              placeholder="Verify password"
+              type="password"
+              name="verify"
+            />
+            <input
+              className="hidden"
+              type="text"
+              name="localData"
+              value={localData}
+              readOnly
+            />
+            <button className="silver px-3 py-2 block" type="submit">
+              Sign-up
+            </button>
+          </Form>
+        </article>
+        <article className="max-w-sm">
+          <h2 className="text-center text-2xl font-header">
+            Option 2: Ethereum wallet
+          </h2>
+          <div className="my-4 space-y-4">
+            <button
+              className="gold px-3 py-2 block mx-auto"
+              onClick={clickWalletConnect}
+            >
+              Connect wallet
+            </button>
+            <p>
+              If you have an Ethereum wallet connected to your account, you can
+              draft your own survey questions!
+            </p>
+          </div>
+        </article>
+      </section>
+      <section className="md:mt-8 my-4">
+        <p>
+          Already have an account?{" "}
+          <Link to="/user/login" className="underline">
+            Log-in
+          </Link>
+        </p>
         {message && <p className="text-red-700">{message}</p>}
-        <button
-          className="block w-40 mx-auto px-4 py-2 mt-4 text-sm 
-    font-medium leading-5 text-center text-white transition-colors 
-    duration-150 bg-blue-600 border border-transparent rounded-lg 
-    active:bg-blue-600 hover:bg-blue-700 focus:outline-none 
-    focus:shadow-outline-blue"
-          type="submit"
-        >
-          Sign-up
-        </button>
-      </Form>
-      <div className="my-4">
-        <button
-          className="block w-40 mx-auto px-4 py-2 mt-4 text-sm 
-    font-medium leading-5 text-center text-white transition-colors 
-    duration-150 bg-blue-600 border border-transparent rounded-lg 
-    active:bg-blue-600 hover:bg-blue-700 focus:outline-none 
-    focus:shadow-outline-blue"
-          onClick={clickWalletConnect}
-        >
-          Connect with Wallet
-        </button>
-      </div>
-      <p>
-        Already have an account?{" "}
-        <Link to="/user/login" className="underline">
-          Log-in
-        </Link>
-      </p>
+      </section>
     </main>
   );
 }

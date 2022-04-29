@@ -8,8 +8,9 @@ type Props = {
   photo: Photo;
 };
 
-// Should be using overflow instead of rounding the corners of the inside
-// divs, but overflow on the main container was causing issues on firefox
+// TODO Needs a "community: boolean" prop to determine silver vs. gold
+
+// w-full on the questions is some risky CSS!
 
 export default function Question({ question, photo }: Props) {
   const surveyClose = dayjs(question.surveyClose);
@@ -17,8 +18,8 @@ export default function Question({ question, photo }: Props) {
   return (
     <Link to={`/questions/${question._id}/${action}`}>
       <div
-        className="border-2 border-black rounded-lg 
-    drop-shadow-block z-20 bg-white my-3 max-w-md mx-auto"
+        className="border-[1px] border-outline rounded-lg 
+     z-20 mt-3 w-fill md:w-[358px] mx-auto silver"
       >
         <div className="z-0 h-40 overflow-hidden rounded-t-md bg-black">
           <img
@@ -28,8 +29,8 @@ export default function Question({ question, photo }: Props) {
           />
         </div>
         <h2
-          className="text-lg p-2 font-bold border-t-2 z-30 border-black 
-        bg-white rounded-b-lg"
+          className="text-lg p-2 font-bold border-t-2 z-30 border-outline
+         rounded-b-lg"
         >
           #{question._id} {question.text}
         </h2>

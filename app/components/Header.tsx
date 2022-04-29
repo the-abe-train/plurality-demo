@@ -1,43 +1,37 @@
 import { Link } from "remix";
-import logo from "~/images/logo.svg";
-import wallet from "~/images/wallet.svg";
+import logo from "~/images/icons/logo.svg";
 
 type Props = {
   name?: string;
 };
 
+// TODO Connect button should reveal a dropdown on mobile (?)
+
 export default function Header({ name }: Props) {
   return (
-    <div className="px-4 py-2 border-0 shadow-md light z-10 w-full">
-      <nav className="flex justify-between items-center container max-w-4xl">
+    <div className="px-4 py-2 border-0 shadow-md bg-primary2 z-10 w-full">
+      <nav className="flex justify-between items-center max-w-4xl mx-4 md:mx-auto">
         <Link to="/">
           <h1
             className="text-2xl text-center font-header font-bold flex items-center 
           justify-center gap-x-2"
           >
             <img className="inline h-6 object-fill" src={logo} alt="logo" />
-            <span className="hidden sm:inline">Plurality</span>
+            <span className="hidden md:inline">Plurality</span>
           </h1>
         </Link>
-        <div className="flex items-center space-x-8 ">
-          <ul className="hidden sm:flex space-x-8">
-            <li>
-              <Link to="/questions">Questions</Link>
-            </li>
-            <li>
-              <Link to="/help/what-is-plurality">Help</Link>
-            </li>
-          </ul>
+
+        <ul className="flex md:space-x-8 items-center">
+          <li className="hidden md:block">
+            <Link to="/questions">Surveys</Link>
+          </li>
+          <li className="hidden md:block">
+            <Link to="/help/what-is-plurality">Help</Link>
+          </li>
           <Link to="/user">
-            <button
-              className="px-2 py-1 rounded-sm border-button text-button 
-      bg-[#F9F1F0] font-bold border-2 shadow"
-            >
-              <img className="inline mr-2" src={wallet} alt="wallet" />
-              {name || "Connect"}
-            </button>
+            <button className="silver px-3 py-2">{name || "Connect"}</button>
           </Link>
-        </div>
+        </ul>
       </nav>
     </div>
   );

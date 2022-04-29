@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Amaranth:wght@400;700&family=Kanit:wght@300&display=swap");
 
+/* TODO get rid of google fonts and host own fonts */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

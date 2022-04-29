@@ -1,5 +1,5 @@
 import styles from "~/styles/app.css";
-import whiteLogo from "~/images/white_logo.svg";
+import whiteLogo from "~/images/icons/white_logo.svg";
 import { Link, LinksFunction } from "remix";
 
 export const links: LinksFunction = () => {
@@ -8,7 +8,7 @@ export const links: LinksFunction = () => {
 
 export default function Footer() {
   return (
-    <footer className="bg-[#292929] p-4 text-white text-sm">
+    <footer className="bg-secondary p-4 text-primary1 text-sm">
       <div className="flex justify-between flex-wrap max-w-4xl container space-y-2">
         <section>
           <div className="font-header text-xl space-x-1 flex items-center">

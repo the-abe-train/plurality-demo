@@ -45,7 +45,7 @@ export default function help() {
   return (
     <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
       <Header name={data.user ? data.user.name : "Connect"} />
-      <main className="container max-w-4xl flex-grow px-4">
+      <main className="containerflex-grow px-4 sm:px-0 mx-auto w-full max-w-4xl">
         <Outlet />
         <section className="my-8">
           <h2 className="my-3 text-2xl font-header">Pages</h2>
