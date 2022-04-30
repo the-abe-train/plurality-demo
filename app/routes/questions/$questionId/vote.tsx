@@ -120,7 +120,7 @@ export default function vote() {
             <input
               type="text"
               name="vote"
-              className="border-[1px] border-black py-1 px-2 
+              className="border border-black py-1 px-2 
             bg-white disabled:bg-gray-300"
               disabled={!!yourVote}
             />

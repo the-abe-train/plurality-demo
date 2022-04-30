@@ -22,6 +22,11 @@ import {
 import { sendEmail } from "~/api/sendgrid.server";
 import { createVerifyEmailLink } from "~/util/verify.server";
 import { getSession, destroySession } from "../../sessions";
+import { truncateEthAddress } from "~/util/text";
+import Counter from "~/components/Counter";
+import guess from "~/images/icons/guess.svg";
+import vote from "~/images/icons/vote.svg";
+import draft from "~/images/icons/draft.svg";
 
 type LoaderData = {
   user: UserSchema;
@@ -141,80 +146,141 @@ export default function LogoutRoute() {
   const dontShowVerifyButton =
     actionData?.message === "Verification email sent." || user.email.verified;
 
+  // TODO "Disconnect wallet" button not working
+  // TODO get data for statistics
+
   const [name, setName] = useState(user.name || "");
   return (
-    <main className="container max-w-4xl flex-grow px-4">
-      <section className="my-8 space-y-4">
-        <h1 className="text-2xl my-3">Profile</h1>
-        <Form method="post" className="space-x-4 max-w-xs flex items-center">
-          <p>Email: {user.email.address}</p>
-          {user.email.verified && <p>Email verified</p>}
-          {actionData?.message === "Verification email sent." && (
-            <p>{actionData.message}</p>
-          )}
-          {!dontShowVerifyButton && (
+    <main
+      className="container max-w-4xl flex-grow px-4 flex flex-col
+    md:grid grid-rows-2 grid-cols-2 grid-flow-row gap-6"
+    >
+      <section className="space-y-4">
+        <h1 className="text-3xl my-3 font-header">Profile</h1>
+        <Form method="post">
+          <h2 className="text-xl my-2 font-header">Email</h2>
+          <div className="block md:flex md:space-x-3">
+            <input
+              type="email"
+              placeholder={user.email.address}
+              className="px-3 py-1 border-outline border rounded-sm w-full md:w-auto"
+            />
+            {actionData?.message === "Verification email sent." && (
+              <p>{actionData.message}</p>
+            )}
+            <div className="my-2 md:my-0 space-x-2">
+              <button
+                type="submit"
+                name="_action"
+                value="changeEmail"
+                className="silver px-3 py-1"
+              >
+                Change
+              </button>
+              <button
+                type="submit"
+                name="_action"
+                value="verifyEmail"
+                className="gold px-3 py-1 disabled:bg-[#f8e7b7] disabled:shadow-none"
+                disabled={user.email.verified}
+              >
+                {user.email.verified ? "Verified" : "Verify"}
+              </button>
+            </div>
+          </div>
+        </Form>
+        <Form method="post">
+          <h2 className="text-xl my-3 font-header">Name</h2>
+          <div className="flex space-x-3">
+            <input
+              type="text"
+              value={name}
+              name="name"
+              className="px-3 py-1 border-outline border rounded-sm"
+              onChange={(e) => setName(e.target.value)}
+            />
             <button
               type="submit"
               name="_action"
-              value="verifyEmail"
-              className="border-2 px-2 border-black rounded-sm"
+              value="changeName"
+              className="silver px-3 py-1"
             >
-              Verify email
+              Change
             </button>
-          )}
+          </div>
         </Form>
-        <Form method="post" className="space-x-4 max-w-xs flex items-center">
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            value={name}
-            name="name"
-            className="w-full px-4 py-2 text-sm border rounded-md 
-            focus:border-blue-400 focus:outline-none focus:ring-1 
-            focus:ring-blue-600"
-            onChange={(e) => setName(e.target.value)}
-          />
-          <button
-            type="submit"
-            name="_action"
-            value="changeName"
-            className="border-2 px-2 border-black rounded-sm"
-          >
-            Change
-          </button>
-        </Form>
-        <Form className="space-x-4 max-w-xs flex items-center" method="post">
-          <p>Ethereum wallet: {user.wallet}</p>
-          {!user.wallet && (
-            <button
-              className="border-2 px-2 border-black rounded-sm"
-              onClick={clickAttachWallet}
-            >
-              Connect wallet
-            </button>
-          )}
-          {user.wallet && (
-            <button
-              type="submit"
-              name="_action"
-              value="detachWallet"
-              className="border-2 px-2 border-black rounded-sm"
-            >
-              Disconnect wallet
-            </button>
-          )}
+        <Form method="post">
+          <h2 className="text-xl my-3 font-header">Ethereum Wallet</h2>
+          <div className="flex space-x-3">
+            <p className="px-3 py-1 border-outline border rounded-sm bg-white w-[225px]">
+              {truncateEthAddress(user.wallet || "") || "Not connected"}
+            </p>
+            {!user.wallet ? (
+              <button className="gold px-3 py-1" onClick={clickAttachWallet}>
+                Connect
+              </button>
+            ) : (
+              <button className="cancel px-3 py-1">Disconnect wallet</button>
+            )}
+          </div>
         </Form>
         {message && <p className="text-red-700">{message}</p>}
       </section>
-      <section className="my-8">
-        <h1 className="text-2xl my-3">Account</h1>
+
+      <section className="space-y-5">
+        <h1 className="text-3xl my-3 font-header">Statistics</h1>
+        <div className="flex w-full justify-around">
+          <div className="flex space-x-3 items-center">
+            <img src={guess} width={32} alt="Guess icon" />
+            <Counter value={34} />
+          </div>
+          <div className="flex space-x-3 items-center">
+            <img src={vote} width={32} alt="Vote icon" />
+            <Counter value={32} />
+          </div>
+          <div className="flex space-x-3 items-center">
+            <img src={draft} width={32} alt="Draft icon" />
+            <Counter value={0} />
+          </div>
+        </div>
+        <table className="table-auto">
+          <colgroup>
+            <col />
+            <col className="bg-yellow-50 border" />
+            <col />
+            <col className="bg-yellow-50 border w-max" />
+          </colgroup>
+          <tbody>
+            <tr className="border">
+              <td className="px-2 py-2">Games won</td>
+              <td className="px-2 py-2">34</td>
+              <td className="px-2 py-2">Games played</td>
+              <td className="px-2 py-2">41</td>
+            </tr>
+            <tr className="border">
+              <td className="px-2 py-2">Responses submitted</td>
+              <td className="px-2 py-2">32</td>
+              <td className="px-2 py-2">Highest score</td>
+              <td className="px-2 py-2">97% (#41)</td>
+            </tr>
+            <tr className="border">
+              <td className="px-2 py-2">Surveys drafted</td>
+              <td className="px-2 py-2">3</td>
+              <td className="px-2 py-2">Fewest guesses to win</td>
+              <td className="px-2 py-2">4 (#46)</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section className="">
+        <h1 className="text-3xl my-3 font-header">Account</h1>
         <div className="flex space-x-3">
           <Form method="post" className="space-x-4">
             <button
               type="submit"
               name="_action"
               value="logOut"
-              className="border-2 px-2 border-black rounded-sm"
+              className="silver px-3 py-1"
             >
               Logout
             </button>
@@ -224,12 +290,18 @@ export default function LogoutRoute() {
               type="submit"
               name="_action"
               value="delete"
-              className="border-2 px-2 border-red-700 border-opacity-100 
-              text-red-700 rounded-sm"
+              className="cancel px-3 py-1"
             >
               Delete
             </button>
           </Form>
+        </div>
+      </section>
+      <section className="mb-6">
+        <h1 className="text-3xl my-3 font-header">Survey tokens</h1>
+        <div className="flex space-x-3">
+          <button className="gold px-3 py-1">Buy a draft token</button>
+          <button className="gold px-3 py-1">Submit a draft</button>
         </div>
       </section>
     </main>

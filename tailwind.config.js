@@ -20,6 +20,9 @@ module.exports = {
       },
       container: {
         center: true
+      },
+      gridTemplateColumns: {
+        hompage: "45% 55%"
       }
     },
   },

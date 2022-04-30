@@ -139,7 +139,7 @@ export default function Index() {
           type="text"
           name="text"
           placeholder="Search by keyword or question ID"
-          className="border-[1px] border-black px-2"
+          className="border border-black px-2"
         />
         <div
           className="flex-grow flex flex-col justify-between space-y-3
@@ -149,7 +149,7 @@ export default function Index() {
             type="date"
             name="date"
             id="date"
-            className="border-[1px] border-black px-2 min-w-[300px]"
+            className="border border-black px-2 min-w-[300px]"
           />
           <div>
             <label>
@@ -177,7 +177,7 @@ export default function Index() {
         <div className="flex justify-between border-black ">
           <div className="flex items-center">
             <button
-              className="px-2 border-[1px] border-black rounded-full bg-white h-min"
+              className="px-2 border border-black rounded-full bg-white h-min"
               onClick={() => turnPage(-1)}
               type="button"
             >
@@ -196,7 +196,7 @@ export default function Index() {
               />
             </label>
             <button
-              className="px-2 border-[1px] border-black rounded-full bg-white h-min"
+              className="px-2 border border-black rounded-full bg-white h-min"
               onClick={() => turnPage(1)}
               type="button"
               disabled={transition.state !== "idle"}

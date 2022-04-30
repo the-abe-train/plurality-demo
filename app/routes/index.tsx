@@ -99,55 +99,55 @@ export default function Index() {
   return (
     <div className="bg-primary1 w-full top-0 bottom-0 flex flex-col min-h-screen">
       <Header name={data.user ? data.user.name : "Connect"} />
-      <main className="flex-grow mx-4 md:mx-auto max-w-4xl">
-        <h1
-          className="text-4xl text-center font-header font-bold flex items-center 
-    w-full justify-center gap-x-2 mt-6 mb-4"
-        >
-          <img className="inline h-8 object-fill" src={logo} alt="logo" />
-          <span>Plurality</span>
-        </h1>
-        <section className="flex flex-col md:flex-row-reverse justify-between mb-6 md:space-x-5">
-          <div className="my-2 space-y-3 h-fit block">
-            <h2 className="font-header text-2xl sm:text-left">
-              Click today's question to begin!
-            </h2>
-            <div className="flex flex-col items-center md:flex-row">
-              <Question question={today} photo={todayPhoto} />
-              <div
-                className="flex md:flex-col justify-center space-x-12 my-2
+      <h1
+        className="text-4xl text-center font-header font-bold flex items-center 
+          w-full justify-center gap-x-2 mt-6 mb-4"
+      >
+        <img className="inline h-8 object-fill" src={logo} alt="logo" />
+        <span>Plurality</span>
+      </h1>
+      <main
+        className="flex-grow mx-auto mb-4
+      grid justify-items-start md:grid-cols-hompage"
+      >
+        <section className="my-2 space-y-3 h-fit block ">
+          <h2 className="font-header text-2xl sm:text-left">
+            Click today's question to begin!
+          </h2>
+          <div className="flex flex-col items-center md:flex-row">
+            <Question question={today} photo={todayPhoto} />
+            <div
+              className="flex md:flex-col justify-center space-x-12 my-2
                 md:my-4 md:mx-4 md:gap-y-6 md:space-x-0"
-              >
-                <div className="flex flex-col items-center">
-                  <Counter value={354} />
-                  <span>Votes</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Counter value={93} />
-                  <span>Answer</span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Counter value={23} percent />
-                  <span>Plurality</span>
-                </div>
+            >
+              <div className="flex flex-col items-center">
+                <Counter value={354} />
+                <span>Votes</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <Counter value={93} />
+                <span>Answer</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <Counter value={23} percent />
+                <span>Plurality</span>
               </div>
             </div>
           </div>
+        </section>
+        <section className="md:col-start-1 md:row-start-1 mx-auto md:mx-0">
           <Instructions />
         </section>
-        <section className="flex flex-col md:flex-row justify-between mb-6 md:space-x-5">
+        <section className="my-2 space-y-3 h-fit">
+          <h2 className="font-header text-2xl">Guess for past surveys</h2>
+          <Question question={yesterday} photo={yesterdayPhoto} />
+        </section>
+        <section className="flex md:flex-row flex-col md:space-x-3 w-max">
           <div className="my-2 space-y-3 h-fit">
             <h2 className="font-header text-2xl">Respond to an open survey</h2>
             <Question question={tomorrow} photo={tomorrowPhoto} />
           </div>
-          <div className="my-2 space-y-3 h-fit">
-            <h2 className="font-header text-2xl">Guess for past surveys</h2>
-            <Question question={yesterday} photo={yesterdayPhoto} />
-          </div>
-          <div
-            className="flex justify-around w-full md:w-fit md:flex-col 
-          md:self-end my-3 md:space-y-3"
-          >
+          <div className="md:self-end my-2 flex md:flex-col md:space-y-8 justify-around">
             <div className="w-fit space-y-1 flex flex-col">
               <h3 className="font-header text-lg inline">Play more surveys</h3>
               <Link to="/questions">

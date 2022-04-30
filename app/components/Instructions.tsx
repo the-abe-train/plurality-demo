@@ -92,12 +92,12 @@ export default function Instructions() {
   }
 
   return (
-    <div className="md:my-4 pb-1 w-full md:w-fit inline-block">
+    <div className="md:my-4 pb-1 w-[358px] md:w-fit inline-block">
       <h2 className="hidden md:block text-2xl font-header">Instructions</h2>
       <div
         className="flex justify-around my-2 space-x-4
         md:flex-col md:bg-primary2 md:rounded-md md:w-80 md:p-3 md:space-y-4 
-        md:border-outline md:border-[1px] md:shadow-lg md:space-x-0"
+        md:border-outline md:border md:shadow-lg md:space-x-0"
       >
         {instructions.map((instr) => {
           return (

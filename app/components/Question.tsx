@@ -10,16 +10,14 @@ type Props = {
 
 // TODO Needs a "community: boolean" prop to determine silver vs. gold
 
-// w-full on the questions is some risky CSS!
-
 export default function Question({ question, photo }: Props) {
   const surveyClose = dayjs(question.surveyClose);
   const action = surveyClose > dayjs() ? "vote" : "play";
   return (
     <Link to={`/questions/${question._id}/${action}`}>
       <div
-        className="border-[1px] border-outline rounded-lg 
-     z-20 mt-3 w-fill md:w-[358px] mx-auto silver"
+        className="border border-outline rounded-lg 
+     z-20 mt-3 max-w-[358px] mx-auto silver"
       >
         <div className="z-0 h-40 overflow-hidden rounded-t-md bg-black">
           <img

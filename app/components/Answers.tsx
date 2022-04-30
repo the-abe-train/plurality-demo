@@ -57,7 +57,7 @@ export default function Answers({ guesses, totalVotes, score }: Props) {
           return (
             <motion.div
               key={answer._id}
-              className="flex items-center w-full border-[1px] border-black 
+              className="flex items-center w-full border border-black 
             rounded-sm bg-white p-1"
               variants={variants}
             >
@@ -73,7 +73,7 @@ export default function Answers({ guesses, totalVotes, score }: Props) {
         })}
       </motion.div>
       <div
-        className="flex items-center w-40 border-[1px] border-black 
+        className="flex items-center w-40 border border-black 
             rounded-sm bg-white p-1 mx-auto my-4"
       >
         <span className="text-sm font-bold w-1/2">Remaining</span>

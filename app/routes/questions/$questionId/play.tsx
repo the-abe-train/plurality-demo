@@ -263,7 +263,7 @@ export default function Play() {
         <p>{gameOver}</p>
         <Form className="text-center space-x-2" method="post">
           <input
-            className="border-[1px] border-black py-1 px-2 bg-white 
+            className="border border-black py-1 px-2 bg-white 
             disabled:bg-gray-300"
             type="text"
             name="guess"
