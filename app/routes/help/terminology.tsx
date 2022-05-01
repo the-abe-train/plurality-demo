@@ -9,7 +9,7 @@ export default function terminology() {
           metallic gradient.
         </p>
         <p>
-          <b className="gold-text">Gold</b> indicates that it’s related to Web3,
+          <b className="gold-text">Gold</b> indicates that it's related to Web3,
           including community drafted questions, signing in with your Ethereum
           wallet, or buying an NFT.
         </p>

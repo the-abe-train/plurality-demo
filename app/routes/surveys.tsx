@@ -1,10 +1,27 @@
-import { json, LoaderFunction, Outlet, useLoaderData } from "remix";
+import {
+  json,
+  LinksFunction,
+  LoaderFunction,
+  Outlet,
+  useLoaderData,
+} from "remix";
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
+import styles from "~/styles/app.css";
+import backgrounds from "~/styles/backgrounds.css";
+import animations from "~/styles/animations.css";
 import { UserSchema } from "~/db/schemas";
 import { userById } from "~/db/queries";
 import { getSession } from "~/sessions";
 import { client } from "~/db/connect.server";
+
+export const links: LinksFunction = () => {
+  return [
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: backgrounds },
+    { rel: "stylesheet", href: animations },
+  ];
+};
 
 type LoaderData = {
   user?: UserSchema;

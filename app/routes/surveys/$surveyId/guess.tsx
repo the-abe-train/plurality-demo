@@ -66,7 +66,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
-  const questionId = Number(params.questionId);
+  const questionId = Number(params.surveyId);
 
   // Redirect not signed-in users to home page
   if (!userId) {
@@ -89,7 +89,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     session.set("game", questionId);
 
     // Send user to sample page
-    return redirect(`/questions/${questionId}/sample`, {
+    return redirect(`/surveys/${questionId}/sample`, {
       headers: {
         "Set-Cookie": await commitSession(session),
       },
@@ -103,7 +103,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Redirect to vote if survey close hasn't happened yet
   const surveyClose = question.surveyClose;
   if (dayjs(surveyClose) >= dayjs()) {
-    return redirect(`/questions/${questionId}/vote`);
+    return redirect(`/surveys/${questionId}/respond`);
   }
 
   // Get additional questiondata from db and apis
@@ -162,7 +162,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   // Pull in relevant data
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
-  const questionId = Number(params.questionId);
+  const questionId = Number(params.surveyId);
   const game = await gameByQuestionUser({ client, questionId, userId });
   invariant(game, "Game upsert failed");
   const trimmedGuess = guess.trim().toLowerCase();
@@ -225,7 +225,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   return json<ActionData>({ message, correctGuess, win });
 };
 
-export default function Play() {
+export default () => {
   // Data from server
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -288,7 +288,7 @@ export default function Play() {
         <p>Survey closed on 26 February 2022</p>
         <div className="flex items-center space-x-2">
           <ShareButton score={score} />
-          <Link to="/questions">
+          <Link to="/surveys">
             <button
               className="shadow px-2 py-1 rounded-sm border-button 
             text-button bg-[#F9F1F0] font-bold border-2"
@@ -300,4 +300,4 @@ export default function Play() {
       </section>
     </main>
   );
-}
+};

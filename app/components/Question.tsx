@@ -12,9 +12,9 @@ type Props = {
 
 export default function Question({ question, photo }: Props) {
   const surveyClose = dayjs(question.surveyClose);
-  const action = surveyClose > dayjs() ? "vote" : "play";
+  const action = surveyClose > dayjs() ? "respond" : "guess";
   return (
-    <Link to={`/questions/${question._id}/${action}`}>
+    <Link to={`/surveys/${question._id}/${action}`}>
       <div
         className="border border-outline rounded-lg 
      z-20 w-[358px] mx-auto silver"

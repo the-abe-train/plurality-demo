@@ -122,7 +122,7 @@ export default function Index() {
     newFormData.set("page", String(newPage));
     submit(newFormData, {
       method: "post",
-      action: "/questions?index",
+      action: "/surveys?index",
       replace: true,
     });
   }

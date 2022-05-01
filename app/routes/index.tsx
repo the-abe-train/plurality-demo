@@ -155,7 +155,7 @@ export default function Index() {
         <div className="md:self-end my-2 flex md:flex-col md:space-y-8 justify-around w-full md:w-max">
           <div className="w-max space-y-1 flex flex-col">
             <h3 className="font-header text-lg inline">Play more surveys</h3>
-            <Link to="/questions">
+            <Link to="/surveys">
               <button className="silver px-3 py-2">More surveys</button>
             </Link>
           </div>

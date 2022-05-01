@@ -23,7 +23,7 @@ export default function Header({ name }: Props) {
 
         <ul className="flex md:space-x-8 items-center">
           <li className="hidden md:block">
-            <Link to="/questions">Surveys</Link>
+            <Link to="/surveys">Surveys</Link>
           </li>
           <li className="hidden md:block">
             <Link to="/help/what-is-plurality">Help</Link>

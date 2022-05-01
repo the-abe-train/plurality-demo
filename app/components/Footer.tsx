@@ -30,7 +30,7 @@ export default function Footer() {
               <Link to="/help/what-is-plurality">Help</Link>
             </li>
             <li>
-              <Link to="/questions">Questions</Link>
+              <Link to="/surveys">Surveys</Link>
             </li>
           </ul>
         </section>

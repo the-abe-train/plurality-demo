@@ -590,14 +590,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-bottom: 0.5rem;
 }
 
-.my-8{
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-
 .mx-4{
   margin-left: 1rem;
   margin-right: 1rem;
+}
+
+.mx-8{
+  margin-left: 2rem;
+  margin-right: 2rem;
 }
 
 .my-3{
@@ -610,9 +610,9 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-bottom: 1.5rem;
 }
 
-.mx-8{
-  margin-left: 2rem;
-  margin-right: 2rem;
+.my-8{
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 .mr-4{
@@ -651,8 +651,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-top: 0.75rem;
 }
 
-.mr-8{
-  margin-right: 2rem;
+.mt-8{
+  margin-top: 2rem;
+}
+
+.ml-8{
+  margin-left: 2rem;
 }
 
 .block{
@@ -721,14 +725,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 0.75rem;
 }
 
-.h-8{
-  height: 2rem;
-}
-
 .h-min{
   height: -webkit-min-content;
   height: -moz-min-content;
   height: min-content;
+}
+
+.h-8{
+  height: 2rem;
 }
 
 .min-h-screen{
@@ -870,10 +874,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   align-items: center;
 }
 
-.justify-start{
-  justify-content: flex-start;
-}
-
 .justify-center{
   justify-content: center;
 }
@@ -898,10 +898,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   gap: 1.5rem;
 }
 
-.gap-2{
-  gap: 0.5rem;
-}
-
 .gap-4{
   gap: 1rem;
 }
@@ -913,11 +909,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .gap-y-4{
   row-gap: 1rem;
-}
-
-.gap-x-6{
-  -moz-column-gap: 1.5rem;
-       column-gap: 1.5rem;
 }
 
 .gap-x-10{
@@ -1395,6 +1386,11 @@ Ensure the default browser behavior of the `hidden` attribute.
     margin-right: auto;
   }
 
+  .md\:my-0{
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+
   .md\:my-4{
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -1410,17 +1406,12 @@ Ensure the default browser behavior of the `hidden` attribute.
     margin-right: 0px;
   }
 
-  .md\:my-0{
-    margin-top: 0px;
-    margin-bottom: 0px;
+  .md\:mr-8{
+    margin-right: 2rem;
   }
 
   .md\:mt-8{
     margin-top: 2rem;
-  }
-
-  .md\:mr-8{
-    margin-right: 2rem;
   }
 
   .md\:block{
@@ -1487,12 +1478,12 @@ Ensure the default browser behavior of the `hidden` attribute.
     justify-items: center;
   }
 
-  .md\:gap-2{
-    gap: 0.5rem;
-  }
-
   .md\:gap-3{
     gap: 0.75rem;
+  }
+
+  .md\:gap-8{
+    gap: 2rem;
   }
 
   .md\:gap-y-6{

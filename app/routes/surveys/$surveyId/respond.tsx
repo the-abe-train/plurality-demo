@@ -29,7 +29,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
-  const questionId = Number(params.questionId);
+  const questionId = Number(params.surveyId);
 
   // Redirect not signed-in users to home page
   if (!userId) {
@@ -50,7 +50,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Redirect to vote if survey close hasn't happened yet
   const surveyClose = question.surveyClose;
   if (dayjs(surveyClose) < dayjs()) {
-    return redirect(`/questions/${questionId}/play`);
+    return redirect(`/surveys/${questionId}/guess`);
   }
 
   // Get data from db and apis
@@ -80,7 +80,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   // Pull in relevant data
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
-  const questionId = Number(params.questionId);
+  const questionId = Number(params.surveyId);
   const game = await gameByQuestionUser({ client, questionId, userId });
   invariant(game, "Game upsert failed");
 
@@ -94,7 +94,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   return json<ActionData>({ message, newVoteResult });
 };
 
-export default function vote() {
+export default () => {
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const [yourVote, setYourVote] = useState(loaderData.game.vote?.text);
@@ -109,25 +109,23 @@ export default function vote() {
   }, [actionData]);
 
   return (
-    <main className="container space-y-4 my-4 max-w-lg">
-      <section className="px-4 py-2 space-y-2">
+    <main
+      className="container max-w-4xl flex-grow px-4 flex flex-col md:flex-row
+    mt-8 md:gap-8 gap-4 my-8"
+    >
+      <section className="md:px-4 py-2 space-y-2 w-max">
         <Question question={loaderData.question} photo={loaderData.photo} />
-      </section>
-      <section className="px-4 py-2 space-y-2">
-        <Form method="post">
-          <label>
-            <p>Respond to suvey</p>
-            <input
-              type="text"
-              name="vote"
-              className="border border-black py-1 px-2 
-            bg-white disabled:bg-gray-300"
-              disabled={!!yourVote}
-            />
-          </label>
+        <Form method="post" className=" w-full flex space-x-2">
+          <input
+            type="text"
+            name="vote"
+            className="border border-black py-1 px-2 
+            bg-white disabled:bg-gray-300 w-full"
+            disabled={!!yourVote}
+            placeholder="Type your Survey response here."
+          />
           <button
-            className="px-2 py-1 rounded-sm border-button text-button 
-      bg-[#F9F1F0] font-bold border-2 shadow disabled:bg-gray-300"
+            className="silver px-3 py-1"
             type="submit"
             disabled={!!yourVote}
           >
@@ -141,6 +139,17 @@ export default function vote() {
         )}
         {msg && <p>{msg}</p>}
       </section>
+      <section>
+        <h2 className="font-header mb-2 text-2xl">Instructions</h2>
+        <p>Use this page to respond to the survey for an upcoming game!</p>
+        <p>Your response to the survey should:</p>
+        <ul className="list-disc list-outside ml-8">
+          <li>Be only 1 word</li>
+          <li>Be spelled correctly (please proof-read carefully!)</li>
+          <li>Not have any profanity, obscenity, or hate speech</li>
+          <li>Only have standard English letters or numbers</li>
+        </ul>
+      </section>
     </main>
   );
-}
+};

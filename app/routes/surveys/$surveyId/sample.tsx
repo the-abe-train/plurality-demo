@@ -60,11 +60,11 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
-  const questionId = Number(params.questionId);
+  const questionId = Number(params.surveyId);
 
   // Redirect users who are signed-in to regular page
   if (userId) {
-    return redirect(`/questions/${questionId}/play`);
+    return redirect(`/surveys/${questionId}/guess`);
   }
 
   // User can play exactly one game if they're not signed in.
@@ -92,7 +92,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Redirect to vote if survey close hasn't happened yet
   const surveyClose = question.surveyClose;
   if (dayjs(surveyClose) >= dayjs()) {
-    return redirect(`/questions/${questionId}/vote`);
+    return redirect(`/surveys/${questionId}/respond`);
   }
 
   // Get additional questiondata from db and apis
@@ -133,7 +133,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   // Pull in relevant data
-  const questionId = Number(params.questionId);
+  const questionId = Number(params.surveyId);
   const trimmedGuess = guess.trim().toLowerCase();
 
   // Reject already guessed answers
