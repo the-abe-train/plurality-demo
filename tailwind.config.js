@@ -22,7 +22,7 @@ module.exports = {
         center: true
       },
       gridTemplateColumns: {
-        hompage: "45% 55%"
+        hompage: "5fr 5fr 2fr"
       }
     },
   },

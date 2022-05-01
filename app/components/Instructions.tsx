@@ -4,6 +4,7 @@ import guess from "~/images/icons/guess.svg";
 import vote from "~/images/icons/vote.svg";
 import draft from "~/images/icons/draft.svg";
 import { Link } from "remix";
+import { isDesktop, isMobile } from "react-device-detect";
 
 const instructions = [
   {
@@ -92,12 +93,16 @@ export default function Instructions() {
   }
 
   return (
-    <div className="md:my-4 pb-1 w-[358px] md:w-fit inline-block">
+    <div className="pb-1 w-[358px] md:w-fit inline-block">
       <h2 className="hidden md:block text-2xl font-header">Instructions</h2>
-      <div
+      {/* <div
         className="flex justify-around my-2 space-x-4
         md:flex-col md:bg-primary2 md:rounded-md md:w-80 md:p-3 md:space-y-4 
         md:border-outline md:border md:shadow-lg md:space-x-0"
+      > */}
+      <div
+        className="flex justify-around my-2 space-x-4 desktop-card
+        md:flex-col  md:w-80 md:p-3 md:space-y-4 md:space-x-0"
       >
         {instructions.map((instr) => {
           return (
@@ -109,7 +114,7 @@ export default function Instructions() {
               <h3 className="md:hidden text-black font-header text-2xl">
                 {instr.name}
               </h3>
-              <div className="flex items-center  p-2 space-x-3">
+              <div className="flex items-center p-2 space-x-3">
                 <img
                   src={instr.icon}
                   alt={instr.name}
@@ -128,11 +133,11 @@ export default function Instructions() {
             animate="open"
             exit="collapsed"
             variants={containerVariants}
-            className="bg-white border-2 border-black rounded-md md:hidden md:border-0"
+            className="card md:hidden md:border-0"
           >
             <motion.div
               variants={childVariants}
-              className="flex p-2 bg-primary2 md:hidden"
+              className="flex rounded-md bg-primary2 md:hidden p-3"
             >
               <img src={icon} alt="Instruction symbol" className="mr-4" />
               <p className="m-0">{helper}</p>

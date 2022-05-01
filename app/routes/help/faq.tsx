@@ -1,7 +1,7 @@
 export default function faq() {
   return (
-    <section className="my-4 space-y-4">
-      <h1 className="my-4 text-3xl font-header">FAQ</h1>
+    <section className="space-y-2">
+      <h1 className="mb-4 text-3xl font-header">FAQ</h1>
       <article className="space-y-2">
         <h2 className="mt-3 text-2xl font-header">What is a DApp?</h2>
         <p>

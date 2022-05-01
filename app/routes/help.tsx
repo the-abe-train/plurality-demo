@@ -27,6 +27,7 @@ export const links: LinksFunction = () => {
 
 type LoaderData = {
   user?: UserSchema;
+  path: string;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -35,47 +36,41 @@ export const loader: LoaderFunction = async ({ request }) => {
   const userId = session.get("user");
   const user = (await userById(client, userId)) || undefined;
 
+  const { url } = request;
+  const path = url.split("/").pop() || "";
+
   // Return data
-  const data = { user };
+  const data = { user, path };
   return json<LoaderData>(data);
 };
 
 export default function help() {
   const data = useLoaderData<LoaderData>();
   return (
-    <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
+    <div className="bg-primary1 w-full top-0 bottom-0 flex flex-col min-h-screen">
       <Header name={data.user ? data.user.name : "Connect"} />
-      <main className="containerflex-grow px-4 sm:px-0 mx-auto w-full max-w-4xl">
+      <main
+        className="flex-grow mx-4 md:mx-auto mb-4 flex flex-col 
+      md:flex-row-reverse max-w-4xl my-4"
+      >
         <Outlet />
-        <section className="my-8">
-          <h2 className="my-3 text-2xl font-header">Pages</h2>
-          <nav className="space-x-3">
-            <Link to="/help/what-is-plurality">
-              <button
-                className="shadow px-2 py-1 rounded-sm border-button 
-            text-button bg-[#F9F1F0] font-bold border-2"
-              >
-                What is Plurality?
-              </button>
-            </Link>
-            <Link to="/help/how-to-play">
-              <button
-                className="shadow px-2 py-1 rounded-sm border-button 
-            text-button bg-[#F9F1F0] font-bold border-2"
-              >
-                How to play
-              </button>
-            </Link>
-            <Link to="/help/faq">
-              <button
-                className="shadow px-2 py-1 rounded-sm border-button 
-            text-button bg-[#F9F1F0] font-bold border-2"
-              >
-                FAQ
-              </button>
-            </Link>
-          </nav>
-        </section>
+        <nav
+          className="grid grid-rows-2 grid-cols-2 gap-y-4 gap-x-10 mx-auto my-4
+        md:my-0 md:flex flex-col md:space-y-4 w-max p-2 md:p-4 h-min md:mr-8 card"
+        >
+          <Link className="md:w-max " to="/help/what-is-plurality">
+            What is Plurality?
+          </Link>
+          <Link className="md:w-max " to="/help/how-to-play">
+            How to play
+          </Link>
+          <Link className="md:w-max " to="/help/faq">
+            FAQ
+          </Link>
+          <Link className="md:w-max " to="/help/terminology">
+            Terminology
+          </Link>
+        </nav>
       </main>
       <Footer />
     </div>
