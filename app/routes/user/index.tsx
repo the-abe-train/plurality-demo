@@ -143,11 +143,9 @@ export default function LogoutRoute() {
     setMessage(newMessage);
   }
 
-  const dontShowVerifyButton =
-    actionData?.message === "Verification email sent." || user.email.verified;
-
   // TODO "Disconnect wallet" button not working
   // TODO get data for statistics
+  // TODO delete account button needs a warning/alert, shouldn't happy so quick!
 
   const [name, setName] = useState(user.name || "");
   return (

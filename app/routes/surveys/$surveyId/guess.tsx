@@ -16,6 +16,8 @@ import dayjs from "dayjs";
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
+import guessSymbol from "~/images/icons/guess.svg";
+import exclamationSymbol from "~/images/icons/exclamation.svg";
 
 import { parseAnswer, trim } from "~/util/text";
 import { client } from "~/db/connect.server";
@@ -34,6 +36,8 @@ import Answers from "~/components/Answers";
 import Question from "~/components/Question";
 import Scorebar from "~/components/Scorebar";
 import ShareButton from "~/components/ShareButton";
+import Switch from "~/components/Switch";
+import AnimatedBanner from "~/components/AnimatedBanner";
 
 export const links: LinksFunction = () => {
   return [
@@ -229,6 +233,7 @@ export default () => {
   // Data from server
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
+  console.log("Loader data", loaderData.game);
 
   // Initial states are from loader data
   const [guesses, setGuesses] = useState(loaderData.game.guesses || []);
@@ -236,7 +241,9 @@ export default () => {
   const [gameOver, setGameOver] = useState(loaderData.gameOver);
   const [message, setMessage] = useState<Message>(loaderData.message);
   const [win, setWin] = useState(loaderData.game.win || false);
+  const [displayPercent, setDisplayPercent] = useState(false);
   const { totalVotes } = loaderData;
+  const userVote = loaderData.game.vote;
 
   // Updates from action data
   useEffect(() => {
@@ -255,49 +262,78 @@ export default () => {
   }, 0);
   const score = points / totalVotes;
 
+  // TODO get user's vote data in there
+
   return (
-    <main className="container space-y-4 my-4 max-w-lg">
-      <Question question={loaderData.question} photo={loaderData.photo} />
-      <Answers totalVotes={totalVotes} guesses={guesses} score={score} />
-      <section className="px-4 space-y-4">
-        <p>{gameOver}</p>
-        <Form className="text-center space-x-2" method="post">
-          <input
-            className="border border-black py-1 px-2 bg-white 
-            disabled:bg-gray-300"
-            type="text"
-            name="guess"
-            placeholder="Guess survey responses"
-            value={guess}
-            disabled={gameOver}
-            onChange={(e) => setGuess(e.target.value)}
-          />
-          <button
-            className="px-2 py-1 rounded-sm border-button text-button 
-       bg-[#F9F1F0] font-bold border-2 shadow"
-            disabled={gameOver}
-            type="submit"
-          >
-            Enter
-          </button>
-        </Form>
-        {message !== "" && <p>{message}</p>}
-      </section>
-      <Scorebar points={points} score={score} guesses={guesses} win={win} />
-      <section className="px-4 space-y-4 pt-6 pb-16">
-        <p>Survey closed on 26 February 2022</p>
-        <div className="flex items-center space-x-2">
-          <ShareButton score={score} />
-          <Link to="/surveys">
+    <>
+      {!win && <AnimatedBanner text="Guess" icon={guessSymbol} />}
+      {win && <AnimatedBanner text="Winner" icon={exclamationSymbol} />}
+      <main
+        className="max-w-4xl flex-grow flex flex-col md:grid grid-cols-2
+    mt-8 md:gap-6 gap-4 my-8 justify-center md:mx-auto mx-4"
+      >
+        <section className="md:px-4 space-y-4">
+          <Question question={loaderData.question} photo={loaderData.photo} />
+
+          <p>{gameOver}</p>
+          <Form className="w-survey mx-auto flex space-x-2" method="post">
+            <input
+              className="border border-outline py-1 px-2 
+              bg-white disabled:bg-gray-300 w-full"
+              type="text"
+              name="guess"
+              placeholder="Guess survey responses"
+              value={guess}
+              disabled={gameOver}
+              onChange={(e) => setGuess(e.target.value)}
+            />
             <button
-              className="shadow px-2 py-1 rounded-sm border-button 
-            text-button bg-[#F9F1F0] font-bold border-2"
+              className="silver px-3 py-1"
+              disabled={gameOver}
+              type="submit"
             >
-              More questions
+              Enter
             </button>
-          </Link>
-        </div>
-      </section>
-    </main>
+          </Form>
+          {message !== "" && <p>{message}</p>}
+        </section>
+        <section className="space-y-4">
+          <div className="flex justify-between w-full items-center">
+            {userVote ? (
+              <p>
+                You responded <b>{userVote.text}</b> on{" "}
+                <b>{dayjs(userVote.date).format("D MMMM YYYY")}</b>
+              </p>
+            ) : (
+              <p>You did not respond to this Survey.</p>
+            )}
+            <Switch mode={displayPercent} setMode={setDisplayPercent} />
+          </div>
+          <Answers
+            totalVotes={totalVotes}
+            guesses={guesses}
+            score={score}
+            displayPercent={displayPercent}
+          />
+        </section>
+        <section className="md:order-last">
+          <Scorebar points={points} score={score} guesses={guesses} win={win} />
+        </section>
+        <section className="md:self-end space-y-4 ">
+          <p>Survey closed on 26 February 2022</p>
+          <div className="flex items-center space-x-2">
+            <ShareButton score={score} />
+            <Link to="/surveys">
+              <button className="silver px-3 py-1">More Surveys</button>
+            </Link>
+          </div>
+          <div>
+            <Link to="/help/what-is-plurality" className="underline">
+              Need help? Check out the instructions.
+            </Link>
+          </div>
+        </section>
+      </main>
+    </>
   );
 };

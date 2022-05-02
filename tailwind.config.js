@@ -23,6 +23,9 @@ module.exports = {
       },
       gridTemplateColumns: {
         hompage: "5fr 5fr 2fr"
+      },
+      spacing: {
+        survey: "358px"
       }
     },
   },

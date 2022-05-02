@@ -90,6 +90,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   return "";
 };
 
+// TODO decide on how to use "secondary" colour for text. Needs to be consistent.
+
 export default function Index() {
   const data = useLoaderData<LoaderData>();
   const [yesterday, today, tomorrow] = data.questions;
@@ -107,7 +109,7 @@ export default function Index() {
         <span>Plurality</span>
       </h1>
       <main
-        className="flex-grow mx-auto mb-4 w-max md:gap-3
+        className="flex-grow mx-auto mb-4 w-max md:gap-y-3 md:gap-x-6
       grid justify-items-start md:grid-cols-hompage"
       >
         <section className="h-fit block ">
@@ -120,7 +122,7 @@ export default function Index() {
         </section>
         <div
           className="flex md:flex-col justify-center md:justify-start space-x-12 my-2
-                md:my-4 md:mx-4 md:gap-y-6 md:space-x-0 w-full md:w-max"
+                md:my-10 md:mx-4 md:gap-y-6 md:space-x-0 w-full md:w-max"
         >
           <div className="flex flex-col items-center">
             <Counter value={354} />
@@ -153,13 +155,13 @@ export default function Index() {
           </div>
         </section>
         <div className="md:self-end my-2 flex md:flex-col md:space-y-8 justify-around w-full md:w-max">
-          <div className="w-max space-y-1 flex flex-col">
+          <div className="w-max space-y-2 flex flex-col">
             <h3 className="font-header text-lg inline">Play more surveys</h3>
             <Link to="/surveys">
               <button className="silver px-3 py-2">More surveys</button>
             </Link>
           </div>
-          <div className="w-max space-y-1 flex flex-col">
+          <div className="w-max space-y-2 flex flex-col">
             <h3 className="font-header text-lg inline">Draft a survey</h3>
             <a href="https://opensea.io">
               <button className="gold px-3 py-2 flex space-x-1 items-center">

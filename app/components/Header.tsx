@@ -5,11 +5,14 @@ type Props = {
   name?: string;
 };
 
-// TODO Connect button should reveal a dropdown on mobile (?)
+// TODO Connect button should reveal a dropdown on mobile
 
 export default function Header({ name }: Props) {
   return (
-    <div className="px-4 py-2 border-0 shadow-md bg-primary2 z-10 w-full">
+    <div
+      className="px-4 py-2 border-0 bg-primary2 z-10 w-full"
+      style={{ boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.4)" }}
+    >
       <nav className="flex justify-between items-center max-w-4xl md:mx-auto">
         <Link to="/">
           <h1
@@ -24,6 +27,9 @@ export default function Header({ name }: Props) {
         <ul className="flex md:space-x-8 items-center">
           <li className="hidden md:block">
             <Link to="/surveys">Surveys</Link>
+          </li>
+          <li className="hidden md:block">
+            <Link to="/draft">Draft</Link>
           </li>
           <li className="hidden md:block">
             <Link to="/help/what-is-plurality">Help</Link>

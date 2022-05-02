@@ -148,19 +148,17 @@ export default function signup() {
             <input
               type="email"
               name="email"
-              className="w-full px-4 py-2 text-sm border rounded-md 
-        focus:border-blue-400 focus:outline-none focus:ring-1 
-        focus:ring-blue-600"
+              className="w-full px-4 py-2 text-sm border rounded-md border-outline"
               placeholder="Email Address"
             />
             <input
-              className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+              className="w-full px-4 py-2 text-sm border rounded-md border-outline"
               placeholder="Password"
               type="password"
               name="password"
             />
             <input
-              className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+              className="w-full px-4 py-2 text-sm border rounded-md border-outline"
               placeholder="Verify password"
               type="password"
               name="verify"

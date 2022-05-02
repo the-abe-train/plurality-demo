@@ -9,6 +9,7 @@ import Footer from "~/components/Footer";
 import Header from "~/components/Header";
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
+import switchStyles from "~/styles/switch.css";
 import animations from "~/styles/animations.css";
 import { UserSchema } from "~/db/schemas";
 import { userById } from "~/db/queries";
@@ -20,6 +21,7 @@ export const links: LinksFunction = () => {
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: backgrounds },
     { rel: "stylesheet", href: animations },
+    { rel: "stylesheet", href: switchStyles },
   ];
 };
 

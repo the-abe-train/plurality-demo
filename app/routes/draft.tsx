@@ -31,6 +31,10 @@ import animations from "~/styles/animations.css";
 import { fetchPhoto } from "~/api/unsplash";
 import { getNfts } from "~/api/opensea";
 import { ADMIN_EMAIL } from "~/util/env";
+import AnimatedBanner from "~/components/AnimatedBanner";
+import draftSymbol from "~/images/icons/draft.svg";
+import openSeaIcon from "~/images/icons/open_sea.svg";
+import openSeaJpeg from "~/images/open_sea_logo.jpg";
 
 export const links: LinksFunction = () => {
   return [
@@ -41,7 +45,7 @@ export const links: LinksFunction = () => {
 };
 
 // TODO email must be verified and wallet must be active connected to send
-// TODO link to buy NFT question for players without question in wallet
+// TODO to OpenSea should go to our page, not just the OpenSea homepage
 
 type LoaderData = {
   user: UserSchema;
@@ -174,10 +178,7 @@ export default function draft() {
 
   const [showForm, setShowForm] = useState(true);
 
-  let nftNames: string[] = [];
-  if (loaderData.nfts) {
-    nftNames = loaderData.nfts.map((nft) => nft.name);
-  }
+  const nfts = loaderData.nfts ? [...loaderData.nfts] : [];
 
   useEffect(() => {
     if (actionData?.success) {
@@ -185,84 +186,117 @@ export default function draft() {
     }
   }, [actionData]);
 
+  // TODO decide if we want to keep the "light" backdrop on all pages or use a solid colour
+
   return (
     <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
       <Header name={loaderData.user ? loaderData.user.name : "Connect"} />
-      <main className="container max-w-sm flex-grow px-4">
-        <h1 className="font-header text-2xl my-4">Submit a survey question</h1>
-        <h2 className="font-bold text-lg">Your NFTs</h2>
-        <ul className="list-inside list-disc">
-          {nftNames.length > 0 &&
-            nftNames.map((name, idx) => <li key={idx}>{name}</li>)}
-        </ul>
-        {showForm && (
-          <Form method="post" className="m-4 space-y-3">
-            <label htmlFor="id" className="space-x-4">
-              <span className="mt-4">Survey Number</span>
-              <select name="id" className="min-w-[80px]">
-                {loaderData.ids.map((id) => (
-                  <option key={id} value={id}>
-                    {id}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label htmlFor="question">
-              <p className="mt-4">Survey question</p>
-            </label>
-            <input
-              type="text"
-              className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
-              name="question"
-            />
-            <label htmlFor="photo" className="flex items-center space-x-2">
-              <p>Unsplash photo ID </p>
-              <Tooltip
-                text="The string of characters at the end of the URL for 
-              any photo on unsplash.com"
-              />
-            </label>
-            <input
-              type="text"
-              className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
-              name="photo"
-            />
-            <label htmlFor="email" className="flex items-center space-x-2">
-              <p>Email address</p>
-              <Tooltip text="We will use this email address to reach you about your submission." />
-            </label>
-            <input
-              type="email"
-              className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
-              name="email"
-              placeholder={loaderData.user.email.address}
-            />
-            <button
-              className="block w-40 mx-auto px-4 py-2 mt-4 text-sm 
-    font-medium leading-5 text-center text-white transition-colors 
-    duration-150 bg-blue-600 border border-transparent rounded-lg 
-    active:bg-blue-600 hover:bg-blue-700 focus:outline-none 
-    focus:shadow-outline-blue"
-              type="submit"
-              disabled={transition.state !== "idle"}
-            >
-              Submit
+      <AnimatedBanner text="Draft" icon={draftSymbol} />
+      <main
+        className="container max-w-4xl flex-grow px-4 flex flex-col
+    md:grid grid-cols-2 grid-flow-row gap-6 md:my-6"
+      >
+        <section className="space-y-6">
+          <h2 className="font-header text-2xl">Your Draft Tokens</h2>
+          <div className="grid grid-cols-3 items-center justify-items-center">
+            {nfts.length > 0 &&
+              nfts.map((nft, idx) => {
+                if (nft.image_url) {
+                  return (
+                    <img
+                      key={idx}
+                      src={nft.image_url}
+                      alt={nft.name}
+                      width={100}
+                    />
+                  );
+                }
+                return (
+                  <img key={idx} src={openSeaJpeg} alt={nft.name} width={100} />
+                );
+              })}
+          </div>
+          {nfts.length <= 0 && (
+            <p>
+              You have no Draft Tokens. You can purchase one from{" "}
+              <a href="https://opensea.io" className="underline">
+                OpenSea
+              </a>
+              .
+            </p>
+          )}
+          <a href="https://opensea.io">
+            <button className="gold px-3 py-2 my-6 flex space-x-1 items-center mx-auto">
+              <span>Buy a Token</span>
+              <img src={openSeaIcon} alt="OpenSea" className="inline" />
             </button>
-            <p className="text-red-700">{actionData?.message}</p>
-          </Form>
-        )}
-        {!showForm && (
-          <p>
-            Question submitted successfully! If there is any issue with your
-            submission, the Plurality team will let you know as soon as
-            possible.{" "}
-          </p>
-        )}
+          </a>
+        </section>
+        <section>
+          <h2 className="font-header text-2xl">Draft a Survey</h2>
+          {showForm && (
+            <Form method="post" className="my-4 space-y-3">
+              <label htmlFor="id" className="space-x-4">
+                <span className="mt-4">Survey Number</span>
+                <select name="id" className="min-w-[80px]">
+                  {loaderData.ids.map((id) => (
+                    <option key={id} value={id}>
+                      {id}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label htmlFor="question">
+                <p className="mt-4">Survey question</p>
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                name="question"
+              />
+              <label htmlFor="photo" className="flex items-center space-x-2">
+                <p>Unsplash photo ID </p>
+                <Tooltip
+                  text="The string of characters at the end of the URL for 
+              any photo on unsplash.com"
+                />
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                name="photo"
+              />
+              <label htmlFor="email" className="flex items-center space-x-2">
+                <p>Email address</p>
+                <Tooltip text="We will use this email address to reach you about your submission." />
+              </label>
+              <input
+                type="email"
+                className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                name="email"
+                placeholder={loaderData.user.email.address}
+              />
+              <div>
+                <button
+                  className="gold px-6 py-2 block mx-auto my-6"
+                  type="submit"
+                  disabled={transition.state !== "idle"}
+                >
+                  Submit
+                </button>
+              </div>
+              <p className="text-red-700">{actionData?.message}</p>
+            </Form>
+          )}
+          {!showForm && (
+            <p>
+              Question submitted successfully! If there is any issue with your
+              submission, the Plurality team will let you know as soon as
+              possible.{" "}
+            </p>
+          )}
+        </section>
       </main>
-      <p className="m-4">
-        Note: while we work out the Web3 aspect of the game, everyone is assumed
-        to have the survey token for question #100
-      </p>
       <Footer />
     </div>
   );

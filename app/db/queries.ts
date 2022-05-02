@@ -221,6 +221,19 @@ export async function votesByQuestion(client: MongoClient, questionId: number) {
           },
         },
       },
+      {
+        $setWindowFields: {
+          partitionBy: "_id",
+          sortBy: {
+            votes: -1,
+          },
+          output: {
+            ranking: {
+              $rank: {},
+            },
+          },
+        },
+      },
     ])
     .toArray();
   return votes as VoteAggregation[];

@@ -134,7 +134,9 @@ export default function Index() {
         className="m-8 flex flex-col space-y-4 max-w-xl mx-auto px-4"
         ref={formRef}
       >
-        <h2 className="font-header text-2xl">Search</h2>
+        <h1 className="font-header text-2xl text-center">
+          Search for a Survey
+        </h1>
         <input
           type="text"
           name="text"
@@ -177,7 +179,7 @@ export default function Index() {
         <div className="flex justify-between border-black ">
           <div className="flex items-center">
             <button
-              className="px-2 border border-black rounded-full bg-white h-min"
+              className="px-2 border border-outline rounded-full bg-white h-min"
               onClick={() => turnPage(-1)}
               type="button"
             >
@@ -196,7 +198,7 @@ export default function Index() {
               />
             </label>
             <button
-              className="px-2 border border-black rounded-full bg-white h-min"
+              className="px-2 border border-outline rounded-full bg-white h-min"
               onClick={() => turnPage(1)}
               type="button"
               disabled={transition.state !== "idle"}
@@ -233,7 +235,7 @@ export default function Index() {
               </span>
             </div>
             <div
-              className="grid md:justify-items-center"
+              className="grid md:justify-items-center gap-3"
               style={{
                 gridTemplateColumns: isMobile
                   ? "repeat(auto-fit, minmax(auto, 1fr))"

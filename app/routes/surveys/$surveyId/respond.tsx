@@ -4,6 +4,7 @@ import {
   ActionFunction,
   Form,
   json,
+  Link,
   LoaderFunction,
   redirect,
   useActionData,
@@ -18,6 +19,9 @@ import { addVote, gameByQuestionUser, questionById } from "~/db/queries";
 import { commitSession, getSession } from "~/sessions";
 import { Photo } from "~/api/schemas";
 import { fetchPhoto } from "~/api/unsplash";
+
+import respondSymbol from "~/images/icons/vote.svg";
+import AnimatedBanner from "~/components/AnimatedBanner";
 
 type LoaderData = {
   game: GameSchema;
@@ -109,47 +113,50 @@ export default () => {
   }, [actionData]);
 
   return (
-    <main
-      className="container max-w-4xl flex-grow px-4 flex flex-col md:flex-row
+    <>
+      <AnimatedBanner text="Respond" icon={respondSymbol} />
+      <main
+        className="container max-w-4xl flex-grow px-4 flex flex-col md:flex-row
     mt-8 md:gap-8 gap-4 my-8"
-    >
-      <section className="md:px-4 py-2 space-y-2 w-max">
-        <Question question={loaderData.question} photo={loaderData.photo} />
-        <Form method="post" className=" w-full flex space-x-2">
-          <input
-            type="text"
-            name="vote"
-            className="border border-black py-1 px-2 
+      >
+        <section className="md:px-4 py-2 space-y-2 w-max">
+          <Question question={loaderData.question} photo={loaderData.photo} />
+          <Form method="post" className="w-full flex space-x-2">
+            <input
+              type="text"
+              name="vote"
+              className="border border-black py-1 px-2 
             bg-white disabled:bg-gray-300 w-full"
-            disabled={!!yourVote}
-            placeholder="Type your Survey response here."
-          />
-          <button
-            className="silver px-3 py-1"
-            type="submit"
-            disabled={!!yourVote}
-          >
-            Enter
-          </button>
-        </Form>
-        {yourVote && (
-          <p>
-            Your vote is: <b>{yourVote}</b>
-          </p>
-        )}
-        {msg && <p>{msg}</p>}
-      </section>
-      <section>
-        <h2 className="font-header mb-2 text-2xl">Instructions</h2>
-        <p>Use this page to respond to the survey for an upcoming game!</p>
-        <p>Your response to the survey should:</p>
-        <ul className="list-disc list-outside ml-8">
-          <li>Be only 1 word</li>
-          <li>Be spelled correctly (please proof-read carefully!)</li>
-          <li>Not have any profanity, obscenity, or hate speech</li>
-          <li>Only have standard English letters or numbers</li>
-        </ul>
-      </section>
-    </main>
+              disabled={!!yourVote}
+              placeholder="Type your Survey response here."
+            />
+            <button
+              className="silver px-3 py-1"
+              type="submit"
+              disabled={!!yourVote}
+            >
+              Enter
+            </button>
+          </Form>
+          {yourVote && (
+            <p>
+              Your vote is: <b>{yourVote}</b>
+            </p>
+          )}
+          {msg && <p>{msg}</p>}
+        </section>
+        <section>
+          <h2 className="font-header mb-2 text-2xl">Instructions</h2>
+          <p>Use this page to respond to the survey for an upcoming game!</p>
+          <p>Your response to the survey should:</p>
+          <ul className="list-disc list-outside ml-8">
+            <li>Be only 1 word</li>
+            <li>Be spelled correctly (please proof-read carefully!)</li>
+            <li>Not have any profanity, obscenity, or hate speech</li>
+            <li>Only have standard English letters or numbers</li>
+          </ul>
+        </section>
+      </main>
+    </>
   );
 };

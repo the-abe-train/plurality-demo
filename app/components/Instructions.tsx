@@ -4,7 +4,6 @@ import guess from "~/images/icons/guess.svg";
 import vote from "~/images/icons/vote.svg";
 import draft from "~/images/icons/draft.svg";
 import { Link } from "remix";
-import { isDesktop, isMobile } from "react-device-detect";
 
 const instructions = [
   {
@@ -62,16 +61,16 @@ export default function Instructions() {
   };
 
   const childVariants = {
-    open: {
+    collapsed: {
       height: "auto",
-      opacity: 1,
+      opacity: 0,
       transition: {
         duration: 0.25,
       },
     },
-    collapsed: {
+    open: {
       height: "auto",
-      opacity: 0,
+      opacity: 1,
       transition: {
         duration: 0.25,
       },
@@ -95,11 +94,6 @@ export default function Instructions() {
   return (
     <div className="pb-1 w-[358px] md:w-fit inline-block">
       <h2 className="hidden md:block text-2xl font-header">Instructions</h2>
-      {/* <div
-        className="flex justify-around my-2 space-x-4
-        md:flex-col md:bg-primary2 md:rounded-md md:w-80 md:p-3 md:space-y-4 
-        md:border-outline md:border md:shadow-lg md:space-x-0"
-      > */}
       <div
         className="flex justify-around my-2 space-x-4 desktop-card
         md:flex-col  md:w-80 md:p-3 md:space-y-4 md:space-x-0"
@@ -108,7 +102,7 @@ export default function Instructions() {
           return (
             <div
               key={instr.name}
-              className="flex flex-col items-center pointer"
+              className="flex flex-col items-center"
               onClick={() => togglePopup(instr.text, instr.icon)}
             >
               <h3 className="md:hidden text-black font-header text-2xl">
