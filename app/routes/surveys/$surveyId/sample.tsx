@@ -143,6 +143,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Reject already guessed answers
   const guessesArray: VoteAggregation[] = JSON.parse(guesses);
+  console.log("Guesses array", guessesArray);
   const alreadyGuessed = guessesArray.find((ans) => {
     const text = ans._id;
     return (
@@ -156,6 +157,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Pull in more relevant data
   const answers = await votesByQuestion(client, questionId);
+  console.log("Answers", answers);
   const correctGuess = answers.find((ans) => {
     const text = ans._id;
     return (
@@ -276,6 +278,20 @@ export default () => {
               value={guess}
               disabled={gameOver}
               onChange={(e) => setGuess(e.target.value)}
+            />
+            <input
+              className="hidden"
+              type="text"
+              name="guesses"
+              value={JSON.stringify(guesses)}
+              readOnly
+            />
+            <input
+              className="hidden"
+              type="text"
+              name="totalVotes"
+              value={JSON.stringify(totalVotes)}
+              readOnly
             />
             <button
               className="silver px-3 py-1"

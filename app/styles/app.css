@@ -660,6 +660,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-right: 1rem;
 }
 
+.mr-2{
+  margin-right: 0.5rem;
+}
+
 .mt-2{
   margin-top: 0.5rem;
 }
@@ -690,10 +694,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .ml-8{
   margin-left: 2rem;
-}
-
-.mr-2{
-  margin-right: 0.5rem;
 }
 
 .block{
