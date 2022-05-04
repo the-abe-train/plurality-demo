@@ -3,6 +3,7 @@ import {
   ActionFunction,
   Form,
   json,
+  Link,
   LoaderFunction,
   redirect,
   useActionData,
@@ -298,8 +299,12 @@ export default function LogoutRoute() {
       <section className="mb-6">
         <h1 className="text-3xl my-3 font-header">Survey tokens</h1>
         <div className="flex space-x-3">
-          <button className="gold px-3 py-1">Buy a draft token</button>
-          <button className="gold px-3 py-1">Submit a draft</button>
+          <a href="https://opensea.io/PluralityGame">
+            <button className="gold px-3 py-1">Buy a draft token</button>
+          </a>
+          <Link to="/draft">
+            <button className="gold px-3 py-1">Submit a draft</button>
+          </Link>
         </div>
       </section>
     </main>

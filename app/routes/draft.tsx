@@ -197,7 +197,7 @@ export default function draft() {
     md:grid grid-cols-2 grid-flow-row gap-6 md:my-6"
       >
         <section className="space-y-6">
-          <h2 className="font-header text-2xl">Your Draft Tokens</h2>
+          <h2 className="font-header text-2xl">Your Survey Tokens</h2>
           <div className="grid grid-cols-3 items-center justify-items-center">
             {nfts.length > 0 &&
               nfts.map((nft, idx) => {
@@ -219,13 +219,13 @@ export default function draft() {
           {nfts.length <= 0 && (
             <p>
               You have no Draft Tokens. You can purchase one from{" "}
-              <a href="https://opensea.io" className="underline">
+              <a href="https://opensea.io/PluralityGame" className="underline">
                 OpenSea
               </a>
               .
             </p>
           )}
-          <a href="https://opensea.io">
+          <a href="https://opensea.io/PluralityGame">
             <button className="gold px-3 py-2 my-6 flex space-x-1 items-center mx-auto">
               <span>Buy a Token</span>
               <img src={openSeaIcon} alt="OpenSea" className="inline" />

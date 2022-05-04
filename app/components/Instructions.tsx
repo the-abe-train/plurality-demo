@@ -127,13 +127,18 @@ export default function Instructions() {
             animate="open"
             exit="collapsed"
             variants={containerVariants}
-            className="card md:hidden md:border-0"
+            className="hidden-card card"
           >
             <motion.div
               variants={childVariants}
               className="flex rounded-md bg-primary2 md:hidden p-3"
             >
-              <img src={icon} alt="Instruction symbol" className="mr-4" />
+              <img
+                src={icon}
+                alt="Instruction symbol"
+                className="mr-4"
+                width={48}
+              />
               <p className="m-0">{helper}</p>
             </motion.div>
           </motion.div>

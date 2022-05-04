@@ -103,7 +103,7 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
   }
 
   return (
-    <div className="flex flex-col space-y-4 py-4">
+    <div className="flex flex-col space-y-4 py-4 min-h-[220px]">
       <div
         className="w-3/4 mx-auto bg-gray-200 rounded-full h-2.5 
         dark:bg-gray-700 relative"

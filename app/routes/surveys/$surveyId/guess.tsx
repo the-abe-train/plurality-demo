@@ -104,7 +104,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const question = await questionById(client, questionId);
   invariant(question, "No question found!");
 
-  // Redirect to vote if survey close hasn't happened yet
+  // Redirect to Respond if survey close hasn't happened yet
   const surveyClose = question.surveyClose;
   if (dayjs(surveyClose) >= dayjs()) {
     return redirect(`/surveys/${questionId}/respond`);
@@ -229,11 +229,12 @@ export const action: ActionFunction = async ({ request, params }) => {
   return json<ActionData>({ message, correctGuess, win });
 };
 
+// TODO fix spacing around message from server
+
 export default () => {
   // Data from server
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
-  console.log("Loader data", loaderData.game);
 
   // Initial states are from loader data
   const [guesses, setGuesses] = useState(loaderData.game.guesses || []);
@@ -261,8 +262,6 @@ export default () => {
     return sum + guess.votes;
   }, 0);
   const score = points / totalVotes;
-
-  // TODO get user's vote data in there
 
   return (
     <>

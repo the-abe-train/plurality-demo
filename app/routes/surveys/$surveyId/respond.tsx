@@ -51,7 +51,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const photo = await fetchPhoto(question.photo);
   invariant(photo, "No photo found!");
 
-  // Redirect to vote if survey close hasn't happened yet
+  // Redirect to guess if the survey is closed
   const surveyClose = question.surveyClose;
   if (dayjs(surveyClose) < dayjs()) {
     return redirect(`/surveys/${questionId}/guess`);
