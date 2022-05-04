@@ -1,6 +1,12 @@
 import { AnimatePresence, motion, useCycle } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "remix";
+import guess from "~/images/icons/guess.svg";
+import vote from "~/images/icons/vote.svg";
+import draft from "~/images/icons/draft.svg";
+import user from "~/images/icons/user.svg";
+import info from "~/images/icons/info.svg";
+import logo from "~/images/icons/empty_logo.svg";
 
 export default () => {
   const [open, setOpen] = useState(false);
@@ -47,23 +53,68 @@ export default () => {
               exit="closed"
               onClick={() => setOpen(false)}
             >
-              <Link to="/user" className="text-2xl block m-5">
-                Connect
+              <Link to="/user" className="text-2xl m-5 flex items-center">
+                <img
+                  src={user}
+                  alt="Instruction symbol"
+                  className="mr-2 inline"
+                  width={24}
+                />
+                <span>Connect</span>
               </Link>
               <Link to="/surveys" className="text-2xl block m-5">
-                Surveys
+                <img
+                  src={logo}
+                  alt="Instruction symbol"
+                  className="mr-2 inline"
+                  width={24}
+                />
+                <span>Surveys</span>
               </Link>
-              <Link to="/surveys/today" className="text-xl block my-5 mx-8">
-                Guess
+              <Link
+                to="/surveys/today"
+                className="text-xl my-5 mx-8 flex items-center"
+              >
+                <img
+                  src={guess}
+                  alt="Instruction symbol"
+                  className="mr-2 inline"
+                  width={18}
+                />
+                <span>Guess</span>
               </Link>
-              <Link to="/surveys/tomorrow" className="text-xl block my-5 mx-8">
+              <Link
+                to="/surveys/tomorrow"
+                className="text-xl my-5 mx-8 flex items-center"
+              >
+                <img
+                  src={vote}
+                  alt="Instruction symbol"
+                  className="mr-2 inline"
+                  width={18}
+                />
                 Respond
               </Link>
-              <Link to="/draft" className="text-xl block my-5 mx-8">
+              <Link to="/draft" className="text-xl my-5 mx-8 flex items-center">
+                <img
+                  src={draft}
+                  alt="Instruction symbol"
+                  className="mr-2 inline"
+                  width={18}
+                />
                 Draft
               </Link>
-              <Link to="/help/what-is-plurality" className="text-2xl block m-5">
-                Help
+              <Link
+                to="/help/what-is-plurality"
+                className="text-2xl m-5 flex items-center"
+              >
+                <img
+                  src={info}
+                  alt="Instruction symbol"
+                  className="mr-2 inline"
+                  width={24}
+                />
+                <span>Help</span>
               </Link>
             </motion.div>
           </motion.aside>
