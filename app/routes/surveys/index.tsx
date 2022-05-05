@@ -19,14 +19,17 @@ import { questionBySearch, votesByQuestion } from "~/db/queries";
 import { client } from "~/db/connect.server";
 import { Photo } from "~/api/schemas";
 import { fetchPhoto } from "~/api/unsplash";
-import { isMobile } from "react-device-detect";
+import emptyLogo from "~/images/icons/empty_logo.svg";
+import AnimatedBanner from "~/components/AnimatedBanner";
+import { PER_PAGE } from "~/util/env";
 
 type ActionData = {
   pageQuestions: QuestionSchema[];
   metadata: {
     pageStart: number;
     pageEnd: number;
-    total: number;
+    totalSurveys: number;
+    pageSurveys: number;
   };
   photos: Photo[];
   votes: VoteAggregation[][];
@@ -40,12 +43,20 @@ export const links: LinksFunction = () => {
   ];
 };
 
+// TODO Add community and standard search params
+
 export const action: ActionFunction = async ({ request }) => {
   // Parse form
   const body = await request.formData();
   const textParam = body.get("text");
   const dateParam = body.get("date");
   const pageParam = body.get("page");
+
+  // Values show up as "on" or null
+  const communityParam = body.get("community");
+  const standardParam = body.get("standard");
+
+  console.log("Community", communityParam);
 
   // Parse query parameters
   const dateSearch = dayjs(String(dateParam))
@@ -56,47 +67,48 @@ export const action: ActionFunction = async ({ request }) => {
   const textSearch = textParam
     ? new RegExp(String.raw`${textParam}`, "g")
     : /^\S+$/;
-  const perPage = 6;
-  const pageStart = pageParam ? (Number(pageParam) - 1) * perPage : 0;
-  const pageEnd = pageParam ? Number(pageParam) * perPage : perPage;
+
+  // Out of all the Surveys returned, page start and page end are the indeces
+  // of the first and last Surveys that wil appear on the page
+  const pageStart = pageParam ? (Number(pageParam) - 1) * PER_PAGE : 0;
+  const pageEnd = pageParam ? Number(pageParam) * PER_PAGE : PER_PAGE;
 
   // Questions from database
-  const allQuestions = await questionBySearch({
+  const matchingSurveys = await questionBySearch({
     client,
     textSearch,
     dateSearch,
     idSearch,
   });
 
+  const pageSurveys = matchingSurveys.slice(pageStart, pageEnd);
+
   const metadata = {
-    total: allQuestions.length,
-    pageStart: Math.min(pageStart, allQuestions.length),
-    pageEnd: Math.min(pageEnd, allQuestions.length),
+    totalSurveys: matchingSurveys.length,
+    pageSurveys: pageSurveys.length,
+    pageStart: Math.min(pageStart, matchingSurveys.length),
+    pageEnd: Math.min(pageEnd, matchingSurveys.length),
   };
 
-  const pageQuestions = allQuestions.slice(pageStart, pageEnd);
-
   // Get votes from database
-  if (pageQuestions) {
+  if (pageSurveys) {
     const votes = await Promise.all(
-      pageQuestions.map(async (question) => {
+      pageSurveys.map(async (question) => {
         return await votesByQuestion(client, question._id);
       })
     );
     const photos = await Promise.all(
-      pageQuestions.map(async (question) => {
+      pageSurveys.map(async (question) => {
         return await fetchPhoto(question.photo);
       })
     );
 
     // Return data
-    const data = { pageQuestions, metadata, photos, votes };
+    const data = { pageQuestions: pageSurveys, metadata, photos, votes };
     return json<ActionData>(data);
   }
   return "";
 };
-
-// TODO bug: If you search "when" and try to change pages you get weird happenings
 
 export default function Index() {
   const submit = useSubmit();
@@ -105,26 +117,43 @@ export default function Index() {
   const transition = useTransition();
 
   const data = useActionData<ActionData>();
-  const showData = data?.metadata.total ? data.metadata.total > 0 : false;
+  const showData = (data?.metadata.totalSurveys || 0) > 0;
 
   useEffect(() => {
+    console.log("Generating function.");
     if (data?.metadata) {
-      const maxPages = Math.max(Math.ceil(data.metadata.total / 5), 1);
+      const maxPages = Math.max(Math.ceil(data.metadata.totalSurveys / 5), 1);
       setPage(Math.min(page || 1, maxPages));
     }
   }, [data]);
 
   async function turnPage(change: number) {
-    const newFormData = new FormData(formRef.current);
-    const formPage = Number(newFormData.get("page"));
-    let newPage = formPage + change;
-    setPage(newPage);
-    newFormData.set("page", String(newPage));
-    submit(newFormData, {
-      method: "post",
-      action: "/surveys?index",
-      replace: true,
-    });
+    if (data?.metadata) {
+      const { pageSurveys, totalSurveys } = data?.metadata;
+
+      const newFormData = new FormData(formRef.current);
+      const currentPage = Number(newFormData.get("page"));
+      // const currentPage = data?.metadata.
+
+      // If there are fewer than 6 survyes on the page, don't increase
+      if (pageSurveys < 6 && change > 0) return;
+
+      // If the current page is 1, don't decrease
+      if (currentPage === 1 && change < 0) return;
+
+      // If the current page is the final page, don't increase
+      const seenSurveys = pageSurveys + currentPage * 6;
+      if (seenSurveys === totalSurveys && change > 1) return;
+
+      const newPage = currentPage + change;
+      setPage(newPage);
+      newFormData.set("page", String(newPage));
+      submit(newFormData, {
+        method: "post",
+        action: "/surveys?index",
+        replace: true,
+      });
+    }
   }
 
   return (
@@ -134,9 +163,7 @@ export default function Index() {
         className="m-8 flex flex-col space-y-4 max-w-xl mx-auto px-4"
         ref={formRef}
       >
-        <h1 className="font-header text-2xl text-center">
-          Search for a Survey
-        </h1>
+        <AnimatedBanner icon={emptyLogo} text="Search" />
         <input
           type="text"
           name="text"
@@ -153,18 +180,18 @@ export default function Index() {
             id="date"
             className="border border-black px-2 min-w-[300px]"
           />
-          <div>
-            <label>
+          <div className="flex space-x-3 items-center">
+            <label className="flex items-center">
               Community
               <input
-                className="mx-2"
+                className="mx-2 "
                 type="checkbox"
                 name="community"
                 id="community"
                 defaultChecked
               />
             </label>
-            <label>
+            <label className="flex items-center">
               Standard
               <input
                 className="mx-2"
@@ -180,6 +207,7 @@ export default function Index() {
           <div className="flex items-center">
             <button
               className="px-2 border border-outline rounded-full bg-white h-min"
+              // onClick={() => turnPage(-1)}
               onClick={() => turnPage(-1)}
               type="button"
             >
@@ -231,17 +259,10 @@ export default function Index() {
             <div className="m-4 flex justify-between">
               <span>
                 Showing {data.metadata.pageStart + 1} - {data.metadata.pageEnd}{" "}
-                out of {data.metadata.total}
+                out of {data.metadata.totalSurveys}
               </span>
             </div>
-            <div
-              className="grid md:justify-items-center gap-3"
-              style={{
-                gridTemplateColumns: isMobile
-                  ? "repeat(auto-fit, minmax(auto, 1fr))"
-                  : "repeat(auto-fit, minmax(358px, 1fr))",
-              }}
-            >
+            <div className="flex flex-col md:flex-row flex-wrap gap-3">
               {data.pageQuestions.map((q, idx) => {
                 const photo = data.photos[idx];
                 return <Question question={q} photo={photo} key={q._id} />;
@@ -252,4 +273,15 @@ export default function Index() {
       </div>
     </main>
   );
+}
+
+{
+  /* <div
+className="grid md:justify-items-center gap-3"
+style={{
+  gridTemplateColumns: isMobile
+    ? "repeat(auto-fit, minmax(auto, 1fr))"
+    : "repeat(auto-fit, minmax(358px, 1fr))",
+}}
+> */
 }
