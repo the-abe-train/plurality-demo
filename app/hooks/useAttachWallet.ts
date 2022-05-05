@@ -28,7 +28,7 @@ export default function useAttachWallet() {
       }
     } catch (e) {
       message = "Error connecting to wallet";
-      console.error(e);
+      console.error({ message, e });
     }
     return message;
   };

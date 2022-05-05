@@ -7,7 +7,6 @@ import {
   LoaderFunction,
   redirect,
   useActionData,
-  useFormAction,
   useLoaderData,
   useSubmit,
 } from "remix";
@@ -162,7 +161,6 @@ export default function LogoutRoute() {
     }
   }
 
-  // TODO "Disconnect wallet" should use a hook, like a connect button
   // TODO get data for statistics
 
   const [name, setName] = useState(user.name || "");
@@ -236,7 +234,14 @@ export default function LogoutRoute() {
                 Connect
               </button>
             ) : (
-              <button className="cancel px-3 py-1">Disconnect wallet</button>
+              <button
+                type="submit"
+                name="_action"
+                value="detachWallet"
+                className="cancel px-3 py-1"
+              >
+                Disconnect wallet
+              </button>
             )}
           </div>
         </Form>

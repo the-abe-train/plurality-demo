@@ -120,7 +120,6 @@ export default function Index() {
   const showData = (data?.metadata.totalSurveys || 0) > 0;
 
   useEffect(() => {
-    console.log("Generating function.");
     if (data?.metadata) {
       const maxPages = Math.max(Math.ceil(data.metadata.totalSurveys / 5), 1);
       setPage(Math.min(page || 1, maxPages));

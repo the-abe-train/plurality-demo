@@ -95,7 +95,6 @@ export default function Index() {
   const [yesterday, today, tomorrow] = data.questions;
   const [yesterdayPhoto, todayPhoto, tomorrowPhoto] = data.photos;
 
-  console.log(data.todayVotes);
   const { todayVotes } = data;
   const todayResponses = todayVotes.reduce((sum, ans) => {
     return sum + ans.votes;
