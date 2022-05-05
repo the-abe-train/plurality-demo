@@ -17,6 +17,9 @@ import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
 
+import AnimatedBanner from "~/components/AnimatedBanner";
+import infoIcon from "~/images/icons/info.svg";
+
 export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
@@ -49,29 +52,10 @@ export default function help() {
   return (
     <div className="bg-primary1 w-full top-0 bottom-0 flex flex-col min-h-screen">
       <Header name={data.user ? data.user.name : "Connect"} />
-      <main
-        className="flex-grow mx-4 md:mx-auto mb-4 flex flex-col 
-      md:flex-row-reverse max-w-4xl my-4"
-      >
-        <Outlet />
-        <nav
-          className="grid grid-rows-2 grid-cols-2 gap-y-4 gap-x-10 mx-auto my-4
-        md:my-0 md:flex flex-col md:space-y-4 w-max p-2 md:p-4 h-min md:mr-8 card"
-        >
-          <Link className="md:w-max " to="/help/what-is-plurality">
-            What is Plurality?
-          </Link>
-          <Link className="md:w-max " to="/help/how-to-play">
-            How to play
-          </Link>
-          <Link className="md:w-max " to="/help/faq">
-            FAQ
-          </Link>
-          <Link className="md:w-max " to="/help/terminology">
-            Terminology
-          </Link>
-        </nav>
-      </main>
+      {/* <AnimatedBanner icon={infoIcon} text="Info" /> */}
+
+      <Outlet />
+
       <Footer />
     </div>
   );

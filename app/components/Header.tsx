@@ -1,6 +1,6 @@
 import { Link } from "remix";
 import logo from "~/images/icons/logo.svg";
-import Menu from "./Menu";
+import Menu from "./Sidebar";
 
 type Props = {
   name?: string;

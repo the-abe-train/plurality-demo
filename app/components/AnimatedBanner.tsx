@@ -32,7 +32,7 @@ const letterVariants = {
 
 type Props = {
   text: string;
-  icon: string;
+  icon?: string;
 };
 
 export default ({ text, icon }: Props) => {
@@ -60,13 +60,15 @@ export default ({ text, icon }: Props) => {
             </motion.span>
           ))}
           {"\u00A0"}
-          <motion.img
-            variants={letterVariants}
-            src={icon}
-            alt={text}
-            width={34}
-            className="inline-block"
-          />
+          {icon && (
+            <motion.img
+              variants={letterVariants}
+              src={icon}
+              alt={text}
+              width={34}
+              className="inline-block"
+            />
+          )}
         </div>
       </motion.h1>
     </AnimatePresence>
