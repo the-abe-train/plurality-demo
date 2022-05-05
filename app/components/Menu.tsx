@@ -62,7 +62,7 @@ export default () => {
                 />
                 <span>Connect</span>
               </Link>
-              <Link to="/surveys" className="text-2xl block m-5">
+              <Link to="/surveys" className="text-2xl m-5 flex items-center">
                 <img
                   src={logo}
                   alt="Instruction symbol"

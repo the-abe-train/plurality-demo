@@ -6,8 +6,6 @@ type Props = {
   name?: string;
 };
 
-// TODO Connect button should reveal a dropdown on mobile
-
 export default function Header({ name }: Props) {
   return (
     <div
@@ -15,7 +13,8 @@ export default function Header({ name }: Props) {
       style={{ boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.4)" }}
     >
       <div className="w-full flex justify-between max-w-4xl mx-auto items-center">
-        <Link to="/">
+        <Link to="/" className="flex space-x-2 items-center">
+          <p className="font-header text-2xl font-bold">Plurality</p>
           <img className="inline h-6 object-fill" src={logo} alt="logo" />
         </Link>
         <nav className="flex justify-between items-center">

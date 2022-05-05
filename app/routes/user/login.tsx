@@ -16,6 +16,8 @@ import { authorizeUser } from "~/util/authorize";
 import { client } from "~/db/connect.server";
 import { connectUserWallet, gameByQuestionUser } from "~/db/queries";
 import { getSession, commitSession } from "../../sessions";
+import AnimatedBanner from "~/components/AnimatedBanner";
+import userIcon from "~/images/icons/user.svg";
 
 type LoaderData = {
   message: string;
@@ -147,7 +149,7 @@ export default function Login() {
 
   return (
     <main className="container flex-grow px-4 sm:px-0 mx-auto w-full max-w-4xl">
-      <h1 className="font-header text-3xl text-center my-4">Log in</h1>
+      <AnimatedBanner text="Log in" icon={userIcon} />
       <section className="flex justify-around flex-col md:flex-row">
         <article className="max-w-sm ">
           <h2 className="md:text-center text-2xl font-header">

@@ -15,6 +15,8 @@ import { connectUserWallet, gameByQuestionUser } from "~/db/queries";
 import { client } from "~/db/connect.server";
 import { ObjectId } from "mongodb";
 import useConnectWithWallet from "~/hooks/useConnectWithWallet";
+import AnimatedBanner from "~/components/AnimatedBanner";
+import userIcon from "~/images/icons/user.svg";
 
 export const loader: LoaderFunction = async ({ request }) => {
   // Connect to database
@@ -135,7 +137,7 @@ export default function signup() {
 
   return (
     <main className="container flex-grow px-4 sm:px-0 mx-auto w-full max-w-4xl">
-      <h1 className="font-header text-3xl text-center my-4">Sign up</h1>
+      <AnimatedBanner text="Sign up" icon={userIcon} />
       <section className="flex justify-around flex-col md:flex-row">
         <article className="max-w-sm ">
           <h2 className="text-center text-2xl font-header">
