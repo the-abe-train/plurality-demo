@@ -45,8 +45,6 @@ export const links: LinksFunction = () => {
 };
 
 // TODO email must be verified and wallet must be active connected to send
-// TODO to OpenSea should go to our page, not just the OpenSea homepage
-
 type LoaderData = {
   user: UserSchema;
   ids: number[];

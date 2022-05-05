@@ -1,4 +1,25 @@
-@import url("https://fonts.googleapis.com/css2?family=Amaranth:wght@400;700&family=Kanit:wght@300&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Amaranth:wght@400;700&family=Kanit:wght@300&display=swap"); */
+
+@font-face {
+  font-family: "Kanit";
+  src: url("/fonts/Kanit-Light.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Kanit";
+  src: url("/fonts/Kanit-Regular.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Amaranth";
+  src: url("/fonts/Amaranth-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 
 @tailwind base;
 @tailwind components;

@@ -51,7 +51,6 @@ type LoaderData = {
 };
 
 // TODO all loader and action functions should get all their data with Promise.all
-/* TODO get rid of google fonts and host own fonts */
 
 export const loader: LoaderFunction = async ({ request }) => {
   // Get user info

@@ -5,8 +5,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        header: ['"Amaranth"'],
-        sans: ['"Kanit"']
+        header: ['"Amaranth"', 'sans-serif'],
+        sans: ['"Kanit"', 'sans-serif']
       },
       colors: {
         button: '#012733',
