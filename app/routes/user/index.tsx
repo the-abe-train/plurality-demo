@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActionFunction,
   Form,
@@ -7,7 +7,9 @@ import {
   LoaderFunction,
   redirect,
   useActionData,
+  useFormAction,
   useLoaderData,
+  useSubmit,
 } from "remix";
 import useAttachWallet from "~/hooks/useAttachWallet";
 import { UserSchema } from "~/db/schemas";
@@ -59,6 +61,7 @@ export const action: ActionFunction = async ({ request }) => {
   const { _action, ...values } = Object.fromEntries(form);
   const newName = form.get("name");
   const wallet = form.get("wallet");
+  console.log("Action", _action);
 
   // Handle verify email
   if (_action === "verifyEmail") {
@@ -132,6 +135,8 @@ export default function LogoutRoute() {
   const { user } = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const attachWallet = useAttachWallet();
+  const submit = useSubmit();
+  const deleteFormRef = useRef<HTMLFormElement>(null!);
 
   useEffect(() => {
     if (actionData?.message) {
@@ -144,9 +149,21 @@ export default function LogoutRoute() {
     setMessage(newMessage);
   }
 
-  // TODO "Disconnect wallet" button not working
+  function confirmDeleteAccount() {
+    const confirmed = confirm("Are you sure you want to delete your account?");
+    if (confirmed) {
+      const newFormData = new FormData(deleteFormRef.current);
+      newFormData.set("_action", "delete");
+      submit(newFormData, {
+        method: "post",
+        action: "/user?index",
+        replace: true,
+      });
+    }
+  }
+
+  // TODO "Disconnect wallet" should use a hook, like a connect button
   // TODO get data for statistics
-  // TODO delete account button needs a warning/alert, shouldn't happy so quick!
 
   const [name, setName] = useState(user.name || "");
   return (
@@ -284,12 +301,13 @@ export default function LogoutRoute() {
               Logout
             </button>
           </Form>
-          <Form method="post" className="space-x-4">
+          <Form method="post" className="space-x-4" ref={deleteFormRef}>
             <button
-              type="submit"
-              name="_action"
-              value="delete"
+              // type="submit"
+              // name="_action"
+              // value="delete"
               className="cancel px-3 py-1"
+              onClick={confirmDeleteAccount}
             >
               Delete
             </button>
