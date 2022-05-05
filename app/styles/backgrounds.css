@@ -35,6 +35,12 @@
   box-shadow: none;
 }
 
+.silver:disabled {
+  box-shadow: none;
+  background-color: rgba(213, 238, 246, 0.8);
+  background-position: 240%;
+}
+
 .gold {
   background: linear-gradient(
       135deg,
@@ -69,6 +75,12 @@
   -webkit-text-fill-color: transparent;
   text-stroke: 0.5px black;
   -webkit-text-stroke: 0.5px black;
+}
+
+.gold:disabled {
+  background-color: #f8e7b7;
+  box-shadow: none;
+  background-position: 240%;
 }
 
 .silver-text {

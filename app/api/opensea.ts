@@ -13,6 +13,8 @@ export async function getNfts(wallet: string) {
   url.searchParams.set("include_orders", "false");
   url.searchParams.set("owner", wallet);
 
+  // console.log("url", url);
+
   const response = await fetch(url, options);
   const output = await response.json();
   const nfts = output.assets as NFT[];

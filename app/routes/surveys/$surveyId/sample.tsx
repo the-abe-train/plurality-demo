@@ -24,13 +24,13 @@ import { parseAnswer, trim } from "~/util/text";
 import { checkWin } from "~/util/gameplay";
 
 import { client } from "~/db/connect.server";
-import { questionById, votesByQuestion } from "~/db/queries";
-import { QuestionSchema, VoteAggregation } from "~/db/schemas";
+import { surveyById, votesBySurvey } from "~/db/queries";
+import { SurveySchema, VoteAggregation } from "~/db/schemas";
 import { Photo } from "~/api/schemas";
 import { commitSession, getSession } from "~/sessions";
 
 import Answers from "~/components/Answers";
-import Question from "~/components/Question";
+import Survey from "~/components/Survey";
 import { fetchPhoto } from "~/api/unsplash";
 import Scorebar from "~/components/Scorebar";
 import ShareButton from "~/components/ShareButton";
@@ -56,7 +56,7 @@ type Message =
   | "";
 
 type LoaderData = {
-  question: QuestionSchema;
+  question: SurveySchema;
   photo: Photo;
   totalVotes: number;
 };
@@ -91,10 +91,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   session.set("game", questionId);
 
   // Get question from db
-  const question = await questionById(client, questionId);
+  const question = await surveyById(client, questionId);
   invariant(question, "No question found!");
 
-  // Redirect to vote if survey close hasn't happened yet
+  // Redirect to Respond if survey close hasn't happened yet
   const surveyClose = question.surveyClose;
   if (dayjs(surveyClose) >= dayjs()) {
     return redirect(`/surveys/${questionId}/respond`);
@@ -103,7 +103,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Get additional questiondata from db and apis
   const photo = await fetchPhoto(question.photo);
   invariant(photo, "No photo found!");
-  const votes = await votesByQuestion(client, questionId);
+  const votes = await votesBySurvey(client, questionId);
   console.log("votes", votes);
   const totalVotes = votes.reduce((sum, ans) => {
     return sum + ans.votes;
@@ -156,7 +156,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   // Pull in more relevant data
-  const answers = await votesByQuestion(client, questionId);
+  const answers = await votesBySurvey(client, questionId);
   console.log("Answers", answers);
   const correctGuess = answers.find((ans) => {
     const text = ans._id;
@@ -265,7 +265,7 @@ export default () => {
     mt-8 md:gap-6 gap-4 my-8 justify-center md:mx-auto mx-4"
       >
         <section className="md:px-4 space-y-4">
-          <Question question={loaderData.question} photo={loaderData.photo} />
+          <Survey survey={loaderData.question} photo={loaderData.photo} />
 
           <p>{gameOver}</p>
           <Form className="w-survey mx-auto flex space-x-2" method="post">

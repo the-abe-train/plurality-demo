@@ -22,12 +22,13 @@ export type SessionSchema = {
   expiry?: Date;
 };
 
-export type QuestionSchema = {
+export type SurveySchema = {
   _id: number;
   text: string;
   photo: string;
   surveyClose: Date;
   drafted: Date;
+  community: boolean;
 };
 
 export type GameSchema = {

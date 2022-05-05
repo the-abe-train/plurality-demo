@@ -12,14 +12,14 @@ import timezone from "dayjs/plugin/timezone";
 
 import Footer from "~/components/Footer";
 import Header from "~/components/Header";
-import Question from "~/components/Question";
+import Survey from "~/components/Survey";
 import Instructions from "~/components/Instructions";
 import Counter from "~/components/Counter";
 
 import logo from "~/images/icons/logo.svg";
 import openSea from "~/images/icons/open_sea.svg";
 
-import { QuestionSchema, UserSchema, VoteAggregation } from "~/db/schemas";
+import { SurveySchema, UserSchema, VoteAggregation } from "~/db/schemas";
 import { Photo } from "~/api/schemas";
 
 import styles from "~/styles/app.css";
@@ -28,7 +28,7 @@ import animations from "~/styles/animations.css";
 
 import { client } from "~/db/connect.server";
 import { getSession } from "~/sessions";
-import { questionBySurveyClose, userById, votesByQuestion } from "~/db/queries";
+import { surveyByClose, userById, votesBySurvey } from "~/db/queries";
 import { fetchPhoto } from "~/api/unsplash";
 import AnimatedBanner from "~/components/AnimatedBanner";
 
@@ -44,7 +44,7 @@ export const links: LinksFunction = () => {
 };
 
 type LoaderData = {
-  questions: QuestionSchema[];
+  questions: SurveySchema[];
   photos: Photo[];
   user?: UserSchema;
   todayVotes: VoteAggregation[];
@@ -65,9 +65,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   const tomorrowSc = midnight.toDate();
 
   // Get questions from db
-  const yesterday = await questionBySurveyClose(client, yesterdaySc);
-  const today = await questionBySurveyClose(client, todaySc);
-  const tomorrow = await questionBySurveyClose(client, tomorrowSc);
+  const yesterday = await surveyByClose(client, yesterdaySc);
+  const today = await surveyByClose(client, todaySc);
+  const tomorrow = await surveyByClose(client, tomorrowSc);
   invariant(today, "Today's question not fetched from database");
 
   // Get photo for each question from Unsplash and votes from database
@@ -79,7 +79,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         return await fetchPhoto(question.photo);
       })
     );
-    const todayVotes = await votesByQuestion(client, today._id);
+    const todayVotes = await votesBySurvey(client, today._id);
 
     // Return data
     const data = { questions, user, photos, todayVotes };
@@ -116,7 +116,7 @@ export default function Index() {
               Play today's Survey!
             </h2>
             <div className="flex flex-col items-center md:flex-row">
-              <Question question={today} photo={todayPhoto} />
+              <Survey survey={today} photo={todayPhoto} />
             </div>
           </section>
           <div
@@ -143,14 +143,14 @@ export default function Index() {
             <h2 className="font-header mb-2 text-2xl sm:text-left">
               Play previous Surveys
             </h2>
-            <Question question={yesterday} photo={yesterdayPhoto} />
+            <Survey survey={yesterday} photo={yesterdayPhoto} />
           </section>
           <section className="flex md:flex-row flex-col md:space-x-3 w-max">
             <div className="my-2 space-y-3 h-fit">
               <h2 className="font-header mb-2 text-2xl sm:text-left">
                 Respond to an open Survey
               </h2>
-              <Question question={tomorrow} photo={tomorrowPhoto} />
+              <Survey survey={tomorrow} photo={tomorrowPhoto} />
             </div>
           </section>
           <div className="md:self-end my-2 flex md:flex-col md:space-y-8 justify-around w-full md:w-max">

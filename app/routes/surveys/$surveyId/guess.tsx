@@ -24,16 +24,16 @@ import { client } from "~/db/connect.server";
 import {
   addGuess,
   gameByQuestionUser,
-  questionById,
-  votesByQuestion,
+  surveyById,
+  votesBySurvey,
 } from "~/db/queries";
-import { GameSchema, QuestionSchema, VoteAggregation } from "~/db/schemas";
+import { GameSchema, SurveySchema, VoteAggregation } from "~/db/schemas";
 import { Photo } from "~/api/schemas";
 import { commitSession, getSession } from "~/sessions";
 import { fetchPhoto } from "~/api/unsplash";
 
 import Answers from "~/components/Answers";
-import Question from "~/components/Question";
+import Survey from "~/components/Survey";
 import Scorebar from "~/components/Scorebar";
 import ShareButton from "~/components/ShareButton";
 import Switch from "~/components/Switch";
@@ -61,7 +61,7 @@ type LoaderData = {
   game: GameSchema;
   message: Message;
   gameOver: boolean;
-  question: QuestionSchema;
+  survey: SurveySchema;
   photo: Photo;
   totalVotes: number;
 };
@@ -70,13 +70,13 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
-  const questionId = Number(params.surveyId);
+  const surveyId = Number(params.surveyId);
 
   // Redirect not signed-in users to home page
   if (!userId) {
     // User can play exactly one game if they're not signed in.
     // Check if the player already has a game in the session
-    if (session.has("game") && session.get("game") !== questionId) {
+    if (session.has("game") && session.get("game") !== surveyId) {
       session.flash(
         "message",
         `You need to be logged-in to play more games.
@@ -90,37 +90,37 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     }
 
     // Set the sample game for this not-logged-in user
-    session.set("game", questionId);
+    session.set("game", surveyId);
 
     // Send user to sample page
-    return redirect(`/surveys/${questionId}/sample`, {
+    return redirect(`/surveys/${surveyId}/sample`, {
       headers: {
         "Set-Cookie": await commitSession(session),
       },
     });
   }
 
-  // Get question from db
-  const question = await questionById(client, questionId);
-  invariant(question, "No question found!");
+  // Get survey from db
+  const survey = await surveyById(client, surveyId);
+  invariant(survey, "No survey found!");
 
   // Redirect to Respond if survey close hasn't happened yet
-  const surveyClose = question.surveyClose;
+  const surveyClose = survey.surveyClose;
   if (dayjs(surveyClose) >= dayjs()) {
-    return redirect(`/surveys/${questionId}/respond`);
+    return redirect(`/surveys/${surveyId}/respond`);
   }
 
-  // Get additional questiondata from db and apis
-  const photo = await fetchPhoto(question.photo);
+  // Get additional surveydata from db and apis
+  const photo = await fetchPhoto(survey.photo);
   invariant(photo, "No photo found!");
-  const votes = await votesByQuestion(client, questionId);
+  const votes = await votesBySurvey(client, surveyId);
   console.log("votes", votes);
   const totalVotes = votes.reduce((sum, ans) => {
     return sum + ans.votes;
   }, 0);
   const game = await gameByQuestionUser({
     client,
-    questionId,
+    questionId: surveyId,
     userId,
     totalVotes,
   });
@@ -137,7 +137,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     message = "No more guesses.";
   }
 
-  const data = { totalVotes, game, message, gameOver, question, photo };
+  const data = { totalVotes, game, message, gameOver, survey, photo };
   return json<LoaderData>(data, {
     headers: {
       "Set-Cookie": await commitSession(session),
@@ -166,8 +166,12 @@ export const action: ActionFunction = async ({ request, params }) => {
   // Pull in relevant data
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
-  const questionId = Number(params.surveyId);
-  const game = await gameByQuestionUser({ client, questionId, userId });
+  const surveyId = Number(params.surveyId);
+  const game = await gameByQuestionUser({
+    client,
+    questionId: surveyId,
+    userId,
+  });
   invariant(game, "Game upsert failed");
   const trimmedGuess = guess.trim().toLowerCase();
 
@@ -187,7 +191,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   // Pull in more relevant data
-  const answers = await votesByQuestion(client, questionId);
+  const answers = await votesBySurvey(client, surveyId);
   const correctGuess = answers.find((ans) => {
     const text = ans._id;
     return (
@@ -272,7 +276,7 @@ export default () => {
     mt-8 md:gap-6 gap-4 my-8 justify-center md:mx-auto mx-4"
       >
         <section className="md:px-4 space-y-4">
-          <Question question={loaderData.question} photo={loaderData.photo} />
+          <Survey survey={loaderData.survey} photo={loaderData.photo} />
 
           <p>{gameOver}</p>
           <Form className="w-survey mx-auto flex space-x-2" method="post">
@@ -319,7 +323,15 @@ export default () => {
           <Scorebar points={points} score={score} guesses={guesses} win={win} />
         </section>
         <section className="md:self-end space-y-4 ">
-          <p>Survey closed on 26 February 2022</p>
+          <div>
+            <p>
+              Survey closed on{" "}
+              {dayjs(loaderData.survey.surveyClose).format("D MMMM YYYY")}.
+            </p>
+            {loaderData.survey.community && (
+              <p>This survey question was drafted by Plurality players!</p>
+            )}
+          </div>
           <div className="flex items-center space-x-2">
             <ShareButton score={score} />
             <Link to="/surveys">

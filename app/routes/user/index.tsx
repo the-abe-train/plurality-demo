@@ -195,7 +195,7 @@ export default function LogoutRoute() {
                 type="submit"
                 name="_action"
                 value="verifyEmail"
-                className="gold px-3 py-1 disabled:bg-[#f8e7b7] disabled:shadow-none"
+                className="gold px-3 py-1"
                 disabled={user.email.verified}
               >
                 {user.email.verified ? "Verified" : "Verify"}
@@ -256,7 +256,7 @@ export default function LogoutRoute() {
             <Counter value={34} />
           </div>
           <div className="flex space-x-3 items-center">
-            <img src={vote} width={32} alt="Vote icon" />
+            <img src={vote} width={32} alt="Respond icon" />
             <Counter value={32} />
           </div>
           <div className="flex space-x-3 items-center">

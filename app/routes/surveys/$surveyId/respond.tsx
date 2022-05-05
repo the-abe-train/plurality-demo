@@ -4,17 +4,16 @@ import {
   ActionFunction,
   Form,
   json,
-  Link,
   LoaderFunction,
   redirect,
   useActionData,
   useLoaderData,
 } from "remix";
 import invariant from "tiny-invariant";
-import Question from "~/components/Question";
-import { GameSchema, QuestionSchema } from "~/db/schemas";
+import Survey from "~/components/Survey";
+import { GameSchema, SurveySchema } from "~/db/schemas";
 import { client } from "~/db/connect.server";
-import { addVote, gameByQuestionUser, questionById } from "~/db/queries";
+import { addVote, gameByQuestionUser, surveyById } from "~/db/queries";
 
 import { commitSession, getSession } from "~/sessions";
 import { Photo } from "~/api/schemas";
@@ -25,9 +24,11 @@ import AnimatedBanner from "~/components/AnimatedBanner";
 
 type LoaderData = {
   game: GameSchema;
-  question: QuestionSchema;
+  question: SurveySchema;
   photo: Photo;
 };
+
+// TODO email should be verified to respond
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   // Get user info
@@ -37,7 +38,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   // Redirect not signed-in users to home page
   if (!userId) {
-    session.flash("message", "You need to be logged-in to vote on a survey.");
+    session.flash(
+      "message",
+      "You need to be logged-in to respond to a Survey."
+    );
     return redirect("/user/login", {
       headers: {
         "Set-Cookie": await commitSession(session),
@@ -46,7 +50,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 
   // Get data from db and apis
-  const question = await questionById(client, questionId);
+  const question = await surveyById(client, questionId);
   invariant(question, "No question found!");
   const photo = await fetchPhoto(question.photo);
   invariant(photo, "No photo found!");
@@ -120,7 +124,7 @@ export default () => {
     mt-8 md:gap-8 gap-4 my-8"
       >
         <section className="md:px-4 py-2 space-y-2 w-max">
-          <Question question={loaderData.question} photo={loaderData.photo} />
+          <Survey survey={loaderData.question} photo={loaderData.photo} />
           <Form method="post" className="w-full flex space-x-2">
             <input
               type="text"
@@ -140,7 +144,7 @@ export default () => {
           </Form>
           {yourVote && (
             <p>
-              Your vote is: <b>{yourVote}</b>
+              Your response is: <b>{yourVote}</b>
             </p>
           )}
           {msg && <p>{msg}</p>}

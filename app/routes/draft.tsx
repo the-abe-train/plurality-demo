@@ -56,11 +56,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
   const user = (await userById(client, userId)) || undefined;
-  console.log("user", user);
+  // console.log("user", user);
 
   // Redirect not signed-in users to home page
   if (!user) {
-    session.flash("message", "You need to be logged-in to draft a question.");
+    session.flash("message", "You need to be logged-in to draft a survey.");
     return redirect("/user/login", {
       headers: {
         "Set-Cookie": await commitSession(session),
@@ -81,12 +81,13 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   }
 
-  // Get list of IDs that this user is allow to submit questions for
+  // Get list of IDs that this user is allow to submit surveys for
   // Always just [100] for Web2 version
   const ids = [100];
 
   // Return data
   const data = { user, ids };
+  // console.log(data);
   return json<LoaderData>(data);
 };
 
@@ -194,9 +195,9 @@ export default function draft() {
         className="container max-w-4xl flex-grow px-4 flex flex-col
     md:grid grid-cols-2 grid-flow-row gap-6 md:my-6"
       >
-        <section className="space-y-6">
+        <section>
           <h2 className="font-header text-2xl">Your Survey Tokens</h2>
-          <div className="grid grid-cols-3 items-center justify-items-center">
+          <div className="grid grid-cols-3 items-center justify-items-center my-4">
             {nfts.length > 0 &&
               nfts.map((nft, idx) => {
                 if (nft.image_url) {
@@ -215,7 +216,7 @@ export default function draft() {
               })}
           </div>
           {nfts.length <= 0 && (
-            <p>
+            <p className="my-4">
               You have no Draft Tokens. You can purchase one from{" "}
               <a href="https://opensea.io/PluralityGame" className="underline">
                 OpenSea

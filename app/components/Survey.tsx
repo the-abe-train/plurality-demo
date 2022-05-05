@@ -1,23 +1,21 @@
 import dayjs from "dayjs";
 import { Link } from "remix";
 import { Photo } from "~/api/schemas";
-import { QuestionSchema } from "~/db/schemas";
+import { SurveySchema } from "~/db/schemas";
 
 type Props = {
-  question: QuestionSchema;
+  survey: SurveySchema;
   photo: Photo;
 };
 
-// TODO Needs a "community: boolean" prop to determine silver vs. gold
-
-export default function Question({ question, photo }: Props) {
-  const surveyClose = dayjs(question.surveyClose);
+export default function Survey({ survey, photo }: Props) {
+  const surveyClose = dayjs(survey.surveyClose);
   const action = surveyClose > dayjs() ? "respond" : "guess";
   return (
-    <Link to={`/surveys/${question._id}/${action}`}>
+    <Link to={`/surveys/${survey._id}/${action}`}>
       <div
-        className="border border-outline rounded-lg 
-     z-20 w-survey mx-auto silver"
+        className={`border border-outline rounded-lg 
+     z-20 w-survey mx-auto ${survey.community ? "gold" : "silver"}`}
       >
         <div className="z-0 h-40 overflow-hidden rounded-t-md bg-black">
           <img
@@ -30,7 +28,7 @@ export default function Question({ question, photo }: Props) {
           className="text-lg p-2 font-bold border-t-2 z-30 border-outline
          rounded-b-lg"
         >
-          #{question._id} {question.text}
+          #{survey._id} {survey.text}
         </h2>
       </div>
     </Link>

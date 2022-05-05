@@ -3,7 +3,7 @@ import invariant from "tiny-invariant";
 import dayjs from "dayjs";
 
 import { client } from "~/db/connect.server";
-import { questionBySurveyClose } from "~/db/queries";
+import { surveyByClose } from "~/db/queries";
 import { commitSession, getSession } from "~/sessions";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const todaySc = midnight.subtract(1, "day").toDate();
 
   // Get questions from db
-  const question = await questionBySurveyClose(client, todaySc);
+  const question = await surveyByClose(client, todaySc);
   invariant(question, "Today's question not fetched from database");
   const questionId = question._id;
 

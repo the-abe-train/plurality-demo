@@ -10,12 +10,12 @@ import {
 } from "remix";
 import dayjs from "dayjs";
 
-import Question from "~/components/Question";
+import Survey from "~/components/Survey";
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
-import { QuestionSchema, VoteAggregation } from "~/db/schemas";
-import { questionBySearch, votesByQuestion } from "~/db/queries";
+import { SurveySchema, VoteAggregation } from "~/db/schemas";
+import { surveyBySearch, votesBySurvey } from "~/db/queries";
 import { client } from "~/db/connect.server";
 import { Photo } from "~/api/schemas";
 import { fetchPhoto } from "~/api/unsplash";
@@ -24,7 +24,7 @@ import AnimatedBanner from "~/components/AnimatedBanner";
 import { PER_PAGE } from "~/util/env";
 
 type ActionData = {
-  pageQuestions: QuestionSchema[];
+  pageQuestions: SurveySchema[];
   metadata: {
     pageStart: number;
     pageEnd: number;
@@ -34,7 +34,6 @@ type ActionData = {
   photos: Photo[];
   votes: VoteAggregation[][];
 };
-
 export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
@@ -42,8 +41,6 @@ export const links: LinksFunction = () => {
     { rel: "stylesheet", href: animations },
   ];
 };
-
-// TODO Add community and standard search params
 
 export const action: ActionFunction = async ({ request }) => {
   // Parse form
@@ -59,14 +56,16 @@ export const action: ActionFunction = async ({ request }) => {
   console.log("Community", communityParam);
 
   // Parse query parameters
-  const dateSearch = dayjs(String(dateParam))
-    .tz("America/Toronto")
-    .endOf("day")
-    .toDate();
-  const idSearch = Number(textParam);
-  const textSearch = textParam
-    ? new RegExp(String.raw`${textParam}`, "g")
-    : /^\S+$/;
+  const searchParams = {
+    dateSearch: dayjs(String(dateParam))
+      .tz("America/Toronto")
+      .endOf("day")
+      .toDate(),
+    idSearch: Number(textParam),
+    textSearch: textParam ? new RegExp(String.raw`${textParam}`, "g") : /^\S+$/,
+    communitySearch: communityParam === "on",
+    standardSearch: standardParam === "on",
+  };
 
   // Out of all the Surveys returned, page start and page end are the indeces
   // of the first and last Surveys that wil appear on the page
@@ -74,12 +73,8 @@ export const action: ActionFunction = async ({ request }) => {
   const pageEnd = pageParam ? Number(pageParam) * PER_PAGE : PER_PAGE;
 
   // Questions from database
-  const matchingSurveys = await questionBySearch({
-    client,
-    textSearch,
-    dateSearch,
-    idSearch,
-  });
+  console.log(searchParams);
+  const matchingSurveys = await surveyBySearch({ client, ...searchParams });
 
   const pageSurveys = matchingSurveys.slice(pageStart, pageEnd);
 
@@ -94,7 +89,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (pageSurveys) {
     const votes = await Promise.all(
       pageSurveys.map(async (question) => {
-        return await votesByQuestion(client, question._id);
+        return await votesBySurvey(client, question._id);
       })
     );
     const photos = await Promise.all(
@@ -236,7 +231,7 @@ export default function Index() {
           <div className="space-x-4">
             <button
               type="reset"
-              className="cancel px-3 py-2"
+              className="cancel px-3 py-1"
               onClick={() => setPage(1)}
               disabled={transition.state !== "idle"}
             >
@@ -244,7 +239,7 @@ export default function Index() {
             </button>
             <button
               type="submit"
-              className="silver px-3 py-2"
+              className="silver px-3 py-1"
               disabled={transition.state !== "idle"}
             >
               Search
@@ -264,11 +259,12 @@ export default function Index() {
             <div className="flex flex-col md:flex-row flex-wrap gap-3">
               {data.pageQuestions.map((q, idx) => {
                 const photo = data.photos[idx];
-                return <Question question={q} photo={photo} key={q._id} />;
+                return <Survey survey={q} photo={photo} key={q._id} />;
               })}
             </div>
           </section>
         )}
+        {!showData && data?.metadata && <p>No results returned.</p>}
       </div>
     </main>
   );

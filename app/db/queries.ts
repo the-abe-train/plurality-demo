@@ -1,5 +1,5 @@
 import {
-  QuestionSchema,
+  SurveySchema,
   VoteAggregation,
   UserSchema,
   GameSchema,
@@ -153,22 +153,19 @@ export async function deleteUser(client: MongoClient, id: ObjectId) {
   return await usersCollection.deleteOne({ _id: id });
 }
 
-// Questions collection
-export async function questionById(client: MongoClient, id: number) {
+// Surveys collection
+export async function surveyById(client: MongoClient, id: number) {
   const db = await connectDb(client);
-  const questionsCollection = db.collection<QuestionSchema>("questions");
-  return await questionsCollection.findOne({
+  const surveysCollection = db.collection<SurveySchema>("surveys");
+  return await surveysCollection.findOne({
     _id: id,
   });
 }
 
-export async function questionBySurveyClose(
-  client: MongoClient,
-  surveyClose: Date
-) {
+export async function surveyByClose(client: MongoClient, surveyClose: Date) {
   const db = await connectDb(client);
-  const questionsCollection = db.collection<QuestionSchema>("questions");
-  return await questionsCollection.findOne({
+  const surveysCollection = db.collection<SurveySchema>("surveys");
+  return await surveysCollection.findOne({
     surveyClose: surveyClose,
   });
 }
@@ -178,36 +175,51 @@ type SearchParams = {
   textSearch: RegExp;
   dateSearch: Date;
   idSearch: number;
+  communitySearch: boolean;
+  standardSearch: boolean;
 };
 
-export async function questionBySearch({
+export async function surveyBySearch({
   client,
   textSearch,
   dateSearch,
   idSearch,
+  communitySearch,
+  standardSearch,
 }: SearchParams) {
   const db = await connectDb(client);
-  const questionsCollection = db.collection<QuestionSchema>("questions");
-  return await questionsCollection
+  const surveysCollection = db.collection<SurveySchema>("surveys");
+  if (!communitySearch && !standardSearch) return [];
+  return await surveysCollection
     .find({
-      $or: [
-        { text: { $regex: textSearch } },
-        { _id: idSearch },
-        { surveyClose: dateSearch },
+      $and: [
+        {
+          $or: [
+            { text: { $regex: textSearch } },
+            { _id: idSearch },
+            { surveyClose: dateSearch },
+          ],
+        },
+        {
+          $or: [
+            { community: communitySearch },
+            { community: { $ne: standardSearch } },
+          ],
+        },
       ],
     })
     .toArray();
 }
 
 // Games collection
-export async function votesByQuestion(client: MongoClient, questionId: number) {
+export async function votesBySurvey(client: MongoClient, surveyId: number) {
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
   const votes = await gamesCollection
     .aggregate([
       {
         $match: {
-          question: questionId,
+          question: surveyId,
           vote: {
             $exists: true,
           },
