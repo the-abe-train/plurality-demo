@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useCycle } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "remix";
 import guess from "~/images/icons/guess.svg";
@@ -8,7 +8,11 @@ import user from "~/images/icons/user.svg";
 import info from "~/images/icons/info.svg";
 import logo from "~/images/icons/empty_logo.svg";
 
-export default () => {
+type Props = {
+  name?: string;
+};
+
+export default ({ name }: Props) => {
   const [open, setOpen] = useState(false);
 
   const wrapperRef = useRef<HTMLDivElement>(null!);
@@ -39,7 +43,7 @@ export default () => {
           <motion.aside
             initial={{ width: 0 }}
             animate={{
-              width: "50vw",
+              width: "75vw",
             }}
             exit={{
               width: 0,
@@ -52,17 +56,18 @@ export default () => {
               animate="open"
               exit="closed"
               onClick={() => setOpen(false)}
+              className="space-y-12 flex flex-col"
             >
-              <Link to="/user" className="text-2xl m-5 flex items-center">
+              <Link to="/user" className="text-2xl mx-5 flex items-center">
                 <img
                   src={user}
                   alt="Instruction symbol"
                   className="mr-2 inline"
                   width={24}
                 />
-                <span>Connect</span>
+                <span>{name || "Connect"}</span>
               </Link>
-              <Link to="/surveys" className="text-2xl m-5 flex items-center">
+              <Link to="/surveys" className="text-2xl mx-5 flex items-center">
                 <img
                   src={logo}
                   alt="Instruction symbol"
@@ -71,42 +76,44 @@ export default () => {
                 />
                 <span>Surveys</span>
               </Link>
-              <Link
-                to="/surveys/today"
-                className="text-xl my-5 mx-8 flex items-center"
-              >
-                <img
-                  src={guess}
-                  alt="Instruction symbol"
-                  className="mr-2 inline"
-                  width={18}
-                />
-                <span>Guess</span>
-              </Link>
-              <Link
-                to="/surveys/tomorrow"
-                className="text-xl my-5 mx-8 flex items-center"
-              >
-                <img
-                  src={vote}
-                  alt="Instruction symbol"
-                  className="mr-2 inline"
-                  width={18}
-                />
-                Respond
-              </Link>
-              <Link to="/draft" className="text-xl my-5 mx-8 flex items-center">
-                <img
-                  src={draft}
-                  alt="Instruction symbol"
-                  className="mr-2 inline"
-                  width={18}
-                />
-                Draft
-              </Link>
+              <div className="flex flex-col space-y-8">
+                <Link
+                  to="/surveys/today"
+                  className="text-xl mx-8 flex items-center"
+                >
+                  <img
+                    src={guess}
+                    alt="Instruction symbol"
+                    className="mr-2 inline"
+                    width={18}
+                  />
+                  <span>Guess</span>
+                </Link>
+                <Link
+                  to="/surveys/tomorrow"
+                  className="text-xl mx-8 flex items-center"
+                >
+                  <img
+                    src={vote}
+                    alt="Instruction symbol"
+                    className="mr-2 inline"
+                    width={18}
+                  />
+                  Respond
+                </Link>
+                <Link to="/draft" className="text-xl mx-8 flex items-center">
+                  <img
+                    src={draft}
+                    alt="Instruction symbol"
+                    className="mr-2 inline"
+                    width={18}
+                  />
+                  Draft
+                </Link>
+              </div>
               <Link
                 to="/help/what-is-plurality"
-                className="text-2xl m-5 flex items-center"
+                className="text-2xl mx-5 flex items-center"
               >
                 <img
                   src={info}

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
-import { useState } from "react";
+import { ReactFragment, useEffect, useReducer, useState } from "react";
 import { VoteAggregation } from "~/db/schemas";
 import { MAX_GUESSES, THRESHOLD } from "~/util/gameplay";
 import Counter from "./Counter";
@@ -11,43 +11,31 @@ type Props = {
   win: boolean;
 };
 
+type Item = {
+  name: "Score" | "Points" | "Guesses left";
+  value: number;
+  percentage: boolean;
+};
+
 export default function Scorebar({ points, score, guesses, win }: Props) {
-  const remainingGuesses = MAX_GUESSES - guesses.length;
   const items = [
     {
       name: "Guesses left",
-      value: remainingGuesses,
+      value: MAX_GUESSES - guesses.length,
       percentage: false,
-      text: (
-        <>
-          You can have <b>14 guesses</b> left to reach an <b>80% score</b>.
-        </>
-      ),
     },
     {
       name: "Points",
       value: points,
       percentage: false,
-      text: (
-        <>
-          <b>Points</b> are the number votes received by all correctly guessed
-          survey responses.
-        </>
-      ),
     },
     {
       name: "Score",
       value: score * 100,
       percentage: true,
-      text: (
-        <>
-          <b>Score</b> is the percentage of points acquired out of the total
-          points available.
-        </>
-      ),
     },
   ];
-  const [helper, setHelper] = useState(items[0]["text"]);
+
   const [currentItem, setCurrentItem] = useState("Guesses left");
   const [showPopup, setShowPopup] = useState(true);
   const control = useAnimation();
@@ -88,14 +76,13 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
     },
   };
 
-  function togglePopup(text: JSX.Element, name: string) {
+  function togglePopup(name: string) {
     if (name === currentItem) {
       setShowPopup(false);
       setCurrentItem("");
       return;
     }
     setCurrentItem(name);
-    setHelper(text);
     setShowPopup(true);
     control.start({
       opacity: [1, 0, 1],
@@ -103,14 +90,14 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
   }
 
   return (
-    <div className="flex flex-col space-y-4 py-4 min-h-[220px]">
+    <div className="flex flex-col space-y-4">
       <div
-        className="w-3/4 mx-auto bg-gray-200 rounded-full h-2.5 
+        className="w-3/4 mx-auto bg-gray-300 rounded-full h-2.5 
         dark:bg-gray-700 relative"
       >
         <motion.div
           className="h-2.5 rounded-full"
-          style={{ backgroundColor: win ? "green" : "blue" }}
+          style={{ backgroundColor: win ? "#03bb6e" : "#39cdff" }}
           initial={{ width: 0 }}
           animate={{ width: `${score * 100}%` }}
           transition={{ duration: 1 }}
@@ -125,7 +112,7 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
           return (
             <div
               className="flex flex-col items-center cursor-pointer"
-              onClick={() => togglePopup(item.text, item.name)}
+              onClick={() => togglePopup(item.name)}
               key={item.name}
             >
               <Counter value={item.value} percent={item.percentage} />
@@ -147,7 +134,24 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
               variants={childVariants}
               className="flex rounded-md bg-primary2 p-3"
             >
-              <p className="m-0 h-max">{helper}</p>
+              {currentItem === "Guesses left" && (
+                <p className="m-0 h-max">
+                  You can have <b>{MAX_GUESSES - guesses.length} guesses</b>{" "}
+                  left to reach a <b>{THRESHOLD}% score</b>.
+                </p>
+              )}
+              {currentItem === "Points" && (
+                <p className="m-0 h-max">
+                  <b>Points</b> are the number votes received by all correctly
+                  guessed survey responses.
+                </p>
+              )}
+              {currentItem === "Score" && (
+                <p className="m-0 h-max">
+                  <b>Score</b> is the percentage of points acquired out of the
+                  total points available.
+                </p>
+              )}
             </motion.div>
           </motion.div>
         )}

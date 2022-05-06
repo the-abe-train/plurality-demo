@@ -62,7 +62,9 @@ export const action: ActionFunction = async ({ request }) => {
       .endOf("day")
       .toDate(),
     idSearch: Number(textParam),
-    textSearch: textParam ? new RegExp(String.raw`${textParam}`, "g") : /^\S+$/,
+    textSearch: textParam
+      ? new RegExp(String.raw`${textParam}`, "gi")
+      : /^\S+$/,
     communitySearch: communityParam === "on",
     standardSearch: standardParam === "on",
   };

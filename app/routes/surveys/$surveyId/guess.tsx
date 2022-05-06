@@ -275,11 +275,10 @@ export default () => {
         className="max-w-4xl flex-grow flex flex-col md:grid grid-cols-2
     mt-8 md:gap-6 gap-4 my-8 justify-center md:mx-auto mx-4"
       >
-        <section className="md:px-4 space-y-4">
+        <section className="md:px-4 space-y-4 mx-auto">
           <Survey survey={loaderData.survey} photo={loaderData.photo} />
-
-          <p>{gameOver}</p>
-          <Form className="w-survey mx-auto flex space-x-2" method="post">
+          {message !== "" && <p className="">{message}</p>}
+          <Form className="w-full flex space-x-2" method="post">
             <input
               className="border border-outline py-1 px-2 
               bg-white disabled:bg-gray-300 w-full"
@@ -298,7 +297,6 @@ export default () => {
               Enter
             </button>
           </Form>
-          {message !== "" && <p>{message}</p>}
         </section>
         <section className="space-y-4">
           <div className="flex justify-between w-full items-center">
@@ -319,10 +317,10 @@ export default () => {
             displayPercent={displayPercent}
           />
         </section>
-        <section className="md:order-last">
+        <section className="md:order-last md:self-end h-min">
           <Scorebar points={points} score={score} guesses={guesses} win={win} />
         </section>
-        <section className="md:self-end space-y-4 ">
+        <section className="md:self-end space-y-4 md:px-4">
           <div>
             <p>
               Survey closed on{" "}

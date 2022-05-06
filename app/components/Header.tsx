@@ -1,6 +1,6 @@
 import { Link } from "remix";
 import logo from "~/images/icons/logo.svg";
-import Menu from "./Sidebar";
+import Sidebar from "./Sidebar";
 
 type Props = {
   name?: string;
@@ -34,7 +34,7 @@ export default function Header({ name }: Props) {
           </ul>
         </nav>
         <div className="sm:hidden relative">
-          <Menu />
+          <Sidebar name={name} />
         </div>
       </div>
     </div>
