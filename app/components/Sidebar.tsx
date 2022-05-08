@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "remix";
 import guess from "~/images/icons/guess.svg";
-import vote from "~/images/icons/vote.svg";
+import respond from "~/images/icons/respond.svg";
 import draft from "~/images/icons/draft.svg";
 import user from "~/images/icons/user.svg";
 import info from "~/images/icons/info.svg";
@@ -94,7 +94,7 @@ export default ({ name }: Props) => {
                   className="text-xl mx-8 flex items-center"
                 >
                   <img
-                    src={vote}
+                    src={respond}
                     alt="Instruction symbol"
                     className="mr-2 inline"
                     width={18}

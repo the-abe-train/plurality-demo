@@ -2,7 +2,6 @@ import {
   ActionFunction,
   Form,
   json,
-  Link,
   LinksFunction,
   LoaderFunction,
   redirect,
@@ -38,6 +37,7 @@ import Scorebar from "~/components/Scorebar";
 import ShareButton from "~/components/ShareButton";
 import Switch from "~/components/Switch";
 import AnimatedBanner from "~/components/AnimatedBanner";
+import NavButton from "~/components/NavButton";
 
 export const links: LinksFunction = () => {
   return [
@@ -273,9 +273,9 @@ export default () => {
       {win && <AnimatedBanner text="Winner" icon={exclamationSymbol} />}
       <main
         className="max-w-4xl flex-grow flex flex-col md:grid grid-cols-2
-    mt-8 md:gap-6 gap-4 my-8 justify-center md:mx-auto mx-4"
+    mt-8 gap-4 my-8 justify-center md:mx-auto mx-4"
       >
-        <section className="md:px-4 space-y-4 mx-auto">
+        <section className="md:px-4 space-y-4 mx-auto md:mx-0 justify-self-start">
           <Survey survey={loaderData.survey} photo={loaderData.photo} />
           {message !== "" && <p className="">{message}</p>}
           <Form className="w-full flex space-x-2" method="post">
@@ -320,27 +320,10 @@ export default () => {
         <section className="md:order-last md:self-end h-min">
           <Scorebar points={points} score={score} guesses={guesses} win={win} />
         </section>
-        <section className="md:self-end space-y-4 md:px-4">
-          <div>
-            <p>
-              Survey closed on{" "}
-              {dayjs(loaderData.survey.surveyClose).format("D MMMM YYYY")}.
-            </p>
-            {loaderData.survey.community && (
-              <p>This survey question was drafted by Plurality players!</p>
-            )}
-          </div>
-          <div className="flex items-center space-x-2">
-            <ShareButton score={score} />
-            <Link to="/surveys">
-              <button className="silver px-3 py-1">More Surveys</button>
-            </Link>
-          </div>
-          <div>
-            <Link to="/help/what-is-plurality" className="underline">
-              Need help? Check out the instructions.
-            </Link>
-          </div>
+        <section className="md:self-end md:px-4 flex space-x-4">
+          <NavButton name="Guess" />
+          <NavButton name="Respond" />
+          <NavButton name="Draft" />
         </section>
       </main>
     </>

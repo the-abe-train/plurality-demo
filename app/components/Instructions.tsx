@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import guess from "~/images/icons/guess.svg";
-import vote from "~/images/icons/vote.svg";
+import vote from "~/images/icons/respond.svg";
 import draft from "~/images/icons/draft.svg";
 import { Link } from "remix";
 

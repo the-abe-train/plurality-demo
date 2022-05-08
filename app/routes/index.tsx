@@ -89,6 +89,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 // TODO decide on how to use "secondary" colour for text. Needs to be consistent.
+// TODO maybe hide today's survey stats on mobile? Looks crowded.
 
 export default function Index() {
   const data = useLoaderData<LoaderData>();

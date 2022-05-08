@@ -29,7 +29,7 @@ import AnimatedBanner from "~/components/AnimatedBanner";
 import Counter from "~/components/Counter";
 
 import guess from "~/images/icons/guess.svg";
-import vote from "~/images/icons/vote.svg";
+import vote from "~/images/icons/respond.svg";
 import draft from "~/images/icons/draft.svg";
 import userIcon from "~/images/icons/user.svg";
 

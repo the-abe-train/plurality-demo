@@ -15,7 +15,7 @@ export default function Survey({ survey, photo }: Props) {
     <Link to={`/surveys/${survey._id}/${action}`}>
       <div
         className={`border border-outline rounded-lg 
-     z-20 w-survey mx-auto ${survey.community ? "gold" : "silver"}`}
+     z-20 max-w-survey mx-auto ${survey.community ? "gold" : "silver"}`}
       >
         <div className="z-0 h-40 overflow-hidden rounded-t-md bg-black">
           <img

@@ -19,7 +19,7 @@ import { commitSession, getSession } from "~/sessions";
 import { Photo } from "~/api/schemas";
 import { fetchPhoto } from "~/api/unsplash";
 
-import respondSymbol from "~/images/icons/vote.svg";
+import respondSymbol from "~/images/icons/respond.svg";
 import AnimatedBanner from "~/components/AnimatedBanner";
 
 type LoaderData = {
@@ -29,6 +29,8 @@ type LoaderData = {
 };
 
 // TODO email should be verified to respond
+// TODO all responses should be transformed to sentance-case
+// Should have max answer length
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   // Get user info

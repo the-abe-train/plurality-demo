@@ -16,7 +16,8 @@ module.exports = {
         outline: '#808080'
       },
       dropShadow: {
-        'block': "0px 4px 4px rgba(0, 0, 0, 0.25)"
+        'block': "0px 4px 4px rgba(0, 0, 0, 0.25)",
+        'nav': "0px 2px 6px rgba(0, 0, 0, 0.4)"
       },
       container: {
         center: true
@@ -25,6 +26,9 @@ module.exports = {
         hompage: "5fr 5fr 2fr"
       },
       spacing: {
+        survey: "358px"
+      },
+      maxWidth: {
         survey: "358px"
       }
     },

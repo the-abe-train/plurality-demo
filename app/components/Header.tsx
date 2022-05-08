@@ -1,17 +1,44 @@
 import { Link } from "remix";
-import logo from "~/images/icons/logo.svg";
 import Sidebar from "./Sidebar";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import guess from "~/images/icons/guess.svg";
+import respond from "~/images/icons/respond.svg";
+import draft from "~/images/icons/draft.svg";
+import user from "~/images/icons/user.svg";
+import info from "~/images/icons/info.svg";
+import logo from "~/images/icons/logo.svg";
+import down from "~/images/icons/down.svg";
 
 type Props = {
   name?: string;
 };
 
 export default function Header({ name }: Props) {
+  const [isHover, setIsHover] = useState(false);
+  const subMenuAnimate = {
+    enter: {
+      opacity: 1,
+      rotateX: 0,
+      transition: {
+        duration: 0.25,
+      },
+      display: "block",
+    },
+    exit: {
+      opacity: 0,
+      rotateX: -15,
+      transition: {
+        duration: 0.25,
+        delay: 0.5,
+      },
+      transitionEnd: {
+        display: "none",
+      },
+    },
+  };
   return (
-    <div
-      className="px-4 py-2 border-0 bg-primary2 z-20"
-      style={{ boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.4)" }}
-    >
+    <div className="px-4 py-2 border-0 bg-primary2 z-20 drop-shadow-nav">
       <div className="w-full flex justify-between max-w-4xl mx-auto items-center">
         <Link to="/" className="flex space-x-2 items-center">
           <p className="font-header text-2xl font-bold">Plurality</p>
@@ -19,12 +46,57 @@ export default function Header({ name }: Props) {
         </Link>
         <nav className="flex justify-between items-center">
           <ul className="hidden sm:flex md:space-x-8 items-center">
-            <li>
-              <Link to="/surveys">Surveys</Link>
-            </li>
-            <li>
-              <Link to="/draft">Draft</Link>
-            </li>
+            <motion.li
+              className="z-20 relative"
+              onMouseEnter={() => setIsHover(true)}
+              onMouseLeave={() => setIsHover(false)}
+              onClick={() => setIsHover(!isHover)}
+            >
+              <Link to="/surveys" className="flex items-center space-x-2">
+                <span>Surveys</span>{" "}
+                <img
+                  src={down}
+                  alt="Instruction symbol"
+                  className="mr-2 inline"
+                  width={12}
+                />
+              </Link>
+              <motion.div
+                className="absolute top-8 -left-4 bg-primary2 drop-shadow-nav 
+                rounded-md space-y-3 px-4 py-2 w-32"
+                initial="exit"
+                animate={isHover ? "enter" : "exit"}
+                variants={subMenuAnimate}
+              >
+                <Link to="/surveys/today" className="flex items-center">
+                  <img
+                    src={guess}
+                    alt="Guess symbol"
+                    className="mr-2 inline"
+                    width={16}
+                  />
+                  <span>Guess</span>
+                </Link>
+                <Link to="/surveys/tomorrow" className="flex items-center">
+                  <img
+                    src={respond}
+                    alt="Respond symbol"
+                    className="mr-2 inline"
+                    width={16}
+                  />
+                  <span>Respond</span>
+                </Link>
+                <Link to="/draft" className="flex items-center">
+                  <img
+                    src={draft}
+                    alt="Draft symbol"
+                    className="mr-2 inline"
+                    width={16}
+                  />
+                  <span>Draft</span>
+                </Link>
+              </motion.div>
+            </motion.li>
             <li>
               <Link to="/help/what-is-plurality">Help</Link>
             </li>

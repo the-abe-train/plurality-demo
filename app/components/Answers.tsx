@@ -18,9 +18,12 @@ export default function Answers({
 }: Props) {
   const nodeRef = useRef<HTMLDivElement>(null!);
   const sortedGuesses = guesses.sort((a, z) => z.votes - a.votes);
+  const guessedVotes = guesses.reduce((total, guess) => {
+    return total + guess.votes;
+  }, 0);
   const showRemainingStat = displayPercent
     ? statFormat((1 - score) * 100) + "%"
-    : totalVotes;
+    : totalVotes - guessedVotes;
 
   return (
     <section>

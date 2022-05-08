@@ -2,7 +2,6 @@ import {
   ActionFunction,
   Form,
   json,
-  Link,
   LinksFunction,
   LoaderFunction,
   redirect,
@@ -36,6 +35,7 @@ import Scorebar from "~/components/Scorebar";
 import ShareButton from "~/components/ShareButton";
 import AnimatedBanner from "~/components/AnimatedBanner";
 import Switch from "~/components/Switch";
+import NavButton from "~/components/NavButton";
 
 export const links: LinksFunction = () => {
   return [
@@ -264,7 +264,7 @@ export default () => {
         className="max-w-4xl flex-grow flex flex-col md:grid grid-cols-2
     mt-8 md:gap-6 gap-4 my-8 justify-center md:mx-auto mx-4"
       >
-        <section className="md:px-4 space-y-4">
+        <section className="md:px-4 space-y-4 mx-auto md:mx-0 justify-self-start">
           <Survey survey={loaderData.question} photo={loaderData.photo} />
 
           <p>{gameOver}</p>
@@ -319,19 +319,10 @@ export default () => {
         <section className="md:order-last">
           <Scorebar points={points} score={score} guesses={guesses} win={win} />
         </section>
-        <section className="md:self-end space-y-4 ">
-          <p>Survey closed on 26 February 2022</p>
-          <div className="flex items-center space-x-2">
-            <ShareButton score={score} />
-            <Link to="/surveys">
-              <button className="silver px-3 py-1">More Surveys</button>
-            </Link>
-          </div>
-          <div>
-            <Link to="/help/what-is-plurality" className="underline">
-              Need help? Check out the instructions.
-            </Link>
-          </div>
+        <section className="md:self-end md:px-4 flex space-x-4">
+          <NavButton name="Guess" />
+          <NavButton name="Respond" />
+          <NavButton name="Draft" />
         </section>
       </main>
     </>

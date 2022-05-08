@@ -1,20 +1,15 @@
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
-import { ReactFragment, useEffect, useReducer, useState } from "react";
+import { useState } from "react";
 import { VoteAggregation } from "~/db/schemas";
 import { MAX_GUESSES, THRESHOLD } from "~/util/gameplay";
 import Counter from "./Counter";
+import ShareButton from "./ShareButton";
 
 type Props = {
   points: number;
   score: number;
   guesses: VoteAggregation[];
   win: boolean;
-};
-
-type Item = {
-  name: "Score" | "Points" | "Guesses left";
-  value: number;
-  percentage: boolean;
 };
 
 export default function Scorebar({ points, score, guesses, win }: Props) {
@@ -90,7 +85,7 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
   }
 
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="flex flex-col space-y-4 min-h-[180px]">
       <div
         className="w-3/4 mx-auto bg-gray-300 rounded-full h-2.5 
         dark:bg-gray-700 relative"
@@ -107,7 +102,7 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
           style={{ left: `calc(${THRESHOLD}% - 2px)` }}
         ></div>
       </div>
-      <div className="flex justify-center w-full space-x-12">
+      <div className="flex justify-between items-end w-full md:justify-center  md:space-x-12">
         {items.map((item) => {
           return (
             <div
@@ -120,6 +115,7 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
             </div>
           );
         })}
+        {win && <ShareButton score={score} />}
       </div>
       <AnimatePresence initial={false}>
         {showPopup && (
