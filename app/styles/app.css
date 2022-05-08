@@ -735,6 +735,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-top: 1rem;
 }
 
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
 .mt-3 {
   margin-top: 0.75rem;
 }
@@ -745,14 +749,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .ml-8 {
   margin-left: 2rem;
-}
-
-.mt-5 {
-  margin-top: 1.25rem;
-}
-
-.mt-6 {
-  margin-top: 1.5rem;
 }
 
 .block {
@@ -1530,12 +1526,12 @@ Ensure the default browser behavior of the `hidden` attribute.
     margin-right: 2rem;
   }
 
-  .md\:mt-8 {
-    margin-top: 2rem;
-  }
-
   .md\:mt-0 {
     margin-top: 0px;
+  }
+
+  .md\:mt-8 {
+    margin-top: 2rem;
   }
 
   .md\:block {
@@ -1572,10 +1568,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 
   .md\:w-auto {
     width: auto;
-  }
-
-  .md\:max-w-xl {
-    max-width: 36rem;
   }
 
   .md\:max-w-4xl {

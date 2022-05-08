@@ -3,15 +3,12 @@ import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import switchStyles from "~/styles/switch.css";
 import animations from "~/styles/animations.css";
-import { SurveySchema, UserSchema } from "~/db/schemas";
-import { surveyByClose, userById } from "~/db/queries";
-import { getSession } from "~/sessions";
+import { SurveySchema } from "~/db/schemas";
+import { surveyByClose } from "~/db/queries";
 import { client } from "~/db/connect.server";
 import AnimatedBanner from "~/components/AnimatedBanner";
-import Instructions from "~/components/Instructions";
 import Survey from "~/components/Survey";
 import { Photo } from "~/api/schemas";
-import dayjs from "dayjs";
 import invariant from "tiny-invariant";
 import { fetchPhoto } from "~/api/unsplash";
 
@@ -19,6 +16,13 @@ import logo from "~/images/icons/logo.svg";
 import guess from "~/images/icons/guess.svg";
 import vote from "~/images/icons/respond.svg";
 import draft from "~/images/icons/draft.svg";
+
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const links: LinksFunction = () => {
   return [
