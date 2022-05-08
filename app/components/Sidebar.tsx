@@ -7,6 +7,8 @@ import draft from "~/images/icons/draft.svg";
 import user from "~/images/icons/user.svg";
 import info from "~/images/icons/info.svg";
 import logo from "~/images/icons/empty_logo.svg";
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+import Backdrop from "./Backdrop";
 
 type Props = {
   name?: string;
@@ -36,8 +38,17 @@ export default ({ name }: Props) => {
   }
   useOutsideAlerter(wrapperRef);
 
+  // Scroll locking
+  useEffect(() => {
+    if (open) {
+      disableBodyScroll(wrapperRef.current);
+    } else {
+      enableBodyScroll(wrapperRef.current);
+    }
+  }, [wrapperRef, open]);
+
   return (
-    <nav className="flex drop-shadow-block z-10 relative" ref={wrapperRef}>
+    <nav className="flex drop-shadow-block z-10" ref={wrapperRef}>
       <AnimatePresence>
         {open && (
           <motion.aside
@@ -131,7 +142,7 @@ export default ({ name }: Props) => {
       <button
         // @ts-ignore
         onClick={() => setOpen(!open)}
-        className="silver w-10 h-9 relative"
+        className="w-10 h-9 relative"
       >
         {open ? (
           <>

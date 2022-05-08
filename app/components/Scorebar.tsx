@@ -10,29 +10,39 @@ type Props = {
   score: number;
   guesses: VoteAggregation[];
   win: boolean;
+  instructions: boolean;
 };
 
-export default function Scorebar({ points, score, guesses, win }: Props) {
+export default function Scorebar({
+  points,
+  score,
+  guesses,
+  win,
+  instructions,
+}: Props) {
   const items = [
     {
       name: "Guesses left",
+      text: <p className="text-center">Guesses</p>,
       value: MAX_GUESSES - guesses.length,
       percentage: false,
     },
     {
       name: "Points",
+      text: <p>Points</p>,
       value: points,
       percentage: false,
     },
     {
       name: "Score",
+      text: <p>Score</p>,
       value: score * 100,
       percentage: true,
     },
   ];
 
   const [currentItem, setCurrentItem] = useState("Guesses left");
-  const [showPopup, setShowPopup] = useState(true);
+  const [showPopup, setShowPopup] = useState(instructions);
   const control = useAnimation();
 
   const containerVariants = {
@@ -85,7 +95,7 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
   }
 
   return (
-    <div className="flex flex-col space-y-4 min-h-[180px]">
+    <div className="flex flex-col space-y-4">
       <div
         className="w-3/4 mx-auto bg-gray-300 rounded-full h-2.5 
         dark:bg-gray-700 relative"
@@ -102,7 +112,10 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
           style={{ left: `calc(${THRESHOLD}% - 2px)` }}
         ></div>
       </div>
-      <div className="flex justify-between items-end w-full md:justify-center  md:space-x-12">
+      <div
+        className="flex justify-between items-end  w-full 
+      md:justify-center md:space-x-12"
+      >
         {items.map((item) => {
           return (
             <div
@@ -111,7 +124,7 @@ export default function Scorebar({ points, score, guesses, win }: Props) {
               key={item.name}
             >
               <Counter value={item.value} percent={item.percentage} />
-              <p>{item.name}</p>
+              {item.text}
             </div>
           );
         })}

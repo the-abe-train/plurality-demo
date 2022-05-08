@@ -5,10 +5,9 @@ import { useState } from "react";
 import guess from "~/images/icons/guess.svg";
 import respond from "~/images/icons/respond.svg";
 import draft from "~/images/icons/draft.svg";
-import user from "~/images/icons/user.svg";
-import info from "~/images/icons/info.svg";
 import logo from "~/images/icons/logo.svg";
 import down from "~/images/icons/down.svg";
+import empty_logo from "~/images/icons/empty_logo.svg";
 
 type Props = {
   name?: string;
@@ -37,6 +36,7 @@ export default function Header({ name }: Props) {
       },
     },
   };
+
   return (
     <div className="px-4 py-2 border-0 bg-primary2 z-20 drop-shadow-nav">
       <div className="w-full flex justify-between max-w-4xl mx-auto items-center">
@@ -95,6 +95,15 @@ export default function Header({ name }: Props) {
                   />
                   <span>Draft</span>
                 </Link>
+                <Link to="/surveys" className="flex items-center">
+                  <img
+                    src={empty_logo}
+                    alt="Logo"
+                    className="mr-2 inline"
+                    width={16}
+                  />
+                  <span>Search</span>
+                </Link>
               </motion.div>
             </motion.li>
             <li>
@@ -105,7 +114,7 @@ export default function Header({ name }: Props) {
             </Link>
           </ul>
         </nav>
-        <div className="sm:hidden relative">
+        <div className="sm:hidden">
           <Sidebar name={name} />
         </div>
       </div>

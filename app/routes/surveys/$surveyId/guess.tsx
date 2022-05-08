@@ -9,7 +9,7 @@ import {
   useLoaderData,
 } from "remix";
 import invariant from "tiny-invariant";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 import styles from "~/styles/app.css";
@@ -23,6 +23,7 @@ import { client } from "~/db/connect.server";
 import {
   addGuess,
   gameByQuestionUser,
+  surveyByClose,
   surveyById,
   votesBySurvey,
 } from "~/db/queries";
@@ -38,6 +39,9 @@ import ShareButton from "~/components/ShareButton";
 import Switch from "~/components/Switch";
 import AnimatedBanner from "~/components/AnimatedBanner";
 import NavButton from "~/components/NavButton";
+import Modal from "~/components/Modal";
+import { AnimatePresence } from "framer-motion";
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 
 export const links: LinksFunction = () => {
   return [
@@ -64,6 +68,8 @@ type LoaderData = {
   survey: SurveySchema;
   photo: Photo;
   totalVotes: number;
+  tomorrow: SurveySchema;
+  tomorrowPhoto: Photo;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -104,6 +110,13 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const survey = await surveyById(client, surveyId);
   invariant(survey, "No survey found!");
 
+  // Get tomorrow's survey from db
+  const midnight = dayjs().tz("America/Toronto").endOf("day");
+  const tomorrowSc = midnight.toDate();
+  const tomorrow = await surveyByClose(client, tomorrowSc);
+  invariant(tomorrow, "Tomorrow's survey not found!");
+  const tomorrowPhoto = await fetchPhoto(tomorrow.photo);
+
   // Redirect to Respond if survey close hasn't happened yet
   const surveyClose = survey.surveyClose;
   if (dayjs(surveyClose) >= dayjs()) {
@@ -137,7 +150,16 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     message = "No more guesses.";
   }
 
-  const data = { totalVotes, game, message, gameOver, survey, photo };
+  const data = {
+    totalVotes,
+    game,
+    tomorrow,
+    message,
+    gameOver,
+    survey,
+    photo,
+    tomorrowPhoto,
+  };
   return json<LoaderData>(data, {
     headers: {
       "Set-Cookie": await commitSession(session),
@@ -250,6 +272,17 @@ export default () => {
   const { totalVotes } = loaderData;
   const userVote = loaderData.game.vote;
 
+  // The modal
+  const [openModal, setOpenModal] = useState(actionData?.win || win);
+  const ref = useRef<HTMLDivElement>(null!);
+  useEffect(() => {
+    if (openModal) {
+      disableBodyScroll(ref.current);
+    } else {
+      enableBodyScroll(ref.current);
+    }
+  }, [ref, openModal]);
+
   // Updates from action data
   useEffect(() => {
     if (actionData?.correctGuess) {
@@ -261,11 +294,26 @@ export default () => {
     setGameOver(actionData?.gameOver || gameOver);
   }, [actionData]);
 
+  // Upon winning
+  useEffect(() => {
+    if (win) {
+      window.scrollTo(0, 0);
+      setOpenModal(true);
+    }
+  }, [win]);
+
   // Calculated values
   const points = guesses.reduce((sum, guess) => {
     return sum + guess.votes;
   }, 0);
   const score = points / totalVotes;
+
+  const surveyProps = { survey: loaderData.survey, photo: loaderData.photo };
+  const tomorrowSurveyProps = {
+    survey: loaderData.tomorrow,
+    photo: loaderData.tomorrowPhoto,
+  };
+  const scorebarProps = { points, score, guesses, win };
 
   return (
     <>
@@ -274,9 +322,10 @@ export default () => {
       <main
         className="max-w-4xl flex-grow flex flex-col md:grid grid-cols-2
     mt-8 gap-4 my-8 justify-center md:mx-auto mx-4"
+        ref={ref}
       >
         <section className="md:px-4 space-y-4 mx-auto md:mx-0 justify-self-start">
-          <Survey survey={loaderData.survey} photo={loaderData.photo} />
+          <Survey {...surveyProps} />
           {message !== "" && <p className="">{message}</p>}
           <Form className="w-full flex space-x-2" method="post">
             <input
@@ -318,14 +367,26 @@ export default () => {
           />
         </section>
         <section className="md:order-last md:self-end h-min">
-          <Scorebar points={points} score={score} guesses={guesses} win={win} />
+          <Scorebar {...scorebarProps} instructions={true} />
         </section>
-        <section className="md:self-end md:px-4 flex space-x-4">
+        <section
+          className="md:self-end md:px-4 flex space-x-4 
+        justify-around md:justify-start"
+        >
           <NavButton name="Guess" />
           <NavButton name="Respond" />
           <NavButton name="Draft" />
         </section>
       </main>
+      <AnimatePresence initial={true} exitBeforeEnter={true}>
+        {openModal && (
+          <Modal
+            scorebarProps={scorebarProps}
+            surveyProps={tomorrowSurveyProps}
+            handleClose={() => setOpenModal(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };
