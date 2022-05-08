@@ -1,4 +1,10 @@
-import { json, LinksFunction, LoaderFunction, useLoaderData } from "remix";
+import {
+  json,
+  Link,
+  LinksFunction,
+  LoaderFunction,
+  useLoaderData,
+} from "remix";
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import switchStyles from "~/styles/switch.css";
@@ -90,13 +96,13 @@ export default function questions() {
         <AnimatedBanner text="Plurality" icon={logo} size={"50"} />
         <p className="text-center text-lg">A Web3 guessing game.</p>
         <div className="md:grid grid-cols-2 gap-y-3 gap-x-8 my-8">
-          <h2 className="block text-2xl font-header row-start-1">
+          <h2 className="block text-2xl font-header row-start-1 col-start-2">
             Click on today's Survey to begin!
           </h2>
           <div className="col-start-2">
             <Survey photo={data.photo} survey={data.survey} />
           </div>
-          <h2 className="text-2xl font-header row-start-1 mt-6 md:mt-0">
+          <h2 className="text-2xl font-header row-start-1 mt-6 md:mt-0 col-start-1">
             Instructions
           </h2>
           <div
@@ -118,6 +124,11 @@ export default function questions() {
                 </div>
               );
             })}
+          </div>
+          <div className="my-4">
+            <Link to="/help/what-is-plurality" className="underline">
+              What is Plurality?
+            </Link>
           </div>
         </div>
       </div>
