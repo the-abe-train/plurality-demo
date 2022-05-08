@@ -33,14 +33,16 @@ const letterVariants = {
 type Props = {
   text: string;
   icon?: string;
+  size?: string;
 };
 
-export default ({ text, icon }: Props) => {
+export default ({ text, icon, size }: Props) => {
   return (
     <AnimatePresence>
       <motion.h1
         className="mb-4 text-4xl font-header text-center my-6 flex items-center 
         w-full justify-center space-x-3 font-bold text-secondary"
+        style={{ fontSize: size ? `${size}px` : "" }}
         variants={letterContainerVariants}
         initial={"before"}
         animate={"after"}
@@ -65,7 +67,7 @@ export default ({ text, icon }: Props) => {
               variants={letterVariants}
               src={icon}
               alt={text}
-              width={34}
+              width={size || 34}
               className="inline-block"
             />
           )}

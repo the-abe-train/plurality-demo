@@ -1,182 +1,122 @@
-import {
-  json,
-  Link,
-  LinksFunction,
-  LoaderFunction,
-  useLoaderData,
-} from "remix";
-import invariant from "tiny-invariant";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-
-import Footer from "~/components/Footer";
-import Header from "~/components/Header";
-import Survey from "~/components/Survey";
-import Instructions from "~/components/Instructions";
-import Counter from "~/components/Counter";
-
-import logo from "~/images/icons/logo.svg";
-import openSea from "~/images/icons/open_sea.svg";
-
-import { SurveySchema, UserSchema, VoteAggregation } from "~/db/schemas";
-import { Photo } from "~/api/schemas";
-
+import { json, LinksFunction, LoaderFunction, useLoaderData } from "remix";
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
+import switchStyles from "~/styles/switch.css";
 import animations from "~/styles/animations.css";
-
-import { client } from "~/db/connect.server";
+import { SurveySchema, UserSchema } from "~/db/schemas";
+import { surveyByClose, userById } from "~/db/queries";
 import { getSession } from "~/sessions";
-import { surveyByClose, userById, votesBySurvey } from "~/db/queries";
-import { fetchPhoto } from "~/api/unsplash";
+import { client } from "~/db/connect.server";
 import AnimatedBanner from "~/components/AnimatedBanner";
+import Instructions from "~/components/Instructions";
+import Survey from "~/components/Survey";
+import { Photo } from "~/api/schemas";
+import dayjs from "dayjs";
+import invariant from "tiny-invariant";
+import { fetchPhoto } from "~/api/unsplash";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import logo from "~/images/icons/logo.svg";
+import guess from "~/images/icons/guess.svg";
+import vote from "~/images/icons/respond.svg";
+import draft from "~/images/icons/draft.svg";
 
 export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: backgrounds },
     { rel: "stylesheet", href: animations },
+    { rel: "stylesheet", href: switchStyles },
   ];
 };
 
 type LoaderData = {
-  questions: SurveySchema[];
-  photos: Photo[];
-  user?: UserSchema;
-  todayVotes: VoteAggregation[];
+  survey: SurveySchema;
+  photo: Photo;
 };
-
-// TODO all loader and action functions should get all their data with Promise.all
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // Get user info
-  const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("user");
-  const user = (await userById(client, userId)) || undefined;
-
-  // Get datetime objects
   const midnight = dayjs().tz("America/Toronto").endOf("day");
-  const yesterdaySc = midnight.subtract(2, "day").toDate();
-  const todaySc = midnight.subtract(1, "day").toDate();
-  const tomorrowSc = midnight.toDate();
-
-  // Get questions from db
-  const yesterday = await surveyByClose(client, yesterdaySc);
-  const today = await surveyByClose(client, todaySc);
-  const tomorrow = await surveyByClose(client, tomorrowSc);
-  invariant(today, "Today's question not fetched from database");
-
-  // Get photo for each question from Unsplash and votes from database
-  if (yesterday && today && tomorrow) {
-    const questions = [yesterday, today, tomorrow];
-    // TODO Apply for production from Unsplash
-    const photos = await Promise.all(
-      [yesterday, today, tomorrow].map(async (question) => {
-        return await fetchPhoto(question.photo);
-      })
-    );
-    const todayVotes = await votesBySurvey(client, today._id);
-
-    // Return data
-    const data = { questions, user, photos, todayVotes };
-    return json<LoaderData>(data);
-  }
-  return "";
+  const surveyClose = midnight.subtract(1, "day").toDate();
+  const survey = await surveyByClose(client, surveyClose);
+  invariant(survey, "Tomorrow's survey not found!");
+  const photo = await fetchPhoto(survey.photo);
+  const data = { survey, photo };
+  return json<LoaderData>(data);
 };
 
-// TODO decide on how to use "secondary" colour for text. Needs to be consistent.
-// TODO maybe hide today's survey stats on mobile? Looks crowded.
+const instructions = [
+  {
+    name: "Guess",
+    icon: guess,
+    text: (
+      <>
+        <b>Guess</b> the most popular answers to surveys.
+      </>
+    ),
+  },
+  {
+    name: "Vote",
+    icon: vote,
+    text: (
+      <>
+        <b>Respond</b> to survey questions for future games.
+      </>
+    ),
+  },
+  {
+    name: "Draft",
+    icon: draft,
+    text: (
+      <>
+        <b>Draft</b> custom questions for future surveys.
+      </>
+    ),
+  },
+];
 
-export default function Index() {
+export default function questions() {
   const data = useLoaderData<LoaderData>();
-  const [yesterday, today, tomorrow] = data.questions;
-  const [yesterdayPhoto, todayPhoto, tomorrowPhoto] = data.photos;
-
-  const { todayVotes } = data;
-  const todayResponses = todayVotes.reduce((sum, ans) => {
-    return sum + ans.votes;
-  }, 0);
-  const todayUniqueAnswers = todayVotes.length;
-  const todayPlurality = (todayVotes[0].votes / todayResponses) * 100;
-
   return (
-    <div className="bg-primary1 w-full top-0 bottom-0 flex flex-col min-h-screen">
-      <Header name={data.user ? data.user.name : "Connect"} />
-      <AnimatedBanner icon={logo} text="Plurality" />
-      <div className="flex-grow">
-        <main
-          className=" mx-auto mb-4 w-max md:gap-y-3 md:gap-x-6
-      grid justify-items-start md:grid-cols-hompage h-max"
-        >
-          <section className="h-fit block ">
-            <h2 className="font-header mb-2 text-2xl sm:text-left">
-              Play today's Survey!
-            </h2>
-            <div className="flex flex-col items-center md:flex-row">
-              <Survey survey={today} photo={todayPhoto} />
-            </div>
-          </section>
+    <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
+      <div
+        className="md:absolute top-1/2 left-1/2 md:w-max md:mx-4
+        md:transform md:-translate-x-1/2 md:-translate-y-1/2
+        max-w-survey md:max-w-4xl mx-auto"
+      >
+        <AnimatedBanner text="Plurality" icon={logo} size={"50"} />
+        <p className="text-center text-lg">A Web3 guessing game.</p>
+        <div className="md:grid grid-cols-2 gap-y-3 gap-x-8 my-8">
+          <h2 className="block text-2xl font-header row-start-1">
+            Click on today's Survey to begin!
+          </h2>
+          <div className="col-start-2">
+            <Survey photo={data.photo} survey={data.survey} />
+          </div>
+          <h2 className="text-2xl font-header row-start-1 mt-6 md:mt-0">
+            Instructions
+          </h2>
           <div
-            className="flex md:flex-col justify-center md:justify-start space-x-12 my-2
-                md:mt-10 md:mx-4 md:gap-y-6 md:space-x-0 w-full md:w-max h-max"
+            className="col-start-1 row-start-2 flex justify-around card 
+            flex-col max-w-survey min-w-[260px] p-3 space-y-4 h-full
+            "
           >
-            <div className="flex flex-col items-center">
-              <Counter value={todayResponses} />
-              <span>Responses</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Counter value={todayUniqueAnswers} />
-              <span>Answer</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Counter value={todayPlurality} percent />
-              <span>Plurality</span>
-            </div>
+            {instructions.map((instr) => {
+              return (
+                <div key={instr.name} className="flex flex-col items-center">
+                  <div className="flex items-center p-2 space-x-3">
+                    <img
+                      src={instr.icon}
+                      alt={instr.name}
+                      className="h-9 block"
+                    />
+                    <p className="block text-black">{instr.text}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <section className="md:col-start-1 md:row-start-1 mx-auto md:mx-0 h-max">
-            <Instructions />
-          </section>
-          <section className="my-2 space-y-3 h-fit">
-            <h2 className="font-header mb-2 text-2xl sm:text-left">
-              Play previous Surveys
-            </h2>
-            <Survey survey={yesterday} photo={yesterdayPhoto} />
-          </section>
-          <section className="flex md:flex-row flex-col md:space-x-3 w-max">
-            <div className="my-2 space-y-3 h-fit">
-              <h2 className="font-header mb-2 text-2xl sm:text-left">
-                Respond to an open Survey
-              </h2>
-              <Survey survey={tomorrow} photo={tomorrowPhoto} />
-            </div>
-          </section>
-          <div className="md:self-end my-2 flex md:flex-col md:space-y-8 justify-around w-full md:w-max">
-            <div className="w-max space-y-2 flex flex-col">
-              <h3 className="font-header text-lg inline">Play more surveys</h3>
-              <Link to="/surveys">
-                <button className="silver px-3 py-2">More surveys</button>
-              </Link>
-            </div>
-            <div className="w-max space-y-2 flex flex-col">
-              <h3 className="font-header text-lg inline">Draft a survey</h3>
-              <a href="https://opensea.io/PluralityGame">
-                <button className="gold px-3 py-2 flex space-x-1 items-center">
-                  <span>Buy a Token</span>
-                  <img src={openSea} alt="OpenSea" className="inline" />
-                </button>
-              </a>
-              <Link to="/draft">
-                <button className="gold px-3 py-2">Submit a draft</button>
-              </Link>
-            </div>
-          </div>
-        </main>
+        </div>
       </div>
-      <Footer />
     </div>
   );
 }

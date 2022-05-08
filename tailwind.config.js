@@ -26,10 +26,10 @@ module.exports = {
         hompage: "5fr 5fr 2fr"
       },
       spacing: {
-        survey: "358px"
+        survey: "350px"
       },
       maxWidth: {
-        survey: "358px"
+        survey: "350px"
       }
     },
   },

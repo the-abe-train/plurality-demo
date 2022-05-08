@@ -35,7 +35,6 @@ import { fetchPhoto } from "~/api/unsplash";
 import Answers from "~/components/Answers";
 import Survey from "~/components/Survey";
 import Scorebar from "~/components/Scorebar";
-import ShareButton from "~/components/ShareButton";
 import Switch from "~/components/Switch";
 import AnimatedBanner from "~/components/AnimatedBanner";
 import NavButton from "~/components/NavButton";

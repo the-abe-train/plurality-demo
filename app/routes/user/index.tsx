@@ -169,7 +169,7 @@ export default function LogoutRoute() {
   const [name, setName] = useState(user.name || "");
   return (
     <main className="container max-w-4xl flex-grow px-4">
-      <AnimatedBanner text="User" icon={userIcon} />
+      <AnimatedBanner text={name || "User"} icon={userIcon} />
       <div
         className=" flex flex-col
     md:grid grid-cols-2 grid-flow-row gap-8"

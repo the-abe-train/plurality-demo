@@ -1,11 +1,11 @@
 .light {
   background: linear-gradient(
-      168.53deg,
-      rgba(255, 253, 208, 0) 4.14%,
-      rgba(255, 253, 208, 0.1) 39.37%,
-      rgba(255, 225, 208, 0.5) 80.43%
-    ),
-    #ffffff;
+    117.43deg,
+    #ffeee6 0%,
+    #fcf8f6 30%,
+    #fcf8f6 70%,
+    #ffe5ea 100%
+  );
 }
 
 .skeleton {

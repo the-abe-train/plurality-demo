@@ -317,7 +317,13 @@ export default () => {
           />
         </section>
         <section className="md:order-last">
-          <Scorebar points={points} score={score} guesses={guesses} win={win} />
+          <Scorebar
+            points={points}
+            score={score}
+            guesses={guesses}
+            win={win}
+            instructions
+          />
         </section>
         <section className="md:self-end md:px-4 flex space-x-4">
           <NavButton name="Guess" />
