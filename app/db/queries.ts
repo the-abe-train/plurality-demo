@@ -6,10 +6,10 @@ import {
   SessionSchema,
 } from "./schemas";
 import { DATABASE_NAME } from "../util/env";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient, ObjectId, UpdateFilter } from "mongodb";
 import { SessionData } from "remix";
 import invariant from "tiny-invariant";
-import { checkWin, THRESHOLD } from "~/util/gameplay";
+import { THRESHOLD } from "~/util/gameplay";
 import { truncateEthAddress } from "~/util/text";
 import { randomPassword } from "../util/authorize";
 
@@ -286,29 +286,29 @@ export async function gameByQuestionUser({
 export async function addGuess(
   client: MongoClient,
   gameId: ObjectId,
-  guess: VoteAggregation
+  guess: VoteAggregation,
+  win: boolean,
+  score: number,
+  guessesToWin?: number
 ) {
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
+  const newData: UpdateFilter<GameSchema> = {
+    $set: {
+      lastUpdated: new Date(),
+      win,
+      score,
+    },
+    $push: { guesses: guess },
+    $min: { guessesToWin },
+  };
+  if (!guessesToWin) delete newData["$min"];
   const updatedGameResult = await gamesCollection.findOneAndUpdate(
     { _id: gameId },
-    { $set: { lastUpdated: new Date() }, $push: { guesses: guess } },
+    newData,
     { upsert: true, returnDocument: "after" }
   );
   const updatedGame = updatedGameResult.value;
-
-  // Check if player won
-  invariant(updatedGame?.guesses, "Game update failed to add guess");
-  const { guesses, totalVotes } = updatedGame;
-  const win = checkWin(guesses, totalVotes);
-  if (win) {
-    const wonGameResult = await gamesCollection.findOneAndUpdate(
-      { _id: gameId },
-      { $set: { win } },
-      { upsert: false, returnDocument: "after" }
-    );
-    return wonGameResult.value;
-  }
   return updatedGame;
 }
 
@@ -334,6 +334,71 @@ export async function addVote(
   );
   const updatedGame = updatedGameResult.value;
   return updatedGame;
+}
+
+// User stats
+export async function userGameStats(client: MongoClient, userId: ObjectId) {
+  const db = await connectDb(client);
+  const gamesCollection = db.collection<GameSchema>("games");
+  const stats = await gamesCollection
+    .aggregate([
+      {
+        $match: {
+          user: new ObjectId("62758ca0ca6a66afee264bce"),
+        },
+      },
+      {
+        $group: {
+          _id: "$user",
+          gamesWon: {
+            $sum: {
+              $cond: [
+                {
+                  $eq: ["$win", true],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          responsesSubmitted: {
+            $sum: {
+              $cond: [
+                {
+                  $ifNull: ["$vote", false],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          gamesPlayed: {
+            $sum: {
+              $cond: [
+                {
+                  $gte: [
+                    {
+                      $size: "$guesses",
+                    },
+                    1,
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+          highestScore: {
+            $max: "$score",
+          },
+          fewestGuessesToWin: {
+            $min: "$guessesToWin",
+          },
+        },
+      },
+    ])
+    .toArray();
+  return stats[0];
 }
 
 // Session queries

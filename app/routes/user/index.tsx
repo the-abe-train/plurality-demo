@@ -18,13 +18,14 @@ import {
   deleteUser,
   removeWallet,
   userById,
+  userGameStats,
   userUpdateName,
   userUpdateWallet,
 } from "~/db/queries";
 import { sendEmail } from "~/api/sendgrid.server";
 import { createVerifyEmailLink } from "~/util/verify.server";
 import { getSession, destroySession } from "../../sessions";
-import { truncateEthAddress } from "~/util/text";
+import { statFormat, truncateEthAddress } from "~/util/text";
 import AnimatedBanner from "~/components/AnimatedBanner";
 import Counter from "~/components/Counter";
 
@@ -35,6 +36,13 @@ import userIcon from "~/images/icons/user.svg";
 
 type LoaderData = {
   user: UserSchema;
+  userStats: {
+    gamesWon: number;
+    responsesSubmitted: number;
+    gamesPlayed: number;
+    highestScore: number;
+    fewestGuessesToWin: number;
+  };
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -45,12 +53,16 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (!user) {
     return redirect("/user/login");
   }
-  const data = { user };
+
+  // Get user stats
+  const userStats = await userGameStats(client, userId);
+  const data = { user, userStats };
   return json(data);
 };
 
 type ActionData = {
   message: string;
+  name?: string;
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -84,7 +96,9 @@ export const action: ActionFunction = async ({ request }) => {
 
   // Handle name change form
   if (_action === "changeName" && typeof newName === "string") {
-    return await userUpdateName(client, userId, newName);
+    await userUpdateName(client, userId, newName);
+    const message = "Name updated successfully.";
+    return json<ActionData>({ message, name: newName });
   }
 
   // Handle attach wallet form
@@ -134,7 +148,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function LogoutRoute() {
   const [message, setMessage] = useState("");
-  const { user } = useLoaderData<LoaderData>();
+  const { user, userStats } = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const attachWallet = useAttachWallet();
   const submit = useSubmit();
@@ -169,7 +183,7 @@ export default function LogoutRoute() {
   const [name, setName] = useState(user.name || "");
   return (
     <main className="container max-w-4xl flex-grow px-4">
-      <AnimatedBanner text={name || "User"} icon={userIcon} />
+      <AnimatedBanner text={user.name || "User"} icon={userIcon} />
       <div
         className=" flex flex-col
     md:grid grid-cols-2 grid-flow-row gap-8"
@@ -260,11 +274,11 @@ export default function LogoutRoute() {
           <div className="flex w-full justify-around">
             <div className="flex space-x-3 items-center">
               <img src={guess} width={32} alt="Guess icon" />
-              <Counter value={34} />
+              <Counter value={userStats.gamesWon} />
             </div>
             <div className="flex space-x-3 items-center">
               <img src={vote} width={32} alt="Respond icon" />
-              <Counter value={32} />
+              <Counter value={userStats.responsesSubmitted} />
             </div>
             <div className="flex space-x-3 items-center">
               <img src={draft} width={32} alt="Draft icon" />
@@ -281,21 +295,25 @@ export default function LogoutRoute() {
             <tbody>
               <tr className="border">
                 <td className="px-2 py-2">Games won</td>
-                <td className="px-2 py-2">34</td>
+                <td className="px-2 py-2">{userStats.gamesWon}</td>
                 <td className="px-2 py-2">Games played</td>
-                <td className="px-2 py-2">41</td>
+                <td className="px-2 py-2">{userStats.gamesPlayed}</td>
               </tr>
               <tr className="border">
                 <td className="px-2 py-2">Responses submitted</td>
-                <td className="px-2 py-2">32</td>
+                <td className="px-2 py-2">{userStats.responsesSubmitted}</td>
                 <td className="px-2 py-2">Highest score</td>
-                <td className="px-2 py-2">97% (#41)</td>
+                <td className="px-2 py-2">
+                  {statFormat(userStats.highestScore * 100)}% (#41)
+                </td>
               </tr>
               <tr className="border">
                 <td className="px-2 py-2">Surveys drafted</td>
                 <td className="px-2 py-2">3</td>
                 <td className="px-2 py-2">Fewest guesses to win</td>
-                <td className="px-2 py-2">4 (#46)</td>
+                <td className="px-2 py-2">
+                  {userStats.fewestGuessesToWin} (#46)
+                </td>
               </tr>
             </tbody>
           </table>
