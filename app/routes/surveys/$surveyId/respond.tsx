@@ -4,6 +4,7 @@ import {
   ActionFunction,
   Form,
   json,
+  Link,
   LoaderFunction,
   redirect,
   useActionData,
@@ -21,6 +22,7 @@ import { fetchPhoto } from "~/api/unsplash";
 
 import respondSymbol from "~/images/icons/respond.svg";
 import AnimatedBanner from "~/components/AnimatedBanner";
+import NavButton from "~/components/NavButton";
 
 type LoaderData = {
   game: GameSchema;
@@ -118,14 +120,17 @@ export default () => {
     }
   }, [actionData]);
 
+  // TODO respond page should have a dropdown/calendar input to choose different
+  // days
+
   return (
     <>
       <AnimatedBanner text="Respond" icon={respondSymbol} />
       <main
-        className="container max-w-4xl flex-grow px-4 flex flex-col md:flex-row
+        className="max-w-4xl flex-grow mx-4 md:mx-auto flex flex-col md:flex-row
     mt-8 md:gap-8 gap-4 my-8"
       >
-        <section className="md:px-4 py-2 space-y-2 w-max">
+        <section className="md:px-4 py-2 space-y-2">
           <Survey survey={loaderData.question} photo={loaderData.photo} />
           <Form method="post" className="w-full flex space-x-2">
             <input
@@ -161,7 +166,17 @@ export default () => {
             <li>Not have any profanity, obscenity, or hate speech</li>
             <li>Only have standard English letters or numbers</li>
           </ul>
+          <div className="mt-12">
+            <div className="flex flex-wrap gap-3 my-3">
+              <NavButton name="Guess" />
+              <NavButton name="Draft" />
+            </div>
+            <Link to="/surveys" className="underline text-right w-full">
+              Play more Surveys
+            </Link>
+          </div>
         </section>
+        <section></section>
       </main>
     </>
   );

@@ -72,7 +72,7 @@ export const action: ActionFunction = async ({ request }) => {
     const cookieString = await commitSession(session, {
       expires: nextWeek,
     });
-    return redirect("/", {
+    return redirect("/surveys/today", {
       headers: {
         "Set-Cookie": cookieString,
       },
@@ -116,7 +116,7 @@ export const action: ActionFunction = async ({ request }) => {
   return await successfulRedirect(userId);
 };
 
-export default function Login() {
+export default () => {
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const [localData, setLocalData] = useState("");
@@ -212,4 +212,4 @@ export default function Login() {
       </section>
     </main>
   );
-}
+};

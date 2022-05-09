@@ -43,6 +43,8 @@ export type GameSchema = {
   };
   totalVotes: number;
   lastUpdated: Date;
+  score: number;
+  guessesToWin: number;
 };
 
 export type VoteAggregation = {

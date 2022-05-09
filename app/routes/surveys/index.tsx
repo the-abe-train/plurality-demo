@@ -271,14 +271,3 @@ export default function Index() {
     </main>
   );
 }
-
-{
-  /* <div
-className="grid md:justify-items-center gap-3"
-style={{
-  gridTemplateColumns: isMobile
-    ? "repeat(auto-fit, minmax(auto, 1fr))"
-    : "repeat(auto-fit, minmax(358px, 1fr))",
-}}
-> */
-}

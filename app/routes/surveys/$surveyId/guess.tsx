@@ -2,6 +2,7 @@ import {
   ActionFunction,
   Form,
   json,
+  Link,
   LinksFunction,
   LoaderFunction,
   redirect,
@@ -41,6 +42,7 @@ import NavButton from "~/components/NavButton";
 import Modal from "~/components/Modal";
 import { AnimatePresence } from "framer-motion";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+import { THRESHOLD } from "~/util/gameplay";
 
 export const links: LinksFunction = () => {
   return [
@@ -50,19 +52,9 @@ export const links: LinksFunction = () => {
   ];
 };
 
-type Message =
-  | "You win! Keep guessing to improve your score."
-  | "You win! No more guesses."
-  | "No more guesses."
-  | "Great guess!"
-  | "Incorrect survey response."
-  | "Already guessed."
-  | "Please enter a guess."
-  | "";
-
 type LoaderData = {
   game: GameSchema;
-  message: Message;
+  message: string;
   gameOver: boolean;
   survey: SurveySchema;
   photo: Photo;
@@ -140,7 +132,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   // Set initial message for player
   const gameOver = game.guesses.length >= 6;
-  let message: Message = "";
+  let message = "";
   if (game.win && !gameOver) {
     message = "You win! Keep guessing to improve your score.";
   } else if (game.win && gameOver) {
@@ -167,7 +159,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 };
 
 type ActionData = {
-  message: Message;
+  message: string;
   correctGuess?: VoteAggregation;
   gameOver?: boolean;
   win?: boolean;
@@ -206,7 +198,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       );
     });
     if (alreadyGuessed) {
-      const message = "Already guessed.";
+      const message = `"${alreadyGuessed._id}" was already guessed.`;
       return json<ActionData>({ message });
     }
   }
@@ -222,36 +214,41 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Reject incorrect guesses
   if (!correctGuess) {
-    const message = "Incorrect survey response.";
+    const message = `"${guess}" was not a survey response.`;
     return json<ActionData>({ message });
   }
 
   // Update game with new guess
-  const updatedGame = await addGuess(client, game._id, correctGuess);
+  const guesses = [...game.guesses, correctGuess];
+  const points = guesses.reduce((sum, guess) => {
+    return sum + guess.votes;
+  }, 0);
+  const score = points / game.totalVotes;
+  const win = score >= THRESHOLD / 100;
+  const guessesToWin = win ? guesses.length : 0;
+  const updatedGame = await addGuess(
+    client,
+    game._id,
+    correctGuess,
+    win,
+    score,
+    guessesToWin
+  );
   invariant(updatedGame, "Game update failed");
-  const { win } = updatedGame;
 
-  // Check if user won and can keep guessing
-  if (updatedGame.win && updatedGame.guesses.length < 6) {
-    const message = "You win! Keep guessing to improve your score.";
-    return json<ActionData>({ message, correctGuess, win, gameOver: false });
+  // Pick message to send to player
+  const gameOver = updatedGame.guesses.length >= THRESHOLD;
+  let message: string;
+  if (win && !gameOver) {
+    message = "You win! Keep guessing to improve your score.";
+  } else if (win && gameOver) {
+    message = "You win! No more guesses.";
+  } else if (!win && gameOver) {
+    message = "No more guesses.";
+  } else {
+    message = "Great guess!";
   }
-
-  // Check if user won but cannot guess anymore
-  if (updatedGame.win && updatedGame.guesses.length >= 6) {
-    const message = "You win! No more guesses.";
-    return json<ActionData>({ message, correctGuess, win, gameOver: true });
-  }
-
-  // Check if user did not win and ran out of guesses
-  if (!updatedGame.win && updatedGame.guesses.length >= 6) {
-    const message = "No more guesses.";
-    return json<ActionData>({ message, correctGuess, gameOver: true });
-  }
-
-  // Accept correct guess
-  const message = "Great guess!";
-  return json<ActionData>({ message, correctGuess, win });
+  return json<ActionData>({ message, correctGuess, win, gameOver });
 };
 
 // TODO fix spacing around message from server
@@ -265,7 +262,7 @@ export default () => {
   const [guesses, setGuesses] = useState(loaderData.game.guesses || []);
   const [guess, setGuess] = useState("");
   const [gameOver, setGameOver] = useState(loaderData.gameOver);
-  const [message, setMessage] = useState<Message>(loaderData.message);
+  const [message, setMessage] = useState(loaderData.message);
   const [win, setWin] = useState(loaderData.game.win || false);
   const [displayPercent, setDisplayPercent] = useState(false);
   const { totalVotes } = loaderData;
@@ -273,14 +270,14 @@ export default () => {
 
   // The modal
   const [openModal, setOpenModal] = useState(actionData?.win || win);
-  const ref = useRef<HTMLDivElement>(null!);
+  const mainRef = useRef<HTMLDivElement>(null!);
   useEffect(() => {
     if (openModal) {
-      disableBodyScroll(ref.current);
+      disableBodyScroll(mainRef.current);
     } else {
-      enableBodyScroll(ref.current);
+      enableBodyScroll(mainRef.current);
     }
-  }, [ref, openModal]);
+  }, [mainRef, openModal]);
 
   // Updates from action data
   useEffect(() => {
@@ -293,7 +290,7 @@ export default () => {
     setGameOver(actionData?.gameOver || gameOver);
   }, [actionData]);
 
-  // Upon winning
+  // Upon winning, from action data or loader
   useEffect(() => {
     if (win) {
       window.scrollTo(0, 0);
@@ -306,7 +303,6 @@ export default () => {
     return sum + guess.votes;
   }, 0);
   const score = points / totalVotes;
-
   const surveyProps = { survey: loaderData.survey, photo: loaderData.photo };
   const tomorrowSurveyProps = {
     survey: loaderData.tomorrow,
@@ -321,7 +317,7 @@ export default () => {
       <main
         className="max-w-4xl flex-grow flex flex-col md:grid grid-cols-2
     mt-8 gap-4 my-8 justify-center md:mx-auto mx-4"
-        ref={ref}
+        ref={mainRef}
       >
         <section className="md:px-4 space-y-4 mx-auto md:mx-0 justify-self-start">
           <Survey {...surveyProps} />
@@ -368,13 +364,14 @@ export default () => {
         <section className="md:order-last md:self-end h-min">
           <Scorebar {...scorebarProps} instructions={true} />
         </section>
-        <section
-          className="md:self-end md:px-4 flex space-x-4 
-        justify-around md:justify-start"
-        >
-          <NavButton name="Guess" />
-          <NavButton name="Respond" />
-          <NavButton name="Draft" />
+        <section className="md:self-end md:px-4">
+          <div className="flex flex-wrap gap-3 my-3">
+            <NavButton name="Respond" />
+            <NavButton name="Draft" />
+          </div>
+          <Link to="/surveys" className="underline">
+            Play more Surveys
+          </Link>
         </section>
       </main>
       <AnimatePresence initial={true} exitBeforeEnter={true}>

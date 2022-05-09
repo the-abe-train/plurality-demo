@@ -2,6 +2,7 @@ import {
   ActionFunction,
   Form,
   json,
+  Link,
   LinksFunction,
   LoaderFunction,
   redirect,
@@ -35,6 +36,7 @@ import AnimatedBanner from "~/components/AnimatedBanner";
 import draftSymbol from "~/images/icons/draft.svg";
 import openSeaIcon from "~/images/icons/open_sea.svg";
 import openSeaJpeg from "~/images/open_sea_logo.jpg";
+import NavButton from "~/components/NavButton";
 
 export const links: LinksFunction = () => {
   return [
@@ -193,7 +195,7 @@ export default function draft() {
       <AnimatedBanner text="Draft" icon={draftSymbol} />
       <main
         className="container max-w-4xl flex-grow px-4 flex flex-col
-    md:grid grid-cols-2 grid-flow-row gap-6 md:my-6"
+    md:grid grid-cols-2 grid-flow-row gap-x-6 md:my-6"
       >
         <section>
           <h2 className="font-header text-2xl">Your Survey Tokens</h2>
@@ -295,6 +297,15 @@ export default function draft() {
             </p>
           )}
         </section>
+        <div className="my-5">
+          <div className="flex flex-wrap gap-3 my-3">
+            <NavButton name="Guess" />
+            <NavButton name="Respond" />
+          </div>
+          <Link to="/surveys" className="underline text-right w-full">
+            Play more Surveys
+          </Link>
+        </div>
       </main>
       <Footer />
     </div>

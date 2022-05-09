@@ -63,7 +63,7 @@ export const action: ActionFunction = async ({ request }) => {
     const cookieString = await commitSession(session, {
       expires: nextWeek,
     });
-    return redirect("/", {
+    return redirect("/surveys/today", {
       headers: {
         "Set-Cookie": cookieString,
       },

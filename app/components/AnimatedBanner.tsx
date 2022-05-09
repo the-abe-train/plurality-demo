@@ -38,7 +38,7 @@ type Props = {
 
 export default ({ text, icon, size }: Props) => {
   return (
-    <AnimatePresence>
+    <AnimatePresence exitBeforeEnter>
       <motion.h1
         className="mb-4 text-4xl font-header text-center my-6 flex items-center 
         w-full justify-center space-x-3 font-bold text-secondary"

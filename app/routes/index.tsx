@@ -26,6 +26,7 @@ import draft from "~/images/icons/draft.svg";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import NavButton from "~/components/NavButton";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -84,6 +85,9 @@ const instructions = [
   },
 ];
 
+// TODO add small draft and respond buttons in the last grid space.
+// TODO make icons in instructions clickable
+
 export default function questions() {
   const data = useLoaderData<LoaderData>();
   return (
@@ -101,6 +105,15 @@ export default function questions() {
           </h2>
           <div className="col-start-2">
             <Survey photo={data.photo} survey={data.survey} />
+          </div>
+          <div className="my-5 md:my-0">
+            <div className="flex flex-wrap gap-3 my-3">
+              <NavButton name="Respond" />
+              <NavButton name="Draft" />
+            </div>
+            <Link to="/surveys" className="underline text-right w-full">
+              Play more Surveys
+            </Link>
           </div>
           <h2 className="text-2xl font-header row-start-1 mt-6 md:mt-0 col-start-1">
             Instructions
@@ -125,7 +138,7 @@ export default function questions() {
               );
             })}
           </div>
-          <div className="my-4">
+          <div className="my-2 col-start-1 row-start-3">
             <Link to="/help/what-is-plurality" className="underline">
               What is Plurality?
             </Link>

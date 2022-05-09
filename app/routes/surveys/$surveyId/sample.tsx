@@ -9,7 +9,7 @@ import {
   useLoaderData,
 } from "remix";
 import invariant from "tiny-invariant";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 import styles from "~/styles/app.css";
@@ -20,10 +20,10 @@ import guessSymbol from "~/images/icons/guess.svg";
 import exclamationSymbol from "~/images/icons/exclamation.svg";
 
 import { parseAnswer, trim } from "~/util/text";
-import { checkWin } from "~/util/gameplay";
+import { checkWin, THRESHOLD } from "~/util/gameplay";
 
 import { client } from "~/db/connect.server";
-import { surveyById, votesBySurvey } from "~/db/queries";
+import { surveyByClose, surveyById, votesBySurvey } from "~/db/queries";
 import { SurveySchema, VoteAggregation } from "~/db/schemas";
 import { Photo } from "~/api/schemas";
 import { commitSession, getSession } from "~/sessions";
@@ -32,10 +32,12 @@ import Answers from "~/components/Answers";
 import Survey from "~/components/Survey";
 import { fetchPhoto } from "~/api/unsplash";
 import Scorebar from "~/components/Scorebar";
-import ShareButton from "~/components/ShareButton";
 import AnimatedBanner from "~/components/AnimatedBanner";
 import Switch from "~/components/Switch";
 import NavButton from "~/components/NavButton";
+import { AnimatePresence } from "framer-motion";
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+import Modal from "~/components/Modal";
 
 export const links: LinksFunction = () => {
   return [
@@ -45,36 +47,28 @@ export const links: LinksFunction = () => {
   ];
 };
 
-type Message =
-  | "You win! Keep guessing to improve your score."
-  | "You win! No more guesses."
-  | "No more guesses."
-  | "Great guess!"
-  | "Incorrect survey response."
-  | "Already guessed."
-  | "Please enter a guess."
-  | "";
-
 type LoaderData = {
-  question: SurveySchema;
+  survey: SurveySchema;
   photo: Photo;
   totalVotes: number;
+  tomorrow: SurveySchema;
+  tomorrowPhoto: Photo;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
-  const questionId = Number(params.surveyId);
+  const surveyId = Number(params.surveyId);
 
   // Redirect users who are signed-in to regular page
   if (userId) {
-    return redirect(`/surveys/${questionId}/guess`);
+    return redirect(`/surveys/${surveyId}/guess`);
   }
 
   // User can play exactly one game if they're not signed in.
   // Check if the player already has a game in the session
-  if (session.has("game") && session.get("game") !== questionId) {
+  if (session.has("game") && session.get("game") !== surveyId) {
     session.flash(
       "message",
       `You need to be logged-in to play more games.
@@ -88,28 +82,35 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 
   // Set the sample game for this not-logged-in user
-  session.set("game", questionId);
+  session.set("game", surveyId);
 
-  // Get question from db
-  const question = await surveyById(client, questionId);
-  invariant(question, "No question found!");
+  // Get survey from db
+  const survey = await surveyById(client, surveyId);
+  invariant(survey, "No survey found!");
+
+  // Get tomorrow's survey from db
+  const midnight = dayjs().tz("America/Toronto").endOf("day");
+  const tomorrowSc = midnight.toDate();
+  const tomorrow = await surveyByClose(client, tomorrowSc);
+  invariant(tomorrow, "Tomorrow's survey not found!");
+  const tomorrowPhoto = await fetchPhoto(tomorrow.photo);
 
   // Redirect to Respond if survey close hasn't happened yet
-  const surveyClose = question.surveyClose;
+  const surveyClose = survey.surveyClose;
   if (dayjs(surveyClose) >= dayjs()) {
-    return redirect(`/surveys/${questionId}/respond`);
+    return redirect(`/surveys/${surveyId}/respond`);
   }
 
-  // Get additional questiondata from db and apis
-  const photo = await fetchPhoto(question.photo);
+  // Get additional surveydata from db and apis
+  const photo = await fetchPhoto(survey.photo);
   invariant(photo, "No photo found!");
-  const votes = await votesBySurvey(client, questionId);
+  const votes = await votesBySurvey(client, surveyId);
   console.log("votes", votes);
   const totalVotes = votes.reduce((sum, ans) => {
     return sum + ans.votes;
   }, 0);
 
-  const data = { question, photo, totalVotes };
+  const data = { survey, photo, totalVotes, tomorrow, tomorrowPhoto };
   return json<LoaderData>(data, {
     headers: {
       "Set-Cookie": await commitSession(session),
@@ -118,7 +119,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 };
 
 type ActionData = {
-  message: Message;
+  message: string;
   correctGuess?: VoteAggregation;
   gameOver?: boolean;
   win?: boolean;
@@ -138,7 +139,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   // Pull in relevant data
-  const questionId = Number(params.surveyId);
+  const surveyId = Number(params.surveyId);
   const trimmedGuess = guess.trim().toLowerCase();
 
   // Reject already guessed answers
@@ -151,12 +152,12 @@ export const action: ActionFunction = async ({ request, params }) => {
     );
   });
   if (alreadyGuessed) {
-    const message = "Already guessed.";
+    const message = `"${alreadyGuessed._id}" was already guessed.`;
     return json<ActionData>({ message });
   }
 
   // Pull in more relevant data
-  const answers = await votesBySurvey(client, questionId);
+  const answers = await votesBySurvey(client, surveyId);
   console.log("Answers", answers);
   const correctGuess = answers.find((ans) => {
     const text = ans._id;
@@ -167,7 +168,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Reject incorrect guesses
   if (!correctGuess) {
-    const message = "Incorrect survey response.";
+    const message = `"${guess}" was not a survey response.`;
     return json<ActionData>({ message });
   }
 
@@ -175,27 +176,19 @@ export const action: ActionFunction = async ({ request, params }) => {
   const updatedGuesses = [...guessesArray, correctGuess];
   const win = checkWin(updatedGuesses, Number(totalVotes));
 
-  // Check if user won and can keep guessing
-  if (win && updatedGuesses.length < 6) {
-    const message = "You win! Keep guessing to improve your score.";
-    return json<ActionData>({ message, correctGuess, win, gameOver: false });
+  // Pick message to send to player
+  const gameOver = updatedGuesses.length >= THRESHOLD;
+  let message: string;
+  if (win && !gameOver) {
+    message = "You win! Keep guessing to improve your score.";
+  } else if (win && gameOver) {
+    message = "You win! No more guesses.";
+  } else if (!win && gameOver) {
+    message = "No more guesses.";
+  } else {
+    message = "Great guess!";
   }
-
-  // Check if user won but cannot guess anymore
-  if (win && updatedGuesses.length >= 6) {
-    const message = "You win! No more guesses.";
-    return json<ActionData>({ message, correctGuess, win, gameOver: true });
-  }
-
-  // Check if user did not win and ran out of guesses
-  if (!win && updatedGuesses.length >= 6) {
-    const message = "No more guesses.";
-    return json<ActionData>({ message, correctGuess, gameOver: true });
-  }
-
-  // Accept correct guess
-  const message = "Great guess!";
-  return json<ActionData>({ message, correctGuess, win });
+  return json<ActionData>({ message, correctGuess, win, gameOver });
 };
 
 export default () => {
@@ -207,47 +200,64 @@ export default () => {
   const [guesses, setGuesses] = useState<VoteAggregation[]>([]);
   const [guess, setGuess] = useState("");
   const [gameOver, setGameOver] = useState(false);
-  const [message, setMessage] = useState<Message>("");
+  const [message, setMessage] = useState("");
   const [win, setWin] = useState(false);
   const [displayPercent, setDisplayPercent] = useState(false);
   const { totalVotes } = loaderData;
-  const questionId = loaderData.question._id;
+  const surveyId = loaderData.survey._id;
+
+  // The modal
+  const [openModal, setOpenModal] = useState(actionData?.win || win);
+  const mainRef = useRef<HTMLDivElement>(null!);
+  useEffect(() => {
+    if (openModal) {
+      disableBodyScroll(mainRef.current);
+    } else {
+      enableBodyScroll(mainRef.current);
+    }
+  }, [mainRef, openModal]);
 
   // Initial game data to local storage
   // Local storage code needs to be run in useEffect or else the server will
   // try to run it.
   useEffect(() => {
-    // If another question's answers are stored in localstorage, start fresh
-    const storedQuestion = Number(localStorage.getItem("question"));
-    if (storedQuestion && storedQuestion !== questionId) {
+    // If another survey's answers are stored in localstorage, start fresh
+    const storedQuestion = Number(localStorage.getItem("survey"));
+    if (storedQuestion && storedQuestion !== surveyId) {
       localStorage.setItem("guesses", "[]");
       localStorage.setItem("win", "false");
       localStorage.setItem("gameOver", "false");
     }
-    localStorage.setItem("question", `${questionId}`);
+    localStorage.setItem("survey", `${surveyId}`);
 
     // Set state initial values from local storage
     setGuesses(JSON.parse(localStorage.getItem("guesses") || "[]"));
     setWin(JSON.parse(localStorage.getItem("win") || "false"));
-    setGameOver(JSON.parse(localStorage.getItem("guesses") || "false"));
+    setGameOver(JSON.parse(localStorage.getItem("gameOver") || "false"));
   }, []);
 
   // Updates from action data
   useEffect(() => {
-    if (actionData?.correctGuess) {
-      setGuesses([...guesses, actionData.correctGuess]);
-      setGuess("");
+    if (actionData) {
+      if (actionData.correctGuess) {
+        setGuesses([...guesses, actionData.correctGuess]);
+        setGuess("");
+      }
+      setMessage(actionData.message);
+      setWin(actionData?.win || win);
+      setGameOver(actionData?.gameOver || gameOver);
     }
-    setMessage(actionData?.message || message);
-    setWin(actionData?.win || win);
-    setGameOver(actionData?.gameOver || gameOver);
   }, [actionData]);
 
-  // Update the local storage
+  // Update the local storage and win condition
   useEffect(() => {
     localStorage.setItem("guesses", JSON.stringify(guesses));
     localStorage.setItem("win", JSON.stringify(win));
     localStorage.setItem("gameOver", JSON.stringify(gameOver));
+    if (win) {
+      window.scrollTo(0, 0);
+      setOpenModal(true);
+    }
   }, [guesses, win, gameOver]);
 
   // Calculated values
@@ -255,6 +265,12 @@ export default () => {
     return sum + guess.votes;
   }, 0);
   const score = points / totalVotes;
+  const surveyProps = { survey: loaderData.survey, photo: loaderData.photo };
+  const tomorrowSurveyProps = {
+    survey: loaderData.tomorrow,
+    photo: loaderData.tomorrowPhoto,
+  };
+  const scorebarProps = { points, score, guesses, win };
 
   return (
     <>
@@ -263,9 +279,10 @@ export default () => {
       <main
         className="max-w-4xl flex-grow flex flex-col md:grid grid-cols-2
     mt-8 md:gap-6 gap-4 my-8 justify-center md:mx-auto mx-4"
+        ref={mainRef}
       >
         <section className="md:px-4 space-y-4 mx-auto md:mx-0 justify-self-start">
-          <Survey survey={loaderData.question} photo={loaderData.photo} />
+          <Survey {...surveyProps} />
 
           <p>{gameOver}</p>
           <Form className="w-survey mx-auto flex space-x-2" method="post">
@@ -306,7 +323,6 @@ export default () => {
         <section className="space-y-4">
           <div className="flex justify-between w-full items-center">
             <p>You did not respond to this Survey.</p>
-
             <Switch mode={displayPercent} setMode={setDisplayPercent} />
           </div>
           <Answers
@@ -331,6 +347,15 @@ export default () => {
           <NavButton name="Draft" />
         </section>
       </main>
+      <AnimatePresence initial={true} exitBeforeEnter={true}>
+        {openModal && (
+          <Modal
+            scorebarProps={scorebarProps}
+            surveyProps={tomorrowSurveyProps}
+            handleClose={() => setOpenModal(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };
