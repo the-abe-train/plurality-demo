@@ -305,7 +305,7 @@ export async function gameByQuestionUser({
     { question: questionId, user: userId },
     {
       $set: { lastUpdated: new Date() },
-      $setOnInsert: { guesses: guesses || [], win: win || false },
+      $setOnInsert: { guesses: guesses || [], win: win || false, score: 0 },
       $max: { totalVotes },
     },
     { upsert: true, returnDocument: "after" }
@@ -361,7 +361,7 @@ export async function addVote(
         },
       },
     },
-    { upsert: true, returnDocument: "after" }
+    { upsert: false, returnDocument: "after" }
   );
   const updatedGame = updatedGameResult.value;
   return updatedGame;
@@ -373,70 +373,6 @@ export async function userGames(client: MongoClient, userId: ObjectId) {
   const games = await gamesCollection.find({ user: userId }).toArray();
   return games;
 }
-
-// export async function userGameStats(client: MongoClient, userId: ObjectId) {
-//   const db = await connectDb(client);
-//   const gamesCollection = db.collection<GameSchema>("games");
-//   const stats = await gamesCollection
-//     .aggregate([
-//       {
-//         $match: {
-//           user: userId,
-//         },
-//       },
-//       {
-//         $group: {
-//           _id: "$user",
-//           gamesWon: {
-//             $sum: {
-//               $cond: [
-//                 {
-//                   $eq: ["$win", true],
-//                 },
-//                 1,
-//                 0,
-//               ],
-//             },
-//           },
-//           responsesSubmitted: {
-//             $sum: {
-//               $cond: [
-//                 {
-//                   $ifNull: ["$vote", false],
-//                 },
-//                 1,
-//                 0,
-//               ],
-//             },
-//           },
-//           gamesPlayed: {
-//             $sum: {
-//               $cond: [
-//                 {
-//                   $gte: [
-//                     {
-//                       $size: "$guesses",
-//                     },
-//                     1,
-//                   ],
-//                 },
-//                 1,
-//                 0,
-//               ],
-//             },
-//           },
-//           highestScore: {
-//             $max: "$score",
-//           },
-//           fewestGuessesToWin: {
-//             $min: "$guessesToWin",
-//           },
-//         },
-//       },
-//     ])
-//     .toArray();
-//   return stats[0];
-// }
 
 // Session queries
 export async function createSession(

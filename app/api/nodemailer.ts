@@ -26,17 +26,12 @@ export function sendEmail({ emailBody, emailTo, subject }: Props) {
     text: emailBody,
   };
 
-  console.log(transporter);
-  console.log(options);
-  console.log(EMAIL_PASSWORD);
-
   return new Promise<number>((res, rej) => {
     transporter.sendMail(options, (err, info) => {
       if (err) {
         console.error(err);
         return rej(err);
       }
-      console.log("Sent:", info);
       res(200);
     });
   });

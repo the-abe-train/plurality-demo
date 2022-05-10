@@ -74,12 +74,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     userGames(client, userId),
   ]);
 
+  // Check to see if any of the games have a score
+
   const highScoreGame = games
     .filter((game) => game.score > 0)
     .sort((a, z) => z.score - a.score)[0];
   const fewestGuessesGame = games
-    .filter((game) => game.guessesToWin > 0)
-    .sort((a, z) => a.guessesToWin - z.guessesToWin)[0];
+    .filter((game) => game.guessesToWin)
+    .sort((a, z) => {
+      if (a.guessesToWin && z.guessesToWin) {
+        return a.guessesToWin - z.guessesToWin;
+      }
+      return 0;
+    })[0];
+
+  console.log("Few", fewestGuessesGame);
 
   const userStats = {
     gamesWon: games.filter((game) => game.win).length,
@@ -90,8 +99,8 @@ export const loader: LoaderFunction = async ({ request }) => {
       score: highScoreGame.score,
     },
     fewestGuesses: {
-      survey: fewestGuessesGame.question,
-      guesses: fewestGuessesGame.guessesToWin,
+      survey: fewestGuessesGame ? fewestGuessesGame.question : 0,
+      guesses: fewestGuessesGame ? fewestGuessesGame.guessesToWin : 0,
     },
     surveysDrafted: surveysList.length,
   };
@@ -261,6 +270,7 @@ export default () => {
                   name="_action"
                   value="changeEmail"
                   className="silver px-3 py-1"
+                  disabled={email === user.email.address}
                 >
                   Change
                 </button>
@@ -296,6 +306,7 @@ export default () => {
                 name="_action"
                 value="changeName"
                 className="silver px-3 py-1"
+                disabled={name === user.name}
               >
                 Change
               </button>
@@ -369,8 +380,9 @@ export default () => {
                 <td className="px-2 py-2">{userStats.surveysDrafted}</td>
                 <td className="px-2 py-2">Fewest guesses to win</td>
                 <td className="px-2 py-2">
-                  {userStats.fewestGuesses.guesses} (#
-                  {userStats.fewestGuesses.survey})
+                  {userStats.fewestGuesses.guesses
+                    ? `${userStats.fewestGuesses.guesses} (${userStats.fewestGuesses.survey})`
+                    : ""}
                 </td>
               </tr>
             </tbody>
