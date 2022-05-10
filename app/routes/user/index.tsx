@@ -9,7 +9,10 @@ import {
   useActionData,
   useLoaderData,
   useSubmit,
+  useTransition,
 } from "remix";
+import { sendEmail } from "~/api/nodemailer";
+
 import useAttachWallet from "~/hooks/useAttachWallet";
 import { UserSchema } from "~/db/schemas";
 import { authorizeWallet } from "~/util/authorize";
@@ -24,20 +27,24 @@ import {
   userUpdateName,
   userUpdateWallet,
 } from "~/db/queries";
-import { sendEmail } from "~/api/sendgrid.server";
 import { createVerifyEmailLink } from "~/util/verify.server";
 import { getSession, destroySession } from "../../sessions";
 import { statFormat, truncateEthAddress } from "~/util/text";
 import AnimatedBanner from "~/components/AnimatedBanner";
 import Counter from "~/components/Counter";
+import NFTList from "~/components/NFTList";
 
 import guess from "~/images/icons/guess.svg";
 import vote from "~/images/icons/respond.svg";
 import draft from "~/images/icons/draft.svg";
 import userIcon from "~/images/icons/user.svg";
+import openSeaIcon from "~/images/icons/open_sea.svg";
+import { NFT } from "~/api/schemas";
+import { getNfts } from "~/api/opensea";
 
 type LoaderData = {
   user: UserSchema;
+  nfts: NFT[];
   userStats: {
     gamesWon: number;
     responsesSubmitted: number;
@@ -56,6 +63,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (!user) {
     return redirect("/user/login");
   }
+
+  // Get list of NFTs on account using OpenSea API
+  const { wallet } = user;
+  const nfts = wallet ? await getNfts(wallet) : [];
 
   // Get user stats
   const [surveysList, games] = await Promise.all([
@@ -85,7 +96,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     surveysDrafted: surveysList.length,
   };
 
-  const data = { user, userStats };
+  const data = { user, userStats, nfts };
   return json(data);
 };
 
@@ -117,10 +128,12 @@ export const action: ActionFunction = async ({ request }) => {
     if (user) {
       const emailTo = user.email.address;
       const emailLink = await createVerifyEmailLink(emailTo);
-      const emailBody = `<a href="${emailLink}">Click to verify your email</a>`;
+      const emailBody = `Click the link below to verify your email!
+${emailLink}`;
       const subject = "Verify Email for Plurality";
-      const response = await sendEmail({ emailTo, emailBody, subject });
-      if (response.ok) {
+      // const response = await sendEmail({ emailTo, emailBody, subject });
+      const response = await sendEmail({ emailBody, emailTo, subject });
+      if (response === 200) {
         const message = "Verification email sent.";
         return json<ActionData>({ message });
       }
@@ -184,10 +197,13 @@ export const action: ActionFunction = async ({ request }) => {
   return "";
 };
 
-export default function LogoutRoute() {
-  const [message, setMessage] = useState("");
-  const { user, userStats } = useLoaderData<LoaderData>();
+export default () => {
+  const { user, userStats, nfts } = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
+
+  const transition = useTransition();
+
+  const [message, setMessage] = useState("");
   const attachWallet = useAttachWallet();
   const submit = useSubmit();
   const deleteFormRef = useRef<HTMLFormElement>(null!);
@@ -255,7 +271,8 @@ export default function LogoutRoute() {
                   className="gold px-3 py-1"
                   disabled={
                     user.email.verified ||
-                    actionData?.message === "Verification email sent."
+                    actionData?.message === "Verification email sent." ||
+                    transition.state !== "idle"
                   }
                 >
                   {user.email.verified ? "Verified" : "Verify"}
@@ -384,9 +401,17 @@ export default function LogoutRoute() {
         </section>
         <section className="mb-6">
           <h2 className="text-2xl my-2 font-header">Survey tokens</h2>
+          <NFTList nfts={nfts} />
           <div className="flex space-x-3">
             <a href="https://opensea.io/PluralityGame">
-              <button className="gold px-3 py-1">Buy a draft token</button>
+              <button className="gold px-3 py-1 flex items-center space-x-1">
+                <span> Buy a draft token </span>
+                <img
+                  className="inline-block"
+                  src={openSeaIcon}
+                  alt="Open Sea"
+                />
+              </button>
             </a>
             <Link to="/draft">
               <button className="gold px-3 py-1">Submit a draft</button>
@@ -396,4 +421,4 @@ export default function LogoutRoute() {
       </div>
     </main>
   );
-}
+};

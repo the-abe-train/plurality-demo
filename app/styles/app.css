@@ -933,10 +933,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   width: 350px;
 }
 
-.w-2 {
-  width: 0.5rem;
-}
-
 .min-w-\[260px\] {
   min-width: 260px;
 }
@@ -1144,6 +1140,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
 }
 
+.space-x-12 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(3rem * var(--tw-space-x-reverse));
+  margin-left: calc(3rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
 .space-y-12 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-y-reverse: 0;
   margin-top: calc(3rem * calc(1 - var(--tw-space-y-reverse)));
@@ -1166,12 +1168,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-space-y-reverse: 0;
   margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
-}
-
-.space-x-12 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(3rem * var(--tw-space-x-reverse));
-  margin-left: calc(3rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .justify-self-start {
@@ -1224,16 +1220,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   border-width: 0px;
 }
 
-.border-y {
-  border-top-width: 1px;
-  border-bottom-width: 1px;
-}
-
-.border-x {
-  border-left-width: 1px;
-  border-right-width: 1px;
-}
-
 .border-t-2 {
   border-top-width: 2px;
 }
@@ -1267,9 +1253,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(253 250 246 / var(--tw-bg-opacity));
 }
 
-.bg-gray-300 {
+.bg-outline {
   --tw-bg-opacity: 1;
-  background-color: rgb(209 213 219 / var(--tw-bg-opacity));
+  background-color: rgb(128 128 128 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#03bb6e\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(3 187 110 / var(--tw-bg-opacity));
 }
 
 .bg-black {
@@ -1282,29 +1273,14 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.bg-yellow-50 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(254 252 232 / var(--tw-bg-opacity));
-}
-
-.bg-gray-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
-}
-
 .bg-gray-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 
-.bg-outline {
+.bg-yellow-50 {
   --tw-bg-opacity: 1;
-  background-color: rgb(128 128 128 / var(--tw-bg-opacity));
-}
-
-.bg-\[\#03bb6e\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(3 187 110 / var(--tw-bg-opacity));
+  background-color: rgb(254 252 232 / var(--tw-bg-opacity));
 }
 
 .object-cover {
@@ -1541,14 +1517,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 @media (min-width: 640px) {
-  .sm\:flex {
-    display: flex;
-  }
-
-  .sm\:hidden {
-    display: none;
-  }
-
   .sm\:px-0 {
     padding-left: 0px;
     padding-right: 0px;
@@ -1583,6 +1551,11 @@ Ensure the default browser behavior of the `hidden` attribute.
     margin-right: 1rem;
   }
 
+  .md\:my-2 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
   .md\:mx-auto {
     margin-left: auto;
     margin-right: auto;
@@ -1593,26 +1566,8 @@ Ensure the default browser behavior of the `hidden` attribute.
     margin-right: 0px;
   }
 
-  .md\:my-1 {
-    margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .md\:my-2 {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
   .md\:mr-8 {
     margin-right: 2rem;
-  }
-
-  .md\:mt-0 {
-    margin-top: 0px;
-  }
-
-  .md\:mt-8 {
-    margin-top: 2rem;
   }
 
   .md\:mt-1 {
@@ -1621,6 +1576,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
   .md\:mb-2 {
     margin-bottom: 0.5rem;
+  }
+
+  .md\:mt-8 {
+    margin-top: 2rem;
   }
 
   .md\:block {
@@ -1689,10 +1648,6 @@ Ensure the default browser behavior of the `hidden` attribute.
     flex-direction: column;
   }
 
-  .md\:justify-center {
-    justify-content: center;
-  }
-
   .md\:gap-8 {
     gap: 2rem;
   }
@@ -1717,12 +1672,6 @@ Ensure the default browser behavior of the `hidden` attribute.
     --tw-space-x-reverse: 0;
     margin-right: calc(0px * var(--tw-space-x-reverse));
     margin-left: calc(0px * calc(1 - var(--tw-space-x-reverse)));
-  }
-
-  .md\:space-x-12 > :not([hidden]) ~ :not([hidden]) {
-    --tw-space-x-reverse: 0;
-    margin-right: calc(3rem * var(--tw-space-x-reverse));
-    margin-left: calc(3rem * calc(1 - var(--tw-space-x-reverse)));
   }
 
   .md\:space-y-0 > :not([hidden]) ~ :not([hidden]) {

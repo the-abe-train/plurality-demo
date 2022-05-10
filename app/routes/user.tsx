@@ -8,9 +8,10 @@ import {
   LinksFunction,
   LoaderFunction,
   Outlet,
+  redirect,
   useLoaderData,
 } from "remix";
-import { getSession } from "~/sessions";
+import { commitSession, destroySession, getSession } from "~/sessions";
 import { UserSchema } from "~/db/schemas";
 import { userById } from "~/db/queries";
 import { client } from "~/db/connect.server";
@@ -32,6 +33,16 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
   const user = (await userById(client, userId)) || undefined;
+
+  // If there is a userId but no user, destroy the cookie
+  if (userId && !user) {
+    return redirect("/user/login", {
+      headers: {
+        "Set-Cookie": await destroySession(session),
+      },
+    });
+  }
+
   const data = { user };
   return json<LoaderData>(data);
 };

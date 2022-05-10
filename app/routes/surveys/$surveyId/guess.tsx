@@ -103,6 +103,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     });
   }
 
+  console.log("User ID", userId);
+
   // Get tomorrow's survey from db
   const midnight = dayjs().tz("America/Toronto").endOf("day");
   const tomorrowSc = midnight.toDate();

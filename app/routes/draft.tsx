@@ -22,7 +22,7 @@ import { NFT } from "~/api/schemas";
 import { client } from "~/db/connect.server";
 import { userById } from "~/db/queries";
 
-import { sendEmail } from "~/api/sendgrid.server";
+// import { sendEmail } from "~/api/sendgrid.server";
 
 import { commitSession, getSession } from "~/sessions";
 
@@ -35,8 +35,9 @@ import { ADMIN_EMAIL } from "~/util/env";
 import AnimatedBanner from "~/components/AnimatedBanner";
 import draftSymbol from "~/images/icons/draft.svg";
 import openSeaIcon from "~/images/icons/open_sea.svg";
-import openSeaJpeg from "~/images/open_sea_logo.jpg";
 import NavButton from "~/components/NavButton";
+import { sendEmail } from "~/api/nodemailer";
+import NFTList from "~/components/NFTList";
 
 export const links: LinksFunction = () => {
   return [
@@ -58,7 +59,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
   const user = (await userById(client, userId)) || undefined;
-  // console.log("user", user);
 
   // Redirect not signed-in users to home page
   if (!user) {
@@ -162,8 +162,8 @@ export const action: ActionFunction = async ({ request }) => {
   `;
   const subject = "Survey Draft Submission";
   const emailTo = ADMIN_EMAIL;
-  const sendGridResp = await sendEmail({ emailBody, emailTo, subject });
-  if (sendGridResp.status === 200) {
+  const mailerResp = await sendEmail({ emailBody, emailTo, subject });
+  if (mailerResp === 200) {
     const message = "Survey draft submitted successfully!";
     const success = true;
     return json<ActionData>({ message, success });
@@ -176,12 +176,13 @@ export const action: ActionFunction = async ({ request }) => {
   return json<ActionData>({ message, success });
 };
 
-export default function draft() {
+export default () => {
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const transition = useTransition();
 
   const [showForm, setShowForm] = useState(true);
+  const [enabled, setEnabled] = useState(true);
 
   const nfts = loaderData.nfts ? [...loaderData.nfts] : [];
 
@@ -189,6 +190,8 @@ export default function draft() {
     if (actionData?.success) {
       setShowForm(false);
     }
+
+    // Disable form using transition, email verified, valid token selected
   }, [actionData]);
 
   return (
@@ -201,33 +204,7 @@ export default function draft() {
       >
         <section>
           <h2 className="font-header text-2xl">Your Survey Tokens</h2>
-          <div className="grid grid-cols-3 items-center justify-items-center my-4">
-            {nfts.length > 0 &&
-              nfts.map((nft, idx) => {
-                if (nft.image_url) {
-                  return (
-                    <img
-                      key={idx}
-                      src={nft.image_url}
-                      alt={nft.name}
-                      width={100}
-                    />
-                  );
-                }
-                return (
-                  <img key={idx} src={openSeaJpeg} alt={nft.name} width={100} />
-                );
-              })}
-          </div>
-          {nfts.length <= 0 && (
-            <p className="my-4">
-              You have no Draft Tokens. You can purchase one from{" "}
-              <a href="https://opensea.io/PluralityGame" className="underline">
-                OpenSea
-              </a>
-              .
-            </p>
-          )}
+          <NFTList nfts={nfts} />
           <a href="https://opensea.io/PluralityGame">
             <button className="gold px-3 py-2 my-6 flex space-x-1 items-center mx-auto">
               <span>Buy a Token</span>
@@ -283,7 +260,7 @@ export default function draft() {
                 <button
                   className="gold px-6 py-2 block mx-auto my-6"
                   type="submit"
-                  disabled={transition.state !== "idle"}
+                  disabled={!enabled}
                 >
                   Submit
                 </button>
@@ -312,4 +289,4 @@ export default function draft() {
       <Footer />
     </div>
   );
-}
+};
