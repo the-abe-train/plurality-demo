@@ -74,11 +74,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     userGames(client, userId),
   ]);
 
-  // Check to see if any of the games have a score
-
-  const highScoreGame = games
-    .filter((game) => game.score > 0)
-    .sort((a, z) => z.score - a.score)[0];
+  const highScoreGame = games.sort((a, z) => z.score - a.score)[0];
   const fewestGuessesGame = games
     .filter((game) => game.guessesToWin)
     .sort((a, z) => {
@@ -87,8 +83,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       }
       return 0;
     })[0];
-
-  console.log("Few", fewestGuessesGame);
 
   const userStats = {
     gamesWon: games.filter((game) => game.win).length,
@@ -241,6 +235,8 @@ export default () => {
     }
   }
 
+  const wonAnyGames = !!userStats.fewestGuesses.guesses;
+
   const [name, setName] = useState(user.name || "");
   const [email, setEmail] = useState(user.email.address || "");
   return (
@@ -371,8 +367,9 @@ export default () => {
                 <td className="px-2 py-2">{userStats.responsesSubmitted}</td>
                 <td className="px-2 py-2">Highest score</td>
                 <td className="px-2 py-2">
-                  {statFormat(userStats.highestScore.score * 100)}% (#
-                  {userStats.highestScore.survey})
+                  {wonAnyGames &&
+                    `${statFormat(userStats.highestScore.score * 100)}% (#
+                  ${userStats.highestScore.survey})`}
                 </td>
               </tr>
               <tr className="border">
@@ -380,9 +377,8 @@ export default () => {
                 <td className="px-2 py-2">{userStats.surveysDrafted}</td>
                 <td className="px-2 py-2">Fewest guesses to win</td>
                 <td className="px-2 py-2">
-                  {userStats.fewestGuesses.guesses
-                    ? `${userStats.fewestGuesses.guesses} (${userStats.fewestGuesses.survey})`
-                    : ""}
+                  {wonAnyGames &&
+                    `${userStats.fewestGuesses.guesses} (${userStats.fewestGuesses.survey})`}
                 </td>
               </tr>
             </tbody>
