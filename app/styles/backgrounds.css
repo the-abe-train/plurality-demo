@@ -122,7 +122,6 @@
   border-radius: 0.375rem /* 6px */;
   border-color: rgb(128 128 128);
   border-width: 1px;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 @media (min-width: 768px) {
@@ -142,6 +141,5 @@
     border-radius: 0.375rem /* 6px */;
     border-color: rgb(128 128 128);
     border-width: 1px;
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.4);
   }
 }

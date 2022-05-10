@@ -99,23 +99,27 @@ type ActionData = {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  // Async parse form and session data
+  const [form, session] = await Promise.all([
+    request.formData(),
+    getSession(request.headers.get("Cookie")),
+  ]);
+
   // Extract data from form
-  const form = await request.formData();
   const id = form.get("id");
-  const question = form.get("question");
+  const survey = form.get("question");
   const photo = form.get("photo");
   const email = form.get("email");
 
   // Get user ID from session
-  const session = await getSession(request.headers.get("Cookie"));
   const user = session.get("user");
 
   // Verify the that the data entered exists
   if (
     typeof id !== "string" ||
     id.length <= 0 ||
-    typeof question !== "string" ||
-    question.length <= 0 ||
+    typeof survey !== "string" ||
+    survey.length <= 0 ||
     typeof photo !== "string" ||
     photo.length <= 0 ||
     typeof email !== "string" ||
@@ -149,18 +153,18 @@ export const action: ActionFunction = async ({ request }) => {
     <li>User ID: ${user}</li>
     <li>Email: ${email}</li>
   </ul>
-  <h3>Question id</h3>
+  <h3>Survey id</h3>
   <p>${id}</p>
-  <h3>Question text</h3>
-  <p>${question}</p>
+  <h3>Survey text</h3>
+  <p>${survey}</p>
   <h3>Unsplash photo</h3>
   <p>https://unsplash.com/photos/${photo}</p>
   `;
-  const subject = "Question Submission";
+  const subject = "Survey Draft Submission";
   const emailTo = ADMIN_EMAIL;
   const sendGridResp = await sendEmail({ emailBody, emailTo, subject });
   if (sendGridResp.status === 200) {
-    const message = "Question submitted successfully!";
+    const message = "Survey draft submitted successfully!";
     const success = true;
     return json<ActionData>({ message, success });
   }
@@ -186,8 +190,6 @@ export default function draft() {
       setShowForm(false);
     }
   }, [actionData]);
-
-  // TODO decide if we want to keep the "light" backdrop on all pages or use a solid colour
 
   return (
     <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">

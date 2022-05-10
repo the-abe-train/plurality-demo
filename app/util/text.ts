@@ -32,3 +32,7 @@ export const truncateEthAddress = (address: string) => {
   if (!match) return address;
   return `${match[1]}…${match[2]}`;
 };
+
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}

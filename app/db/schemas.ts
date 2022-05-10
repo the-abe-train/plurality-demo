@@ -29,6 +29,7 @@ export type SurveySchema = {
   surveyClose: Date;
   drafted: Date;
   community: boolean;
+  author?: ObjectId;
 };
 
 export type GameSchema = {

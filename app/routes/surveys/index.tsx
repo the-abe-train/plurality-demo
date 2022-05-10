@@ -8,20 +8,30 @@ import {
   useSubmit,
   useTransition,
 } from "remix";
-import dayjs from "dayjs";
 
-import Survey from "~/components/Survey";
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
 import animations from "~/styles/animations.css";
+
 import { SurveySchema, VoteAggregation } from "~/db/schemas";
 import { surveyBySearch, votesBySurvey } from "~/db/queries";
 import { client } from "~/db/connect.server";
 import { Photo } from "~/api/schemas";
 import { fetchPhoto } from "~/api/unsplash";
-import emptyLogo from "~/images/icons/empty_logo.svg";
-import AnimatedBanner from "~/components/AnimatedBanner";
+
 import { PER_PAGE } from "~/util/env";
+
+import Survey from "~/components/Survey";
+import AnimatedBanner from "~/components/AnimatedBanner";
+
+import emptyLogo from "~/images/icons/empty_logo.svg";
+
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 type ActionData = {
   pageQuestions: SurveySchema[];
@@ -34,6 +44,7 @@ type ActionData = {
   photos: Photo[];
   votes: VoteAggregation[][];
 };
+
 export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
@@ -52,8 +63,6 @@ export const action: ActionFunction = async ({ request }) => {
   // Values show up as "on" or null
   const communityParam = body.get("community");
   const standardParam = body.get("standard");
-
-  console.log("Community", communityParam);
 
   // Parse query parameters
   const searchParams = {
@@ -75,7 +84,6 @@ export const action: ActionFunction = async ({ request }) => {
   const pageEnd = pageParam ? Number(pageParam) * PER_PAGE : PER_PAGE;
 
   // Questions from database
-  console.log(searchParams);
   const matchingSurveys = await surveyBySearch({ client, ...searchParams });
 
   const pageSurveys = matchingSurveys.slice(pageStart, pageEnd);
@@ -89,16 +97,18 @@ export const action: ActionFunction = async ({ request }) => {
 
   // Get votes from database
   if (pageSurveys) {
-    const votes = await Promise.all(
-      pageSurveys.map(async (question) => {
-        return await votesBySurvey(client, question._id);
-      })
-    );
-    const photos = await Promise.all(
-      pageSurveys.map(async (question) => {
-        return await fetchPhoto(question.photo);
-      })
-    );
+    const [votes, photos] = await Promise.all([
+      await Promise.all(
+        pageSurveys.map(async (question) => {
+          return await votesBySurvey(client, question._id);
+        })
+      ),
+      await Promise.all(
+        pageSurveys.map(async (question) => {
+          return await fetchPhoto(question.photo);
+        })
+      ),
+    ]);
 
     // Return data
     const data = { pageQuestions: pageSurveys, metadata, photos, votes };

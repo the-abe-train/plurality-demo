@@ -97,25 +97,25 @@ export default function Scorebar({
   return (
     <div className="flex flex-col space-y-4">
       <div
-        className="w-3/4 mx-auto bg-gray-300 rounded-full h-2.5 
+        className="w-3/4 mx-auto bg-outline rounded-full h-2.5 
         dark:bg-gray-700 relative"
       >
         <motion.div
-          className="h-2.5 rounded-full"
+          className="h-2.5 rounded-full z-20"
           style={{ backgroundColor: win ? "#03bb6e" : "#39cdff" }}
           initial={{ width: 0 }}
           animate={{ width: `${score * 100}%` }}
           transition={{ duration: 1 }}
         ></motion.div>
         <div
-          className="h-full w-1 z-10 bg-black absolute top-0"
-          style={{ left: `calc(${THRESHOLD}% - 2px)` }}
+          className="h-full w-1 z-10 bg-[#03bb6e] absolute top-0"
+          style={{
+            left: `calc(${THRESHOLD}% - 2px)`,
+            // backgroundColor: win ? "#03bb6e" : "#39cdff",
+          }}
         ></div>
       </div>
-      <div
-        className="flex justify-between items-end  w-full 
-      md:justify-center md:space-x-12"
-      >
+      <div className="flex items-end w-full justify-center space-x-12">
         {items.map((item) => {
           return (
             <div

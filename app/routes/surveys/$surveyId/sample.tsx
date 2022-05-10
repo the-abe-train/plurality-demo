@@ -10,7 +10,8 @@ import {
 } from "remix";
 import invariant from "tiny-invariant";
 import { useEffect, useRef, useState } from "react";
-import dayjs from "dayjs";
+import { AnimatePresence } from "framer-motion";
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
@@ -27,17 +28,22 @@ import { surveyByClose, surveyById, votesBySurvey } from "~/db/queries";
 import { SurveySchema, VoteAggregation } from "~/db/schemas";
 import { Photo } from "~/api/schemas";
 import { commitSession, getSession } from "~/sessions";
+import { fetchPhoto } from "~/api/unsplash";
 
 import Answers from "~/components/Answers";
 import Survey from "~/components/Survey";
-import { fetchPhoto } from "~/api/unsplash";
 import Scorebar from "~/components/Scorebar";
 import AnimatedBanner from "~/components/AnimatedBanner";
 import Switch from "~/components/Switch";
 import NavButton from "~/components/NavButton";
-import { AnimatePresence } from "framer-motion";
-import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import Modal from "~/components/Modal";
+
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const links: LinksFunction = () => {
   return [
@@ -84,16 +90,17 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   // Set the sample game for this not-logged-in user
   session.set("game", surveyId);
 
-  // Get survey from db
-  const survey = await surveyById(client, surveyId);
-  invariant(survey, "No survey found!");
-
   // Get tomorrow's survey from db
   const midnight = dayjs().tz("America/Toronto").endOf("day");
   const tomorrowSc = midnight.toDate();
-  const tomorrow = await surveyByClose(client, tomorrowSc);
+
+  // Get surveys
+  const [survey, tomorrow] = await Promise.all([
+    surveyById(client, surveyId),
+    surveyByClose(client, tomorrowSc),
+  ]);
+  invariant(survey, "No survey found!");
   invariant(tomorrow, "Tomorrow's survey not found!");
-  const tomorrowPhoto = await fetchPhoto(tomorrow.photo);
 
   // Redirect to Respond if survey close hasn't happened yet
   const surveyClose = survey.surveyClose;
@@ -102,10 +109,13 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 
   // Get additional surveydata from db and apis
-  const photo = await fetchPhoto(survey.photo);
-  invariant(photo, "No photo found!");
-  const votes = await votesBySurvey(client, surveyId);
-  console.log("votes", votes);
+  const [photo, votes, tomorrowPhoto] = await Promise.all([
+    fetchPhoto(survey.photo),
+    votesBySurvey(client, surveyId),
+    fetchPhoto(tomorrow.photo),
+  ]);
+
+  console.log("Votes", votes);
   const totalVotes = votes.reduce((sum, ans) => {
     return sum + ans.votes;
   }, 0);
@@ -127,10 +137,10 @@ type ActionData = {
 
 export const action: ActionFunction = async ({ request, params }) => {
   // Parse form
-  const body = await request.formData();
-  const guess = body.get("guess");
-  const guesses = body.get("guesses") as string;
-  const totalVotes = body.get("totalVotes") as string;
+  const form = await request.formData();
+  const guess = form.get("guess");
+  const guesses = form.get("guesses") as string;
+  const totalVotes = form.get("totalVotes") as string;
 
   // Reject empty form submissions
   if (typeof guess !== "string") {
@@ -144,7 +154,6 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Reject already guessed answers
   const guessesArray: VoteAggregation[] = JSON.parse(guesses);
-  console.log("Guesses array", guessesArray);
   const alreadyGuessed = guessesArray.find((ans) => {
     const text = ans._id;
     return (
@@ -158,7 +167,6 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   // Pull in more relevant data
   const answers = await votesBySurvey(client, surveyId);
-  console.log("Answers", answers);
   const correctGuess = answers.find((ans) => {
     const text = ans._id;
     return (

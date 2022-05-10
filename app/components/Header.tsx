@@ -45,7 +45,7 @@ export default function Header({ name }: Props) {
           <img className="inline h-6 object-fill" src={logo} alt="logo" />
         </Link>
         <nav className="flex justify-between items-center">
-          <ul className="hidden sm:flex md:space-x-8 items-center">
+          <ul className="hidden md:flex md:space-x-8 items-center">
             <motion.li
               className="z-20 relative"
               onMouseEnter={() => setIsHover(true)}
@@ -114,7 +114,7 @@ export default function Header({ name }: Props) {
             </Link>
           </ul>
         </nav>
-        <div className="sm:hidden">
+        <div className="md:hidden">
           <Sidebar name={name} />
         </div>
       </div>

@@ -37,8 +37,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const message = session.get("message") || null;
   session.unset("message");
-  console.log(message);
-
   return json<LoaderData>(
     { message },
     {
@@ -143,9 +141,6 @@ export default () => {
     const win = localStorage.getItem("win");
     setLocalData(JSON.stringify({ question, guesses, win }));
   }, []);
-
-  // TODO if there's an error connecting to the ETH wallet the user should see
-  // a proper error message
 
   return (
     <main className="container flex-grow px-4 sm:px-0 mx-auto w-full max-w-4xl">

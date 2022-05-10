@@ -10,5 +10,3 @@ export const ROOT_DOMAIN = process.env.ROOT_DOMAIN ?? "";
 export const JWT_SIGNATURE = process.env.JWT_SIGNATURE ?? "";
 
 export const PER_PAGE = 6;
-
-// TODO Align terminology: "Question" should be "Survey" everywhere in the code

@@ -17,8 +17,10 @@ import { client } from "~/db/connect.server";
 import {
   deleteUser,
   removeWallet,
+  surveysByAuthor,
   userById,
-  userGameStats,
+  userGames,
+  userUpdateEmail,
   userUpdateName,
   userUpdateWallet,
 } from "~/db/queries";
@@ -40,8 +42,9 @@ type LoaderData = {
     gamesWon: number;
     responsesSubmitted: number;
     gamesPlayed: number;
-    highestScore: number;
-    fewestGuessesToWin: number;
+    surveysDrafted: number;
+    highestScore: { survey: number; score: number };
+    fewestGuesses: { survey: number; guesses: number };
   };
 };
 
@@ -55,7 +58,33 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   // Get user stats
-  const userStats = await userGameStats(client, userId);
+  const [surveysList, games] = await Promise.all([
+    surveysByAuthor(client, userId),
+    userGames(client, userId),
+  ]);
+
+  const highScoreGame = games
+    .filter((game) => game.score > 0)
+    .sort((a, z) => z.score - a.score)[0];
+  const fewestGuessesGame = games
+    .filter((game) => game.guessesToWin > 0)
+    .sort((a, z) => a.guessesToWin - z.guessesToWin)[0];
+
+  const userStats = {
+    gamesWon: games.filter((game) => game.win).length,
+    responsesSubmitted: games.filter((game) => !!game.vote).length,
+    gamesPlayed: games.filter((game) => game.guesses.length > 0).length,
+    highestScore: {
+      survey: highScoreGame.question,
+      score: highScoreGame.score,
+    },
+    fewestGuesses: {
+      survey: fewestGuessesGame.question,
+      guesses: fewestGuessesGame.guessesToWin,
+    },
+    surveysDrafted: surveysList.length,
+  };
+
   const data = { user, userStats };
   return json(data);
 };
@@ -63,19 +92,24 @@ export const loader: LoaderFunction = async ({ request }) => {
 type ActionData = {
   message: string;
   name?: string;
+  email?: string;
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  // Async parse form and session data
+  const [form, session] = await Promise.all([
+    request.formData(),
+    getSession(request.headers.get("Cookie")),
+  ]);
+
   // Get user info from cookie
-  const session = await getSession(request.headers.get("Cookie"));
   const userId = session.get("user");
 
   // Parse forms
-  const form = await request.formData();
-  const { _action, ...values } = Object.fromEntries(form);
+  const { _action } = Object.fromEntries(form);
+  const newEmail = form.get("email");
   const newName = form.get("name");
   const wallet = form.get("wallet");
-  console.log("Action", _action);
 
   // Handle verify email
   if (_action === "verifyEmail") {
@@ -87,11 +121,17 @@ export const action: ActionFunction = async ({ request }) => {
       const subject = "Verify Email for Plurality";
       const response = await sendEmail({ emailTo, emailBody, subject });
       if (response.ok) {
-        console.log(`Verification email sent to ${emailTo}!`);
         const message = "Verification email sent.";
         return json<ActionData>({ message });
       }
     }
+  }
+
+  // Handle email change form
+  if (_action === "changeEmail" && typeof newEmail === "string") {
+    await userUpdateEmail(client, userId, newEmail);
+    const message = "Email updated successfully.";
+    return json<ActionData>({ message, email: newEmail });
   }
 
   // Handle name change form
@@ -105,7 +145,6 @@ export const action: ActionFunction = async ({ request }) => {
   if (_action === "attachWallet" && typeof wallet === "string") {
     // Check if wallet is already attached to another account
     const { isAuthorized } = await authorizeWallet(userId, wallet);
-    console.log("is authorized", isAuthorized);
     if (!isAuthorized) {
       const message = "Wallet is already attached to another account";
       return json<ActionData>({ message });
@@ -115,7 +154,6 @@ export const action: ActionFunction = async ({ request }) => {
 
   // Handle detach wallet form
   if (_action === "detachWallet") {
-    console.log("Remove wallet");
     return await removeWallet(client, userId);
   }
 
@@ -178,9 +216,8 @@ export default function LogoutRoute() {
     }
   }
 
-  // TODO get data for statistics
-
   const [name, setName] = useState(user.name || "");
+  const [email, setEmail] = useState(user.email.address || "");
   return (
     <main className="container max-w-4xl flex-grow px-4">
       <AnimatedBanner text={user.name || "User"} icon={userIcon} />
@@ -198,10 +235,10 @@ export default function LogoutRoute() {
                 placeholder={user.email.address}
                 className="px-3 py-1 border-outline border rounded-sm w-full md:w-auto"
                 maxLength={40}
+                value={email}
+                name="email"
+                onChange={(e) => setEmail(e.target.value)}
               />
-              {actionData?.message === "Verification email sent." && (
-                <p>{actionData.message}</p>
-              )}
               <div className="my-2 md:my-0 space-x-2">
                 <button
                   type="submit"
@@ -216,7 +253,10 @@ export default function LogoutRoute() {
                   name="_action"
                   value="verifyEmail"
                   className="gold px-3 py-1"
-                  disabled={user.email.verified}
+                  disabled={
+                    user.email.verified ||
+                    actionData?.message === "Verification email sent."
+                  }
                 >
                   {user.email.verified ? "Verified" : "Verify"}
                 </button>
@@ -247,7 +287,7 @@ export default function LogoutRoute() {
           <Form method="post">
             <h3 className="text-xl my-2 font-header">Ethereum Wallet</h3>
             <div className="flex space-x-3">
-              <p className="px-3 py-1 border-outline border rounded-sm bg-white w-[225px]">
+              <p className="px-3 py-1 border-outline border rounded-sm bg-gray-200 w-[225px]">
                 {truncateEthAddress(user.wallet || "") || "Not connected"}
               </p>
               {!user.wallet ? (
@@ -266,9 +306,8 @@ export default function LogoutRoute() {
               )}
             </div>
           </Form>
-          {message && <p className="text-red-700">{message}</p>}
+          {message && <p>{message}</p>}
         </section>
-
         <section className="space-y-5">
           <h2 className="text-2xl my-2 font-header">Statistics</h2>
           <div className="flex w-full justify-around">
@@ -282,7 +321,7 @@ export default function LogoutRoute() {
             </div>
             <div className="flex space-x-3 items-center">
               <img src={draft} width={32} alt="Draft icon" />
-              <Counter value={0} />
+              <Counter value={userStats.surveysDrafted} />
             </div>
           </div>
           <table className="table-auto">
@@ -304,15 +343,17 @@ export default function LogoutRoute() {
                 <td className="px-2 py-2">{userStats.responsesSubmitted}</td>
                 <td className="px-2 py-2">Highest score</td>
                 <td className="px-2 py-2">
-                  {statFormat(userStats.highestScore * 100)}% (#41)
+                  {statFormat(userStats.highestScore.score * 100)}% (#
+                  {userStats.highestScore.survey})
                 </td>
               </tr>
               <tr className="border">
                 <td className="px-2 py-2">Surveys drafted</td>
-                <td className="px-2 py-2">3</td>
+                <td className="px-2 py-2">{userStats.surveysDrafted}</td>
                 <td className="px-2 py-2">Fewest guesses to win</td>
                 <td className="px-2 py-2">
-                  {userStats.fewestGuessesToWin} (#46)
+                  {userStats.fewestGuesses.guesses} (#
+                  {userStats.fewestGuesses.survey})
                 </td>
               </tr>
             </tbody>
@@ -333,9 +374,6 @@ export default function LogoutRoute() {
             </Form>
             <Form method="post" className="space-x-4" ref={deleteFormRef}>
               <button
-                // type="submit"
-                // name="_action"
-                // value="delete"
                 className="cancel px-3 py-1"
                 onClick={confirmDeleteAccount}
               >

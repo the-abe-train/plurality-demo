@@ -21,7 +21,7 @@ export async function createVerifyEmailLink(email: string) {
     const URIencodedEmail = encodeURIComponent(email);
 
     // Return link for verification
-    return `https://${ROOT_DOMAIN}/verify/${URIencodedEmail}/${emailToken}`;
+    return `${ROOT_DOMAIN}/verify/${URIencodedEmail}/${emailToken}`;
   } catch (e) {
     console.log("Failed to send email verification link.");
     console.error(e);

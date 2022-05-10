@@ -8,9 +8,7 @@ import {
 import { DATABASE_NAME } from "../util/env";
 import { MongoClient, ObjectId, UpdateFilter } from "mongodb";
 import { SessionData } from "remix";
-import invariant from "tiny-invariant";
-import { THRESHOLD } from "~/util/gameplay";
-import { truncateEthAddress } from "~/util/text";
+import { capitalizeFirstLetter, truncateEthAddress } from "~/util/text";
 import { randomPassword } from "../util/authorize";
 
 // Connect database
@@ -84,6 +82,22 @@ export async function userUpdateName(
   const modifiedUser = await usersCollection.findOneAndUpdate(
     { _id: id },
     { $set: { name: newName } },
+    { upsert: false, returnDocument: "after" }
+  );
+  return modifiedUser.value;
+}
+
+export async function userUpdateEmail(
+  client: MongoClient,
+  id: ObjectId,
+  newEmail: string
+) {
+  const db = await connectDb(client);
+  const usersCollection = db.collection<UserSchema>("users");
+  const newData = { address: newEmail, verified: false };
+  const modifiedUser = await usersCollection.findOneAndUpdate(
+    { _id: id },
+    { $set: { email: newData } },
     { upsert: false, returnDocument: "after" }
   );
   return modifiedUser.value;
@@ -168,6 +182,23 @@ export async function surveyByClose(client: MongoClient, surveyClose: Date) {
   return await surveysCollection.findOne({
     surveyClose: surveyClose,
   });
+}
+
+export async function surveysByAuthor(client: MongoClient, userId: ObjectId) {
+  const db = await connectDb(client);
+  const surveysCollection = db.collection<SurveySchema>("surveys");
+  return await surveysCollection.find({ author: userId }).toArray();
+}
+
+export async function getLastSurvey(client: MongoClient) {
+  const db = await connectDb(client);
+  const surveysCollection = db.collection<SurveySchema>("surveys");
+  const collection = await surveysCollection
+    .find()
+    .sort({ surveyClose: -1 })
+    .limit(1)
+    .toArray();
+  return collection[0];
 }
 
 type SearchParams = {
@@ -325,7 +356,7 @@ export async function addVote(
       $set: {
         lastUpdated: new Date(),
         vote: {
-          text: voteText,
+          text: capitalizeFirstLetter(voteText),
           date: new Date(),
         },
       },
@@ -336,70 +367,76 @@ export async function addVote(
   return updatedGame;
 }
 
-// User stats
-export async function userGameStats(client: MongoClient, userId: ObjectId) {
+export async function userGames(client: MongoClient, userId: ObjectId) {
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
-  const stats = await gamesCollection
-    .aggregate([
-      {
-        $match: {
-          user: new ObjectId("62758ca0ca6a66afee264bce"),
-        },
-      },
-      {
-        $group: {
-          _id: "$user",
-          gamesWon: {
-            $sum: {
-              $cond: [
-                {
-                  $eq: ["$win", true],
-                },
-                1,
-                0,
-              ],
-            },
-          },
-          responsesSubmitted: {
-            $sum: {
-              $cond: [
-                {
-                  $ifNull: ["$vote", false],
-                },
-                1,
-                0,
-              ],
-            },
-          },
-          gamesPlayed: {
-            $sum: {
-              $cond: [
-                {
-                  $gte: [
-                    {
-                      $size: "$guesses",
-                    },
-                    1,
-                  ],
-                },
-                1,
-                0,
-              ],
-            },
-          },
-          highestScore: {
-            $max: "$score",
-          },
-          fewestGuessesToWin: {
-            $min: "$guessesToWin",
-          },
-        },
-      },
-    ])
-    .toArray();
-  return stats[0];
+  const games = await gamesCollection.find({ user: userId }).toArray();
+  return games;
 }
+
+// export async function userGameStats(client: MongoClient, userId: ObjectId) {
+//   const db = await connectDb(client);
+//   const gamesCollection = db.collection<GameSchema>("games");
+//   const stats = await gamesCollection
+//     .aggregate([
+//       {
+//         $match: {
+//           user: userId,
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: "$user",
+//           gamesWon: {
+//             $sum: {
+//               $cond: [
+//                 {
+//                   $eq: ["$win", true],
+//                 },
+//                 1,
+//                 0,
+//               ],
+//             },
+//           },
+//           responsesSubmitted: {
+//             $sum: {
+//               $cond: [
+//                 {
+//                   $ifNull: ["$vote", false],
+//                 },
+//                 1,
+//                 0,
+//               ],
+//             },
+//           },
+//           gamesPlayed: {
+//             $sum: {
+//               $cond: [
+//                 {
+//                   $gte: [
+//                     {
+//                       $size: "$guesses",
+//                     },
+//                     1,
+//                   ],
+//                 },
+//                 1,
+//                 0,
+//               ],
+//             },
+//           },
+//           highestScore: {
+//             $max: "$score",
+//           },
+//           fewestGuessesToWin: {
+//             $min: "$guessesToWin",
+//           },
+//         },
+//       },
+//     ])
+//     .toArray();
+//   return stats[0];
+// }
 
 // Session queries
 export async function createSession(
