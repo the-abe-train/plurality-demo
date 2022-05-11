@@ -309,7 +309,9 @@ export default () => {
   useEffect(() => {
     if (win) {
       window.scrollTo(0, 0);
-      setOpenModal(true);
+      setTimeout(() => {
+        setOpenModal(true);
+      }, 1500);
     }
   }, [win]);
 
