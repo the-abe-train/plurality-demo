@@ -57,7 +57,7 @@ export const action: ActionFunction = async ({ request }) => {
   // Parse form
   const body = await request.formData();
   const textParam = body.get("text");
-  const dateParam = body.get("date");
+  const dateParam = body.get("date") as string;
   const pageParam = body.get("page");
 
   // Values show up as "on" or null
@@ -66,10 +66,11 @@ export const action: ActionFunction = async ({ request }) => {
 
   // Parse query parameters
   const searchParams = {
-    dateSearch: dayjs(String(dateParam))
-      .tz("America/Toronto")
-      .endOf("day")
-      .toDate(),
+    dateSearch: dayjs(
+      dateParam + " 23:59:59.999",
+      "YYYY-MM-DD",
+      "America/Toronto"
+    ).toDate(),
     idSearch: Number(textParam),
     textSearch: textParam
       ? new RegExp(String.raw`${textParam}`, "gi")
