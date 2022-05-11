@@ -64,13 +64,12 @@ export const action: ActionFunction = async ({ request }) => {
   const communityParam = body.get("community");
   const standardParam = body.get("standard");
 
+  const [year, month, day] = dateParam.split("-").map((str) => Number(str));
+  const midnight = new Date(Date.UTC(year, month - 1, day + 1, 3, 59, 59, 999));
+
   // Parse query parameters
   const searchParams = {
-    dateSearch: dayjs(
-      dateParam + " 23:59:59.999",
-      "YYYY-MM-DD",
-      "America/Toronto"
-    ).toDate(),
+    dateSearch: midnight,
     idSearch: Number(textParam),
     textSearch: textParam
       ? new RegExp(String.raw`${textParam}`, "gi")

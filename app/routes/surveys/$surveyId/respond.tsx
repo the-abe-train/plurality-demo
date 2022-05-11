@@ -128,11 +128,10 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   if (_action === "changeSurvey") {
     console.log("New date", newDate);
-    const midnight = dayjs(
-      newDate + " 23:59:59.999",
-      "YYYY-MM-DD",
-      "America/Toronto"
-    ).toDate();
+    const [year, month, day] = newDate.split("-").map((str) => Number(str));
+    const midnight = new Date(
+      Date.UTC(year, month - 1, day + 1, 3, 59, 59, 999)
+    );
     console.log("Midnight", midnight);
     const newSurvey = await surveyByClose(client, midnight);
     console.log("New survey", newSurvey);
