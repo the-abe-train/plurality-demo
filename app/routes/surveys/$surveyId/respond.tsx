@@ -127,10 +127,11 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   if (_action === "changeSurvey") {
-    const midnight = dayjs(newDate).tz("America/Toronto").endOf("day").toDate();
-    console.log(midnight);
+    console.log("New date", newDate);
+    const midnight = dayjs(newDate, "America/Toronto").endOf("day").toDate();
+    console.log("Midnight", midnight);
     const newSurvey = await surveyByClose(client, midnight);
-    console.log(newSurvey);
+    console.log("New survey", newSurvey);
     return redirect(`/surveys/${newSurvey?._id}/respond`);
   }
 };
