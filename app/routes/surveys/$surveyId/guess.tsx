@@ -307,7 +307,7 @@ export default () => {
 
   // Upon winning, from action data or loader
   useEffect(() => {
-    if (win) {
+    if (win && !openModal) {
       window.scrollTo(0, 0);
       setTimeout(() => {
         setOpenModal(true);

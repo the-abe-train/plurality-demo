@@ -10,6 +10,7 @@ import { MongoClient, ObjectId, UpdateFilter } from "mongodb";
 import { SessionData } from "remix";
 import { capitalizeFirstLetter, truncateEthAddress } from "~/util/text";
 import { randomPassword } from "../util/authorize";
+import dayjs from "dayjs";
 
 // Connect database
 async function connectDb(client: MongoClient) {
@@ -95,6 +96,12 @@ export async function userUpdateEmail(
   const db = await connectDb(client);
   const usersCollection = db.collection<UserSchema>("users");
   const newData = { address: newEmail, verified: false };
+
+  // First make sure no one already has this email address
+  const existingUser = await userByEmail(client, newEmail);
+  console.log(existingUser);
+  if (existingUser) return existingUser;
+
   const modifiedUser = await usersCollection.findOneAndUpdate(
     { _id: id },
     { $set: { email: newData } },
@@ -190,15 +197,14 @@ export async function surveysByAuthor(client: MongoClient, userId: ObjectId) {
   return await surveysCollection.find({ author: userId }).toArray();
 }
 
-export async function getLastSurvey(client: MongoClient) {
+export async function getFutureSurveys(client: MongoClient, amount: number) {
   const db = await connectDb(client);
   const surveysCollection = db.collection<SurveySchema>("surveys");
   const collection = await surveysCollection
-    .find()
-    .sort({ surveyClose: -1 })
-    .limit(1)
+    .find({ surveyClose: { $gt: dayjs().toDate() } })
+    .limit(amount)
     .toArray();
-  return collection[0];
+  return collection;
 }
 
 type SearchParams = {

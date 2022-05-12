@@ -33,24 +33,24 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-type ActionData = {
-  pageQuestions: SurveySchema[];
-  metadata: {
-    pageStart: number;
-    pageEnd: number;
-    totalSurveys: number;
-    pageSurveys: number;
-  };
-  photos: Photo[];
-  votes: VoteAggregation[][];
-};
-
 export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: backgrounds },
     { rel: "stylesheet", href: animations },
   ];
+};
+
+type ActionData = {
+  pageSurveys: SurveySchema[];
+  metadata: {
+    pageStart: number;
+    pageEnd: number;
+    totalSurveysNum: number;
+    pageSurveysNum: number;
+  };
+  photos: Photo[];
+  votes: VoteAggregation[][];
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -89,8 +89,8 @@ export const action: ActionFunction = async ({ request }) => {
   const pageSurveys = matchingSurveys.slice(pageStart, pageEnd);
 
   const metadata = {
-    totalSurveys: matchingSurveys.length,
-    pageSurveys: pageSurveys.length,
+    totalSurveysNum: matchingSurveys.length,
+    pageSurveysNum: pageSurveys.length,
     pageStart: Math.min(pageStart, matchingSurveys.length),
     pageEnd: Math.min(pageEnd, matchingSurveys.length),
   };
@@ -111,31 +111,35 @@ export const action: ActionFunction = async ({ request }) => {
     ]);
 
     // Return data
-    const data = { pageQuestions: pageSurveys, metadata, photos, votes };
+    const data = { pageSurveys, metadata, photos, votes };
     return json<ActionData>(data);
   }
   return "";
 };
 
-export default function Index() {
+export default () => {
   const submit = useSubmit();
   const [page, setPage] = useState(1);
   const formRef = useRef<HTMLFormElement>(null!);
   const transition = useTransition();
 
   const data = useActionData<ActionData>();
-  const showData = (data?.metadata.totalSurveys || 0) > 0;
+  const showData = (data?.metadata.totalSurveysNum || 0) > 0;
 
   useEffect(() => {
     if (data?.metadata) {
-      const maxPages = Math.max(Math.ceil(data.metadata.totalSurveys / 5), 1);
+      const maxPages = Math.max(
+        Math.ceil(data.metadata.totalSurveysNum / 5),
+        1
+      );
       setPage(Math.min(page || 1, maxPages));
     }
   }, [data]);
 
   async function turnPage(change: number) {
     if (data?.metadata) {
-      const { pageSurveys, totalSurveys } = data?.metadata;
+      const { pageSurveysNum: pageSurveys, totalSurveysNum: totalSurveys } =
+        data?.metadata;
 
       const newFormData = new FormData(formRef.current);
       const currentPage = Number(newFormData.get("page"));
@@ -265,11 +269,11 @@ export default function Index() {
             <div className="m-4 flex justify-between">
               <span>
                 Showing {data.metadata.pageStart + 1} - {data.metadata.pageEnd}{" "}
-                out of {data.metadata.totalSurveys}
+                out of {data.metadata.totalSurveysNum}
               </span>
             </div>
             <div className="flex flex-col md:flex-row flex-wrap gap-3">
-              {data.pageQuestions.map((q, idx) => {
+              {data.pageSurveys.map((q, idx) => {
                 const photo = data.photos[idx];
                 return <Survey survey={q} photo={photo} key={q._id} />;
               })}
@@ -280,4 +284,4 @@ export default function Index() {
       </div>
     </main>
   );
-}
+};

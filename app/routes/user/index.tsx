@@ -105,8 +105,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 type ActionData = {
   message: string;
-  name?: string;
-  email?: string;
+  error: boolean;
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -121,9 +120,9 @@ export const action: ActionFunction = async ({ request }) => {
 
   // Parse forms
   const { _action } = Object.fromEntries(form);
-  const newEmail = form.get("email");
-  const newName = form.get("name");
-  const wallet = form.get("wallet");
+  const newEmail = form.get("email") as string;
+  const newName = form.get("name") as string;
+  const wallet = form.get("wallet") as string;
 
   // Handle verify email
   if (_action === "verifyEmail") {
@@ -134,36 +133,39 @@ export const action: ActionFunction = async ({ request }) => {
       const emailBody = `Click the link below to verify your email!
 ${emailLink}`;
       const subject = "Verify Email for Plurality";
-      // const response = await sendEmail({ emailTo, emailBody, subject });
       const response = await sendEmail({ emailBody, emailTo, subject });
       if (response === 200) {
         const message = "Verification email sent.";
-        return json<ActionData>({ message });
+        return json<ActionData>({ message, error: false });
       }
     }
   }
 
   // Handle email change form
-  if (_action === "changeEmail" && typeof newEmail === "string") {
-    await userUpdateEmail(client, userId, newEmail);
+  if (_action === "changeEmail" && newEmail) {
+    const output = await userUpdateEmail(client, userId, newEmail);
+    if (!output?._id.equals(userId)) {
+      const message = "This email is already attached to another account.";
+      return json<ActionData>({ message, error: true });
+    }
     const message = "Email updated successfully.";
-    return json<ActionData>({ message, email: newEmail });
+    return json<ActionData>({ message, error: false });
   }
 
   // Handle name change form
-  if (_action === "changeName" && typeof newName === "string") {
+  if (_action === "changeName" && newName) {
     await userUpdateName(client, userId, newName);
     const message = "Name updated successfully.";
-    return json<ActionData>({ message, name: newName });
+    return json<ActionData>({ message, error: false });
   }
 
   // Handle attach wallet form
-  if (_action === "attachWallet" && typeof wallet === "string") {
+  if (_action === "attachWallet" && wallet) {
     // Check if wallet is already attached to another account
     const { isAuthorized } = await authorizeWallet(userId, wallet);
     if (!isAuthorized) {
-      const message = "Wallet is already attached to another account";
-      return json<ActionData>({ message });
+      const message = "Wallet is already attached to another account.";
+      return json<ActionData>({ message, error: true });
     }
     return await userUpdateWallet(client, userId, wallet);
   }
@@ -207,6 +209,8 @@ export default () => {
   const transition = useTransition();
 
   const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
+
   const attachWallet = useAttachWallet();
   const submit = useSubmit();
   const deleteFormRef = useRef<HTMLFormElement>(null!);
@@ -214,8 +218,9 @@ export default () => {
   useEffect(() => {
     if (actionData?.message) {
       setMessage(actionData.message);
+      setError(actionData.error);
     }
-  }, [actionData]);
+  }, [actionData?.message]);
 
   async function clickAttachWallet() {
     const newMessage = await attachWallet();
@@ -330,7 +335,7 @@ export default () => {
               )}
             </div>
           </Form>
-          {message && <p>{message}</p>}
+          {message && <p style={{ color: error ? "red" : "" }}>{message}</p>}
         </section>
         <section className="space-y-5">
           <h2 className="text-2xl my-2 font-header">Statistics</h2>

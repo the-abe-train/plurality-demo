@@ -50,8 +50,9 @@ export const links: LinksFunction = () => {
 // TODO email must be verified and wallet must be active connected to send
 type LoaderData = {
   user: UserSchema;
-  ids: number[];
-  nfts?: NFT[];
+  nfts: NFT[];
+  enabled: boolean;
+  message?: string;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -75,22 +76,26 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (wallet) {
     try {
       const nfts = await getNfts(wallet);
-      const ids = [100];
-      const data = { user, ids, nfts };
+      // Don't let them submit form if user email address isn't verified
+      if (!user.email.verified) {
+        const message =
+          "Your email address must be verified to submit a Draft.";
+        return json<LoaderData>({ user, nfts, message, enabled: false });
+      }
+
+      // Return data
+      const data = { user, nfts, enabled: true };
+      // console.log(data);
       return json<LoaderData>(data);
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      const message = "An error occurred. Please try again later.";
+      return json<LoaderData>({ user, nfts: [], message, enabled: false });
     }
   }
-
-  // Get list of IDs that this user is allow to submit surveys for
-  // Always just [100] for Web2 version
-  const ids = [100];
-
-  // Return data
-  const data = { user, ids };
-  // console.log(data);
-  return json<LoaderData>(data);
+  const message =
+    "Your Ethereum wallet must be connected in order to submit a Draft.";
+  return json<LoaderData>({ user, nfts: [], message, enabled: false });
 };
 
 type ActionData = {
@@ -179,16 +184,19 @@ export const action: ActionFunction = async ({ request }) => {
 export default () => {
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
-  const transition = useTransition();
-
   const [showForm, setShowForm] = useState(true);
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(loaderData.enabled);
+  const [msg, setMsg] = useState(loaderData.message || actionData?.message);
 
   const nfts = loaderData.nfts ? [...loaderData.nfts] : [];
 
   useEffect(() => {
     if (actionData?.success) {
       setShowForm(false);
+    }
+
+    if (actionData?.message) {
+      setMsg(actionData.message);
     }
 
     // Disable form using transition, email verified, valid token selected
@@ -219,9 +227,10 @@ export default () => {
               <label htmlFor="id" className="space-x-4">
                 <span className="mt-4">Survey Number</span>
                 <select name="id" className="min-w-[80px]">
-                  {loaderData.ids.map((id) => (
-                    <option key={id} value={id}>
-                      {id}
+                  {loaderData.nfts.map((nft, idx) => (
+                    <option key={idx} value={idx}>
+                      {/* TODO this is obviously placeholder logic */}
+                      {idx}
                     </option>
                   ))}
                 </select>
@@ -246,16 +255,6 @@ export default () => {
                 className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
                 name="photo"
               />
-              <label htmlFor="email" className="flex items-center space-x-2">
-                <p>Email address</p>
-                <Tooltip text="We will use this email address to reach you about your submission." />
-              </label>
-              <input
-                type="email"
-                className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
-                name="email"
-                placeholder={loaderData.user.email.address}
-              />
               <div>
                 <button
                   className="gold px-6 py-2 block mx-auto my-6"
@@ -265,7 +264,7 @@ export default () => {
                   Submit
                 </button>
               </div>
-              <p className="text-red-700">{actionData?.message}</p>
+              <p className="text-red-700">{msg}</p>
             </Form>
           )}
           {!showForm && (

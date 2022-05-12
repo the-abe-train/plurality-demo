@@ -16,7 +16,7 @@ import { client } from "~/db/connect.server";
 import {
   addVote,
   gameByQuestionUser,
-  getLastSurvey,
+  getFutureSurveys,
   surveyByClose,
   surveyById,
 } from "~/db/queries";
@@ -40,7 +40,8 @@ type LoaderData = {
   game: GameSchema;
   survey: SurveySchema;
   photo: Photo;
-  lastSurvey: SurveySchema;
+  futureSurveys: SurveySchema[];
+  futurePhotos: Photo[];
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -75,14 +76,20 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 
   // Get additional data from db and apis
-  const [photo, game, lastSurvey] = await Promise.all([
+  const [photo, game, futureSurveys] = await Promise.all([
     fetchPhoto(survey.photo),
     gameByQuestionUser({ client, questionId, userId }),
-    getLastSurvey(client),
+    getFutureSurveys(client, 3),
   ]);
   invariant(game, "Game upsert failed");
 
-  const data = { game, survey, photo, lastSurvey };
+  const futurePhotos = await Promise.all(
+    futureSurveys.map(async (survey) => {
+      return await fetchPhoto(survey.photo);
+    })
+  );
+
+  const data = { game, survey, photo, futureSurveys, futurePhotos };
   return json<LoaderData>(data);
 };
 
@@ -143,15 +150,30 @@ export default () => {
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const surveyClose = loaderData.survey.surveyClose;
-  const lastSurveyClose = loaderData.lastSurvey.surveyClose;
   const [yourVote, setYourVote] = useState(loaderData.game.vote?.text);
   const [enabled, setEnabled] = useState(false);
   const [voteText, setVoteText] = useState("");
   const [datePicker, setDatePicker] = useState(
     dayjs(surveyClose).format("YYYY-MM-DD")
   );
-  const [msg, setMsg] = useState(" ");
-  const lastSurveyDate = dayjs(lastSurveyClose).format("YYYY-MM-DD");
+  const [msg, setMsg] = useState("");
+
+  // Making sure "your vote" is correct
+  useEffect(() => {
+    setYourVote(loaderData.game.vote?.text);
+    setDatePicker(dayjs(surveyClose).format("YYYY-MM-DD"));
+  }, [loaderData.game]);
+
+  // Search for other surveys to respond to
+  const totalOpenSurveys = loaderData.futureSurveys.length;
+  const lastSurvey = loaderData.futureSurveys[totalOpenSurveys - 1];
+  const lastSurveyDate = dayjs(lastSurvey.surveyClose).format("YYYY-MM-DD");
+  const previewSurveys = loaderData.futureSurveys
+    .map((survey, idx) => {
+      return { survey, photo: loaderData.futurePhotos[idx] };
+    })
+    .filter((survey) => survey.survey._id !== loaderData.survey._id)
+    .slice(0, 2);
 
   // Updates from action data
   useEffect(() => {
@@ -162,6 +184,7 @@ export default () => {
     }
   }, [actionData]);
 
+  // Text validation
   useEffect(() => {
     if (voteText.length < 1 || voteText.length >= 20) {
       setEnabled(false);
@@ -170,7 +193,7 @@ export default () => {
       setMsg("Response cannot contain a space.");
     } else {
       setEnabled(true);
-      setMsg(" ");
+      setMsg("");
     }
   }, [voteText]);
 
@@ -179,35 +202,9 @@ export default () => {
       <AnimatedBanner text="Respond" icon={respondSymbol} />
       <main
         className="max-w-4xl flex-grow mx-4 md:mx-auto flex flex-col md:flex-row
-    mt-8 md:gap-8 gap-4 my-8"
+    mt-8 my-8 flex-wrap"
       >
-        <section className="md:px-4 py-2 space-y-4">
-          {yourVote && (
-            <Form
-              className="w-full flex justify-between items-center mb-4"
-              method="post"
-            >
-              <label htmlFor="date">Survey closes:</label>
-              <input
-                type="date"
-                name="date"
-                id="date"
-                value={datePicker}
-                onChange={(e) => setDatePicker(e.target.value)}
-                min={dayjs().tz("America/Toronto").format("YYYY-MM-DD")}
-                max={lastSurveyDate}
-                className="border border-black px-2"
-              />
-              <button
-                type="submit"
-                className="silver px-3 py-1"
-                name="_action"
-                value="changeSurvey"
-              >
-                Change
-              </button>
-            </Form>
-          )}
+        <section className="md:px-4 py-2 space-y-4 md:w-max">
           <Survey survey={loaderData.survey} photo={loaderData.photo} />
           <Form method="post" className="w-full flex space-x-2 my-4">
             <input
@@ -237,9 +234,9 @@ export default () => {
               Your response is: <b>{yourVote}</b>
             </p>
           )}
-          <p className="min-h-[2rem]">{msg} </p>
+          {msg && <p>{msg}</p>}
         </section>
-        <section>
+        <section className="md:w-max md:px-4">
           <h2 className="font-header mb-2 text-2xl">Instructions</h2>
           <p>Use this page to respond to the survey for an upcoming game!</p>
           <p>Your response to the survey should:</p>
@@ -250,7 +247,7 @@ export default () => {
             <li>Only have standard English letters or numbers</li>
           </ul>
 
-          <div className="mt-12">
+          <div className="my-4 md:mt-12">
             <div className="flex flex-wrap gap-3 my-3">
               <NavButton name="Guess" />
               <NavButton name="Draft" />
@@ -260,6 +257,46 @@ export default () => {
             </Link>
           </div>
         </section>
+        {yourVote && (
+          <section className="w-full px-4">
+            <h2 className="font-header mb-2 text-2xl mt-2">
+              Respond to another survey!
+            </h2>
+            <Form
+              className="md:w-max flex flex-wrap md:justify-between items-center 
+              md:space-x-4 mb-4 justify-around"
+              method="post"
+            >
+              <label htmlFor="date">Choose survey by date:</label>
+              <input
+                type="date"
+                name="date"
+                id="date"
+                value={datePicker}
+                onChange={(e) => setDatePicker(e.target.value)}
+                min={dayjs().tz("America/Toronto").format("YYYY-MM-DD")}
+                max={lastSurveyDate}
+                className="border border-black px-2"
+              />
+              <button
+                type="submit"
+                className="silver px-3 py-1"
+                name="_action"
+                value="changeSurvey"
+              >
+                Select date
+              </button>
+            </Form>
+            <div
+              className="flex flex-wrap gap-4 md:w-full"
+              // onClick={() => setYourVote(undefined)}
+            >
+              {previewSurveys.map(({ survey, photo }, idx) => {
+                return <Survey survey={survey} photo={photo} key={idx} />;
+              })}
+            </div>
+          </section>
+        )}
       </main>
     </>
   );
