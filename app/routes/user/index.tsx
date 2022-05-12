@@ -22,7 +22,7 @@ import {
   removeWallet,
   surveysByAuthor,
   userById,
-  userGames,
+  gamesByUser,
   userUpdateEmail,
   userUpdateName,
   userUpdateWallet,
@@ -71,7 +71,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   // Get user stats
   const [surveysList, games] = await Promise.all([
     surveysByAuthor(client, userId),
-    userGames(client, userId),
+    gamesByUser(client, userId),
   ]);
 
   const highScoreGame = games.sort((a, z) => z.score - a.score)[0];
@@ -335,7 +335,11 @@ export default () => {
               )}
             </div>
           </Form>
-          {message && <p style={{ color: error ? "red" : "" }}>{message}</p>}
+          {message && (
+            <p style={{ color: error ? "red" : "" }}>
+              {transition.state !== "idle" ? "Loading..." : message}
+            </p>
+          )}
         </section>
         <section className="space-y-5">
           <h2 className="text-2xl my-2 font-header">Statistics</h2>

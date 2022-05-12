@@ -197,11 +197,23 @@ export async function surveysByAuthor(client: MongoClient, userId: ObjectId) {
   return await surveysCollection.find({ author: userId }).toArray();
 }
 
-export async function getFutureSurveys(client: MongoClient, amount: number) {
+export async function getFutureSurveys(
+  client: MongoClient,
+  amount: number,
+  userId: ObjectId
+) {
   const db = await connectDb(client);
   const surveysCollection = db.collection<SurveySchema>("surveys");
+  const userGames = await gamesByUser(client, userId);
+  const omitSurveys = userGames
+    .filter((game) => game.vote)
+    .map((game) => game.question);
+  console.log("include surveys", omitSurveys);
   const collection = await surveysCollection
-    .find({ surveyClose: { $gt: dayjs().toDate() } })
+    .find({
+      surveyClose: { $gt: dayjs().toDate() },
+      _id: { $not: { $in: omitSurveys } },
+    })
     .limit(amount)
     .toArray();
   return collection;
@@ -373,7 +385,7 @@ export async function addVote(
   return updatedGame;
 }
 
-export async function userGames(client: MongoClient, userId: ObjectId) {
+export async function gamesByUser(client: MongoClient, userId: ObjectId) {
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
   const games = await gamesCollection.find({ user: userId }).toArray();

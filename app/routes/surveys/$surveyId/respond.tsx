@@ -40,8 +40,6 @@ type LoaderData = {
   game: GameSchema;
   survey: SurveySchema;
   photo: Photo;
-  futureSurveys: SurveySchema[];
-  futurePhotos: Photo[];
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -76,26 +74,21 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 
   // Get additional data from db and apis
-  const [photo, game, futureSurveys] = await Promise.all([
+  const [photo, game] = await Promise.all([
     fetchPhoto(survey.photo),
     gameByQuestionUser({ client, questionId, userId }),
-    getFutureSurveys(client, 3),
   ]);
   invariant(game, "Game upsert failed");
 
-  const futurePhotos = await Promise.all(
-    futureSurveys.map(async (survey) => {
-      return await fetchPhoto(survey.photo);
-    })
-  );
-
-  const data = { game, survey, photo, futureSurveys, futurePhotos };
+  const data = { game, survey, photo };
   return json<LoaderData>(data);
 };
 
 type ActionData = {
   message: string;
   newVoteResult?: string;
+  futureSurveys?: SurveySchema[];
+  futurePhotos?: Photo[];
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -129,8 +122,22 @@ export const action: ActionFunction = async ({ request, params }) => {
     const message = "Thank you for voting!";
     const newVoteResult = updatedGame.vote?.text;
 
+    // Get future surveys
+    const futureSurveys = await getFutureSurveys(client, 3, userId);
+
+    const futurePhotos = await Promise.all(
+      futureSurveys.map(async (survey) => {
+        return await fetchPhoto(survey.photo);
+      })
+    );
+
     // Accept correct guess
-    return json<ActionData>({ message, newVoteResult });
+    return json<ActionData>({
+      message,
+      newVoteResult,
+      futureSurveys,
+      futurePhotos,
+    });
   }
 
   if (_action === "changeSurvey") {
@@ -146,6 +153,8 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
+type Preview = { survey: SurveySchema; photo: Photo }[];
+
 export default () => {
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -157,6 +166,8 @@ export default () => {
     dayjs(surveyClose).format("YYYY-MM-DD")
   );
   const [msg, setMsg] = useState("");
+  const [previewSurveys, setPreviewSurveys] = useState<Preview>([]);
+  const [lastSurveyDate, setLastSurveyDate] = useState("");
 
   // Making sure "your vote" is correct
   useEffect(() => {
@@ -164,23 +175,28 @@ export default () => {
     setDatePicker(dayjs(surveyClose).format("YYYY-MM-DD"));
   }, [loaderData.game]);
 
-  // Search for other surveys to respond to
-  const totalOpenSurveys = loaderData.futureSurveys.length;
-  const lastSurvey = loaderData.futureSurveys[totalOpenSurveys - 1];
-  const lastSurveyDate = dayjs(lastSurvey.surveyClose).format("YYYY-MM-DD");
-  const previewSurveys = loaderData.futureSurveys
-    .map((survey, idx) => {
-      return { survey, photo: loaderData.futurePhotos[idx] };
-    })
-    .filter((survey) => survey.survey._id !== loaderData.survey._id)
-    .slice(0, 2);
-
   // Updates from action data
   useEffect(() => {
     const newVote = actionData?.newVoteResult;
     if (newVote) {
       setEnabled(false);
       setYourVote(newVote);
+    }
+
+    // Search for other surveys to respond to
+    if (actionData?.futureSurveys && actionData.futurePhotos) {
+      const { futureSurveys, futurePhotos } = actionData;
+      setPreviewSurveys(
+        futureSurveys
+          .map((survey, idx) => {
+            return { survey, photo: futurePhotos[idx] };
+          })
+          .filter((survey) => survey.survey._id !== loaderData.survey._id)
+          .slice(0, 2)
+      );
+      const totalOpenSurveys = futureSurveys.length;
+      const lastSurvey = futureSurveys[totalOpenSurveys - 1];
+      setLastSurveyDate(dayjs(lastSurvey.surveyClose).format("YYYY-MM-DD"));
     }
   }, [actionData]);
 
