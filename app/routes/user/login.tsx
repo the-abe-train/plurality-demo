@@ -104,7 +104,7 @@ export const action: ActionFunction = async ({ request }) => {
     await gameByQuestionUser({
       client,
       userId,
-      questionId: Number(question),
+      surveyId: Number(question),
       win: win === "true",
       guesses: JSON.parse(guesses),
     });
