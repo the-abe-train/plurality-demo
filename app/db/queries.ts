@@ -197,25 +197,22 @@ export async function surveysByAuthor(client: MongoClient, userId: ObjectId) {
   return await surveysCollection.find({ author: userId }).toArray();
 }
 
-export async function getFutureSurveys(
-  client: MongoClient,
-  amount: number,
-  userId: ObjectId
-) {
+export async function getFutureSurveys(client: MongoClient, userId: ObjectId) {
   const db = await connectDb(client);
   const surveysCollection = db.collection<SurveySchema>("surveys");
   const userGames = await gamesByUser(client, userId);
+  console.log("User games", userGames);
   const omitSurveys = userGames
     .filter((game) => game.vote)
     .map((game) => game.question);
-  console.log("include surveys", omitSurveys);
   const collection = await surveysCollection
     .find({
       surveyClose: { $gt: dayjs().toDate() },
       _id: { $not: { $in: omitSurveys } },
     })
-    .limit(amount)
+    // .limit(amount)
     .toArray();
+  console.log(collection);
   return collection;
 }
 
@@ -302,7 +299,7 @@ export async function votesBySurvey(client: MongoClient, surveyId: number) {
 
 type GameProps = {
   client: MongoClient;
-  questionId: number;
+  surveyId: number;
   userId: ObjectId;
   totalVotes?: number;
   win?: boolean;
@@ -311,7 +308,7 @@ type GameProps = {
 
 export async function gameByQuestionUser({
   client,
-  questionId,
+  surveyId,
   userId,
   totalVotes,
   win,
@@ -320,7 +317,7 @@ export async function gameByQuestionUser({
   const db = await connectDb(client);
   const gamesCollection = db.collection<GameSchema>("games");
   const result = await gamesCollection.findOneAndUpdate(
-    { question: questionId, user: userId },
+    { question: surveyId, user: userId },
     {
       $set: { lastUpdated: new Date() },
       $setOnInsert: { guesses: guesses || [], win: win || false, score: 0 },

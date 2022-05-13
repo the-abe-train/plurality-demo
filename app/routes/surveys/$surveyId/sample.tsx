@@ -286,7 +286,7 @@ export default () => {
       {win && <AnimatedBanner text="Winner" icon={exclamationSymbol} />}
       <main
         className="max-w-4xl flex-grow flex flex-col md:grid grid-cols-2
-    mt-8 md:gap-6 gap-4 my-8 justify-center md:mx-auto mx-4"
+        gap-4 my-6 justify-center md:mx-auto mx-4"
         ref={mainRef}
       >
         <section className="md:px-4 space-y-4 mx-auto md:mx-0 justify-self-start">

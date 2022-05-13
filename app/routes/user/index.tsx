@@ -422,7 +422,7 @@ export default () => {
           <div className="flex space-x-3">
             <a href="https://opensea.io/PluralityGame">
               <button className="gold px-3 py-1 flex items-center space-x-1">
-                <span> Buy a draft token </span>
+                <span> Buy a Survey Token </span>
                 <img
                   className="inline-block"
                   src={openSeaIcon}

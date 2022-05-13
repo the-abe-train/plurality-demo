@@ -47,7 +47,6 @@ export const links: LinksFunction = () => {
   ];
 };
 
-// TODO email must be verified and wallet must be active connected to send
 type LoaderData = {
   user: UserSchema;
   nfts: NFT[];
@@ -187,6 +186,7 @@ export default () => {
   const [showForm, setShowForm] = useState(true);
   const [enabled, setEnabled] = useState(loaderData.enabled);
   const [msg, setMsg] = useState(loaderData.message || actionData?.message);
+  const [token, setToken] = useState("");
 
   const nfts = loaderData.nfts ? [...loaderData.nfts] : [];
 
@@ -211,8 +211,8 @@ export default () => {
     md:grid grid-cols-2 grid-flow-row gap-x-6 md:my-6"
       >
         <section>
-          <h2 className="font-header text-2xl">Your Survey Tokens</h2>
-          <NFTList nfts={nfts} />
+          <h2 className="font-header text-2xl">Select your survey token</h2>
+          <NFTList nfts={nfts} token={token} setToken={setToken} />
           <a href="https://opensea.io/PluralityGame">
             <button className="gold px-3 py-2 my-6 flex space-x-1 items-center mx-auto">
               <span>Buy a Token</span>
@@ -221,25 +221,10 @@ export default () => {
           </a>
         </section>
         <section>
-          <h2 className="font-header text-2xl">Draft a Survey</h2>
+          <h2 className="font-header text-2xl">Draft your Survey question</h2>
           {showForm && (
             <Form method="post" className="my-4 space-y-3">
-              <label htmlFor="id" className="space-x-4">
-                <span className="mt-4">Survey Number</span>
-                <select name="id" className="min-w-[80px]">
-                  {loaderData.nfts.map((nft, idx) => (
-                    <option key={idx} value={idx}>
-                      {/* TODO this is obviously placeholder logic */}
-                      {idx}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label htmlFor="question">
-                <p className="mt-4">Survey question</p>
-              </label>
-              <input
-                type="text"
+              <textarea
                 className="w-full px-4 py-2 text-sm border rounded-md focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-600"
                 name="question"
               />

@@ -12,7 +12,7 @@ module.exports = {
         button: '#012733',
         primary1: '#FDFAF6',
         primary2: '#FFEAE0',
-        secondary: '#21092A',
+        secondary: '#2B1628',
         outline: '#808080'
       },
       dropShadow: {

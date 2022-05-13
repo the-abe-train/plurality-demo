@@ -32,19 +32,42 @@ import NavButton from "~/components/NavButton";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { ObjectId } from "mongodb";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+type Preview = { survey: SurveySchema; photo: Photo };
 
 type LoaderData = {
   game: GameSchema;
   survey: SurveySchema;
   photo: Photo;
+  previews?: Preview[];
+  lastSurveyDate?: string;
 };
+
+async function getPreviews(userId: ObjectId, surveyId: number) {
+  const futureSurveys = await getFutureSurveys(client, userId);
+  const lastSurvey = futureSurveys[futureSurveys.length - 1];
+  const lastSurveyDate = dayjs(lastSurvey.surveyClose).format("YYYY-MM-DD");
+  const previewSurveys = futureSurveys
+    .filter((preview) => preview._id !== surveyId)
+    .slice(0, 2);
+  const previewPhotos = await Promise.all(
+    previewSurveys.map(async (survey) => {
+      return await fetchPhoto(survey.photo);
+    })
+  );
+  const previews = previewSurveys.map((survey, idx) => {
+    return { survey, photo: previewPhotos[idx] };
+  });
+  return { previews, lastSurveyDate };
+}
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   // Params
-  const questionId = Number(params.surveyId);
+  const surveyId = Number(params.surveyId);
 
   // Get user info
   const session = await getSession(request.headers.get("Cookie"));
@@ -64,31 +87,46 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 
   // Get data from db and apis
-  const survey = await surveyById(client, questionId);
+  const survey = await surveyById(client, surveyId);
   invariant(survey, "No question found!");
 
   // Redirect to guess if the survey is closed
   const surveyClose = survey.surveyClose;
   if (dayjs(surveyClose) < dayjs()) {
-    return redirect(`/surveys/${questionId}/guess`);
+    return redirect(`/surveys/${surveyId}/guess`);
   }
 
   // Get additional data from db and apis
   const [photo, game] = await Promise.all([
     fetchPhoto(survey.photo),
-    gameByQuestionUser({ client, questionId, userId }),
+    gameByQuestionUser({ client, surveyId, userId }),
   ]);
   invariant(game, "Game upsert failed");
 
-  const data = { game, survey, photo };
-  return json<LoaderData>(data);
+  // If the player has already voted
+  if (!game.vote) {
+    const data = { game, survey, photo };
+    return json<LoaderData>(data);
+  }
+
+  // Get future surveys
+  const { previews, lastSurveyDate } = await getPreviews(userId, surveyId);
+
+  // Accept correct guess
+  return json<LoaderData>({
+    game,
+    survey,
+    photo,
+    previews,
+    lastSurveyDate,
+  });
 };
 
 type ActionData = {
   message: string;
   newVoteResult?: string;
-  futureSurveys?: SurveySchema[];
-  futurePhotos?: Photo[];
+  previews?: Preview[];
+  lastSurveyDate?: string;
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -112,8 +150,8 @@ export const action: ActionFunction = async ({ request, params }) => {
     }
     // Pull in relevant data
     const userId = session.get("user");
-    const questionId = Number(params.surveyId);
-    const game = await gameByQuestionUser({ client, questionId, userId });
+    const surveyId = Number(params.surveyId);
+    const game = await gameByQuestionUser({ client, surveyId, userId });
     invariant(game, "Game upsert failed");
 
     // Update game with new guess
@@ -123,20 +161,14 @@ export const action: ActionFunction = async ({ request, params }) => {
     const newVoteResult = updatedGame.vote?.text;
 
     // Get future surveys
-    const futureSurveys = await getFutureSurveys(client, 3, userId);
-
-    const futurePhotos = await Promise.all(
-      futureSurveys.map(async (survey) => {
-        return await fetchPhoto(survey.photo);
-      })
-    );
+    const { previews, lastSurveyDate } = await getPreviews(userId, surveyId);
 
     // Accept correct guess
     return json<ActionData>({
       message,
       newVoteResult,
-      futureSurveys,
-      futurePhotos,
+      previews,
+      lastSurveyDate,
     });
   }
 
@@ -153,8 +185,6 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-type Preview = { survey: SurveySchema; photo: Photo }[];
-
 export default () => {
   const loaderData = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -166,8 +196,12 @@ export default () => {
     dayjs(surveyClose).format("YYYY-MM-DD")
   );
   const [msg, setMsg] = useState("");
-  const [previewSurveys, setPreviewSurveys] = useState<Preview>([]);
-  const [lastSurveyDate, setLastSurveyDate] = useState("");
+  const [previewSurveys, setPreviewSurveys] = useState<Preview[]>(
+    loaderData.previews || []
+  );
+  const [lastSurveyDate, setLastSurveyDate] = useState(
+    loaderData.lastSurveyDate
+  );
 
   // Making sure "your vote" is correct
   useEffect(() => {
@@ -184,19 +218,11 @@ export default () => {
     }
 
     // Search for other surveys to respond to
-    if (actionData?.futureSurveys && actionData.futurePhotos) {
-      const { futureSurveys, futurePhotos } = actionData;
-      setPreviewSurveys(
-        futureSurveys
-          .map((survey, idx) => {
-            return { survey, photo: futurePhotos[idx] };
-          })
-          .filter((survey) => survey.survey._id !== loaderData.survey._id)
-          .slice(0, 2)
-      );
-      const totalOpenSurveys = futureSurveys.length;
-      const lastSurvey = futureSurveys[totalOpenSurveys - 1];
-      setLastSurveyDate(dayjs(lastSurvey.surveyClose).format("YYYY-MM-DD"));
+    if (actionData?.lastSurveyDate) {
+      setLastSurveyDate(actionData.lastSurveyDate);
+    }
+    if (actionData?.previews) {
+      setPreviewSurveys(actionData.previews);
     }
   }, [actionData]);
 
@@ -218,7 +244,7 @@ export default () => {
       <AnimatedBanner text="Respond" icon={respondSymbol} />
       <main
         className="max-w-4xl flex-grow mx-4 md:mx-auto flex flex-col md:flex-row
-    mt-8 my-8 flex-wrap"
+    my-6 flex-wrap"
       >
         <section className="md:px-4 py-2 space-y-4 md:w-max">
           <Survey survey={loaderData.survey} photo={loaderData.photo} />
@@ -252,7 +278,9 @@ export default () => {
           )}
           {msg && <p>{msg}</p>}
         </section>
-        <section className="md:w-max md:px-4">
+        <section
+          className={`md:w-max md:px-4 ${yourVote && "hidden md:block"}`}
+        >
           <h2 className="font-header mb-2 text-2xl">Instructions</h2>
           <p>Use this page to respond to the survey for an upcoming game!</p>
           <p>Your response to the survey should:</p>
@@ -274,7 +302,7 @@ export default () => {
           </div>
         </section>
         {yourVote && (
-          <section className="w-full px-4">
+          <section className="w-full md:px-4">
             <h2 className="font-header mb-2 text-2xl mt-2">
               Respond to another survey!
             </h2>
@@ -283,7 +311,9 @@ export default () => {
               md:space-x-4 mb-4 justify-around"
               method="post"
             >
-              <label htmlFor="date">Choose survey by date:</label>
+              <label htmlFor="date" className="hidden md:block">
+                Choose survey by date:
+              </label>
               <input
                 type="date"
                 name="date"
