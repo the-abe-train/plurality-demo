@@ -40,7 +40,11 @@ import AnimatedBanner from "~/components/AnimatedBanner";
 import NavButton from "~/components/NavButton";
 import Modal from "~/components/Modal";
 import { AnimatePresence } from "framer-motion";
-import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+import {
+  clearAllBodyScrollLocks,
+  disableBodyScroll,
+  enableBodyScroll,
+} from "body-scroll-lock";
 import { THRESHOLD } from "~/util/gameplay";
 
 import dayjs from "dayjs";
@@ -292,6 +296,7 @@ export default () => {
     } else {
       enableBodyScroll(mainRef.current);
     }
+    return () => clearAllBodyScrollLocks();
   }, [mainRef, openModal]);
 
   // Updates from action data

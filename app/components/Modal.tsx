@@ -2,7 +2,7 @@ import { Photo } from "~/api/schemas";
 import { SurveySchema, VoteAggregation } from "~/db/schemas";
 import Scorebar from "./Scorebar";
 import Survey from "./Survey";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import xIcon from "~/images/icons/X.svg";
 import Backdrop from "./Backdrop";
 
@@ -40,7 +40,7 @@ export default ({ scorebarProps, surveyProps, handleClose }: Props) => {
     <Backdrop onClick={handleClose}>
       <motion.div
         className="absolute top-1/2 left-1/2 
-      bg-primary1 p-5 rounded-md border border-outline z-30"
+      bg-primary1 p-5 rounded-md border border-outline z-30 w-max max-w-[90%]"
         onClick={(e) => e.stopPropagation()}
         variants={dropIn}
         initial="hidden"

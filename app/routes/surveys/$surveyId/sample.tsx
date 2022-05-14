@@ -11,7 +11,11 @@ import {
 import invariant from "tiny-invariant";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+import {
+  clearAllBodyScrollLocks,
+  disableBodyScroll,
+  enableBodyScroll,
+} from "body-scroll-lock";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
@@ -223,6 +227,7 @@ export default () => {
     } else {
       enableBodyScroll(mainRef.current);
     }
+    return () => clearAllBodyScrollLocks();
   }, [mainRef, openModal]);
 
   // Initial game data to local storage

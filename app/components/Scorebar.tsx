@@ -109,13 +109,10 @@ export default function Scorebar({
         ></motion.div>
         <div
           className="h-full w-1 z-10 bg-[#03bb6e] absolute top-0"
-          style={{
-            left: `calc(${THRESHOLD}% - 2px)`,
-            // backgroundColor: win ? "#03bb6e" : "#39cdff",
-          }}
+          style={{ left: `calc(${THRESHOLD}% - 2px)` }}
         ></div>
       </div>
-      <div className="flex items-end w-full justify-center space-x-12">
+      <div className="flex items-end w-full justify-around">
         {items.map((item) => {
           return (
             <div
