@@ -3,8 +3,8 @@ import openSeaJpeg from "~/images/open_sea_logo.jpg";
 
 type Props = {
   nfts: NFT[];
-  token: string;
-  setToken: React.Dispatch<React.SetStateAction<string>>;
+  token?: string;
+  setToken?: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default ({ nfts, token, setToken }: Props) => {
@@ -23,10 +23,7 @@ export default ({ nfts, token, setToken }: Props) => {
         </label>
       </form> */}
       {/* <div className="flex flex-wrap items-center justify-items-center max-h-64 overflow-scroll"> */}
-      <div
-        className="grid grid-cols-3
-       max-h-64 overflow-scroll"
-      >
+      <div className="grid grid-cols-3 max-h-64 overflow-y-scroll">
         {nfts.length > 0 &&
           nfts.map((nft) => {
             const src = nft.image_url || openSeaJpeg;
@@ -38,7 +35,9 @@ export default ({ nfts, token, setToken }: Props) => {
                   alt={nft.name}
                   width={100}
                   className="transition-all cursor-pointer"
-                  onClick={() => setToken(nft.token_id)}
+                  onClick={() => {
+                    if (setToken) setToken(nft.token_id);
+                  }}
                   style={{
                     filter: token === nft.token_id ? "" : "grayscale(100%)",
                   }}

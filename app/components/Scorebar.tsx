@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import { useState } from "react";
 import { VoteAggregation } from "~/db/schemas";
-import { MAX_GUESSES, THRESHOLD } from "~/util/gameplay";
+import { MAX_GUESSES, THRESHOLD } from "~/util/constants";
 import Counter from "./Counter";
 import ShareButton from "./ShareButton";
 

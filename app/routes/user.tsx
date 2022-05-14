@@ -11,10 +11,11 @@ import {
   redirect,
   useLoaderData,
 } from "remix";
-import { commitSession, destroySession, getSession } from "~/sessions";
+import { destroySession, getSession } from "~/sessions";
 import { UserSchema } from "~/db/schemas";
 import { userById } from "~/db/queries";
 import { client } from "~/db/connect.server";
+import { truncateName } from "~/util/text";
 
 export const links: LinksFunction = () => {
   return [
@@ -51,7 +52,7 @@ export default function User() {
   const data = useLoaderData<LoaderData>();
   return (
     <div className="light w-full top-0 bottom-0 flex flex-col min-h-screen">
-      <Header name={data.user ? data.user.name : "Connect"} />
+      <Header name={data.user ? truncateName(data.user.name, 5) : "Connect"} />
       <Outlet />
       <Footer />
     </div>

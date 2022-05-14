@@ -1,7 +1,5 @@
 import { VoteAggregation } from "~/db/schemas";
-
-export const THRESHOLD = 80; // This is a %
-export const MAX_GUESSES = 6;
+import { THRESHOLD } from "./constants";
 
 export function checkWin(guesses: VoteAggregation[], totalVotes: number) {
   const points = guesses.reduce((sum, guess) => {

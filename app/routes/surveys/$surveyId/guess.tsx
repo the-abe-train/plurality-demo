@@ -11,6 +11,12 @@ import {
 } from "remix";
 import invariant from "tiny-invariant";
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import {
+  clearAllBodyScrollLocks,
+  disableBodyScroll,
+  enableBodyScroll,
+} from "body-scroll-lock";
 
 import styles from "~/styles/app.css";
 import backgrounds from "~/styles/backgrounds.css";
@@ -39,13 +45,8 @@ import Switch from "~/components/Switch";
 import AnimatedBanner from "~/components/AnimatedBanner";
 import NavButton from "~/components/NavButton";
 import Modal from "~/components/Modal";
-import { AnimatePresence } from "framer-motion";
-import {
-  clearAllBodyScrollLocks,
-  disableBodyScroll,
-  enableBodyScroll,
-} from "body-scroll-lock";
-import { THRESHOLD } from "~/util/gameplay";
+
+import { MAX_GUESSES, THRESHOLD } from "~/util/constants";
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -245,7 +246,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     return sum + guess.votes;
   }, 0);
   const score = points / game.totalVotes;
-  const win = score >= THRESHOLD / 100;
+  const win = score >= 80 / 100;
   const guessesToWin = win ? guesses.length : 0;
   const updatedGame = await addGuess(
     client,
@@ -258,7 +259,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(updatedGame, "Game update failed");
 
   // Pick message to send to player
-  const gameOver = updatedGame.guesses.length >= THRESHOLD;
+  const gameOver = updatedGame.guesses.length >= MAX_GUESSES;
   let message: string;
   if (win && !gameOver) {
     message = "You win! Keep guessing to improve your score.";

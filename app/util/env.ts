@@ -9,5 +9,3 @@ export const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "";
 export const OPENSEA_API_KEY = process.env.OPENSEA_API_KEY ?? "";
 export const ROOT_DOMAIN = process.env.ROOT_DOMAIN ?? "";
 export const JWT_SIGNATURE = process.env.JWT_SIGNATURE ?? "";
-
-export const PER_PAGE = 6;

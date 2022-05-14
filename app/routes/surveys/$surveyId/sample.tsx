@@ -25,7 +25,8 @@ import guessSymbol from "~/images/icons/guess.svg";
 import exclamationSymbol from "~/images/icons/exclamation.svg";
 
 import { parseAnswer, trim } from "~/util/text";
-import { checkWin, THRESHOLD } from "~/util/gameplay";
+import { checkWin } from "~/util/gameplay";
+import { THRESHOLD } from "~/util/constants";
 
 import { client } from "~/db/connect.server";
 import { surveyByClose, surveyById, votesBySurvey } from "~/db/queries";

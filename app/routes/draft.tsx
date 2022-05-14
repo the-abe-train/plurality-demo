@@ -8,7 +8,6 @@ import {
   redirect,
   useActionData,
   useLoaderData,
-  useTransition,
 } from "remix";
 import { useEffect, useState } from "react";
 

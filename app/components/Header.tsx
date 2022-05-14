@@ -8,6 +8,7 @@ import draft from "~/images/icons/draft.svg";
 import logo from "~/images/icons/logo.svg";
 import down from "~/images/icons/down.svg";
 import empty_logo from "~/images/icons/empty_logo.svg";
+import { truncateName } from "~/util/text";
 
 type Props = {
   name?: string;
@@ -110,12 +111,12 @@ export default function Header({ name }: Props) {
               <Link to="/help/what-is-plurality">Help</Link>
             </li>
             <Link to="/user">
-              <button className="silver px-3 py-2">{name || "Connect"}</button>
+              <button className="silver px-3 py-2">{truncateName(name)}</button>
             </Link>
           </ul>
         </nav>
         <div className="md:hidden">
-          <Sidebar name={name} />
+          <Sidebar name={truncateName(name)} />
         </div>
       </div>
     </div>

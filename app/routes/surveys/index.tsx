@@ -19,7 +19,7 @@ import { client } from "~/db/connect.server";
 import { Photo } from "~/api/schemas";
 import { fetchPhoto } from "~/api/unsplash";
 
-import { PER_PAGE } from "~/util/env";
+import { PER_PAGE } from "~/util/constants";
 
 import Survey from "~/components/Survey";
 import AnimatedBanner from "~/components/AnimatedBanner";

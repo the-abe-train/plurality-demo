@@ -134,7 +134,7 @@ export default () => {
     }
   }, [actionData]);
 
-  // If the player has already played a sample round, grag that data
+  // If the player has already played a sample round, grab that data
   useEffect(() => {
     const question = localStorage.getItem("question");
     const guesses = localStorage.getItem("guesses");
@@ -176,6 +176,7 @@ export default () => {
             <button className="silver px-3 py-2 block" type="submit">
               Log-in
             </button>
+            <p className="text-red-700 text-left self-start">{message}</p>
           </Form>
         </article>
         <article className="max-w-sm">
@@ -203,7 +204,6 @@ export default () => {
             Sign-up
           </Link>
         </p>
-        {message && <p className="text-red-700">{message}</p>}
       </section>
     </main>
   );

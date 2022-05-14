@@ -1,3 +1,5 @@
+import { NAME_LENGTH } from "./constants";
+
 export function statFormat(number: number) {
   if (number >= 1000) {
     const newNum = (number / 1000).toPrecision(3);
@@ -35,4 +37,15 @@ export const truncateEthAddress = (address: string) => {
 
 export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
+
+export function truncateName(name: string | undefined): string {
+  if (!name) return "Connect";
+  if (name.includes("@")) {
+    const idx = name.indexOf("@");
+    return truncateName(name.substring(0, idx));
+  }
+  return name.length > NAME_LENGTH
+    ? `${name.substring(0, NAME_LENGTH)}...`
+    : name;
 }

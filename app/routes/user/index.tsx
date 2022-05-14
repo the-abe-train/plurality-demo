@@ -29,7 +29,7 @@ import {
 } from "~/db/queries";
 import { createVerifyEmailLink } from "~/util/verify.server";
 import { getSession, destroySession } from "../../sessions";
-import { statFormat, truncateEthAddress } from "~/util/text";
+import { statFormat, truncateEthAddress, truncateName } from "~/util/text";
 import AnimatedBanner from "~/components/AnimatedBanner";
 import Counter from "~/components/Counter";
 import NFTList from "~/components/NFTList";
@@ -41,6 +41,8 @@ import userIcon from "~/images/icons/user.svg";
 import openSeaIcon from "~/images/icons/open_sea.svg";
 import { NFT } from "~/api/schemas";
 import { getNfts } from "~/api/opensea";
+import { NAME_LENGTH } from "~/util/constants";
+// import { NAME_LENGTH } from "~/util/env";
 
 type LoaderData = {
   user: UserSchema;
@@ -246,7 +248,7 @@ export default () => {
   const [email, setEmail] = useState(user.email.address || "");
   return (
     <main className="container max-w-4xl flex-grow px-4">
-      <AnimatedBanner text={user.name || "User"} icon={userIcon} />
+      <AnimatedBanner text={truncateName(user.name)} icon={userIcon} />
       <div
         className=" flex flex-col
     md:grid grid-cols-2 grid-flow-row gap-8"
@@ -300,7 +302,7 @@ export default () => {
                 name="name"
                 className="px-3 py-1 border-outline border rounded-sm"
                 onChange={(e) => setName(e.target.value)}
-                maxLength={16}
+                maxLength={NAME_LENGTH}
               />
               <button
                 type="submit"
