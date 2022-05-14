@@ -208,7 +208,7 @@ export default () => {
       <AnimatedBanner text="Draft" icon={draftSymbol} />
       <main
         className="container max-w-4xl flex-grow px-4 flex flex-col
-    md:grid grid-cols-2 grid-flow-row gap-x-6 md:my-6"
+    md:grid grid-cols-2 grid-flow-row gap-x-6 my-6"
       >
         <section>
           <h2 className="font-header text-2xl">Select your survey token</h2>

@@ -8,7 +8,6 @@ type Props = {
 };
 
 export default ({ nfts, token, setToken }: Props) => {
-  // const surveyTokens = nfts.filter(nft => nft.traits.)
   return (
     <div className="my-4">
       {/* <form className="my-2">
@@ -23,22 +22,29 @@ export default ({ nfts, token, setToken }: Props) => {
           </select>
         </label>
       </form> */}
-      <div className="flex flex-wrap space-x-4 items-center justify-items-center">
+      {/* <div className="flex flex-wrap items-center justify-items-center max-h-64 overflow-scroll"> */}
+      <div
+        className="grid grid-cols-3
+       max-h-64 overflow-scroll"
+      >
         {nfts.length > 0 &&
           nfts.map((nft) => {
             const src = nft.image_url || openSeaJpeg;
             return (
-              <img
-                key={nft.token_id}
-                src={src}
-                alt={nft.name}
-                width={100}
-                className="transition-all cursor-pointer"
-                onClick={() => setToken(nft.token_id)}
-                style={{
-                  filter: token === nft.token_id ? "" : "grayscale(100%)",
-                }}
-              />
+              <figure className="flex flex-col items-center max-w-[100px] m-2">
+                <img
+                  key={nft.token_id}
+                  src={src}
+                  alt={nft.name}
+                  width={100}
+                  className="transition-all cursor-pointer"
+                  onClick={() => setToken(nft.token_id)}
+                  style={{
+                    filter: token === nft.token_id ? "" : "grayscale(100%)",
+                  }}
+                />
+                <figcaption className="text-center">{nft.name}</figcaption>
+              </figure>
             );
           })}
       </div>

@@ -201,7 +201,6 @@ export async function getFutureSurveys(client: MongoClient, userId: ObjectId) {
   const db = await connectDb(client);
   const surveysCollection = db.collection<SurveySchema>("surveys");
   const userGames = await gamesByUser(client, userId);
-  console.log("User games", userGames);
   const omitSurveys = userGames
     .filter((game) => game.vote)
     .map((game) => game.question);
@@ -212,7 +211,6 @@ export async function getFutureSurveys(client: MongoClient, userId: ObjectId) {
     })
     // .limit(amount)
     .toArray();
-  console.log(collection);
   return collection;
 }
 
