@@ -26,7 +26,7 @@ export default function Footer() {
           </div>
           <p>© Plurality {new Date().getFullYear()}</p>
         </section>
-        <section className="flex justify-between w-full md:w-max md:space-x-3">
+        <section className="flex justify-between w-full md:w-max md:space-x-3 items-center">
           <div>
             <b>Plurality</b> was created by <br />
             <a className="underline" href="https://twitter.com/theAbeTrain">
