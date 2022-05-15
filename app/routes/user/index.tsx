@@ -362,34 +362,41 @@ export default () => {
           <table className="table-auto">
             <colgroup>
               <col />
-              <col className="bg-yellow-50 border" />
+              <col className="bg-yellow-50 border min-w-[3rem]" />
               <col />
-              <col className="bg-yellow-50 border w-max" />
+              <col className="bg-yellow-50 border min-w-[3rem]" />
             </colgroup>
             <tbody>
               <tr className="border">
                 <td className="px-2 py-2">Games won</td>
-                <td className="px-2 py-2">{userStats.gamesWon}</td>
+                <td className="px-2 py-2 text-center">{userStats.gamesWon}</td>
                 <td className="px-2 py-2">Games played</td>
-                <td className="px-2 py-2">{userStats.gamesPlayed}</td>
+                <td className="px-2 py-2 text-center">
+                  {userStats.gamesPlayed}
+                </td>
               </tr>
               <tr className="border">
                 <td className="px-2 py-2">Responses submitted</td>
-                <td className="px-2 py-2">{userStats.responsesSubmitted}</td>
+                <td className="px-2 py-2 text-center">
+                  {userStats.responsesSubmitted}
+                </td>
                 <td className="px-2 py-2">Highest score</td>
-                <td className="px-2 py-2">
+                <td className="px-2 py-2 text-center">
                   {wonAnyGames &&
-                    `${statFormat(userStats.highestScore.score * 100)}% (#
-                  ${userStats.highestScore.survey})`}
+                    `${statFormat(userStats.highestScore.score * 100)}% (#${
+                      userStats.highestScore.survey
+                    })`}
                 </td>
               </tr>
               <tr className="border">
                 <td className="px-2 py-2">Surveys drafted</td>
-                <td className="px-2 py-2">{userStats.surveysDrafted}</td>
+                <td className="px-2 py-2 text-center">
+                  {userStats.surveysDrafted}
+                </td>
                 <td className="px-2 py-2">Fewest guesses to win</td>
-                <td className="px-2 py-2">
+                <td className="px-2 py-2 text-center">
                   {wonAnyGames &&
-                    `${userStats.fewestGuesses.guesses} (${userStats.fewestGuesses.survey})`}
+                    `${userStats.fewestGuesses.guesses} (#${userStats.fewestGuesses.survey})`}
                 </td>
               </tr>
             </tbody>

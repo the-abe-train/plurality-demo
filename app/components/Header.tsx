@@ -39,8 +39,8 @@ export default function Header({ name }: Props) {
   };
 
   return (
-    <div className="px-4 py-2 border-0 bg-primary2 z-20 drop-shadow-nav">
-      <div className="w-full flex justify-between max-w-4xl mx-auto items-center">
+    <div className="py-2 border-0 bg-primary2 z-20 drop-shadow-nav">
+      <div className="w-full px-4 flex justify-between max-w-4xl mx-auto items-center">
         <Link to="/" className="flex space-x-2 items-center">
           <p className="font-header text-2xl font-bold">Plurality</p>
           <img className="inline h-6 object-fill" src={logo} alt="logo" />
@@ -48,20 +48,18 @@ export default function Header({ name }: Props) {
         <nav className="flex justify-between items-center">
           <ul className="hidden md:flex md:space-x-8 items-center">
             <motion.li
-              className="z-20 relative"
+              className="z-20 relative cursor-pointer"
               onMouseEnter={() => setIsHover(true)}
               onMouseLeave={() => setIsHover(false)}
               onClick={() => setIsHover(!isHover)}
             >
-              <Link to="/surveys" className="flex items-center space-x-2">
-                <span>Surveys</span>{" "}
-                <img
-                  src={down}
-                  alt="Instruction symbol"
-                  className="mr-2 inline"
-                  width={12}
-                />
-              </Link>
+              <span>Surveys</span>{" "}
+              <img
+                src={down}
+                alt="Instruction symbol"
+                className="mr-2 inline"
+                width={12}
+              />
               <motion.div
                 className="absolute top-8 -left-4 bg-primary2 drop-shadow-nav 
                 rounded-md space-y-3 px-4 py-2 w-32"

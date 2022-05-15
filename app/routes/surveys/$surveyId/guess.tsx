@@ -192,10 +192,10 @@ export const action: ActionFunction = async ({ request, params }) => {
   ]);
 
   // Parse form
-  const guess = form.get("guess");
+  const guess = form.get("guess") as string;
 
   // Reject empty form submissions
-  if (typeof guess !== "string") {
+  if (!guess) {
     const message = "Please enter a guess.";
     return json<ActionData>({ message });
   }
@@ -320,6 +320,9 @@ export default () => {
       }, 1500);
     }
   }, [win]);
+
+  // Always scroll to the top on refresh
+  useEffect(() => window.scrollTo(0, 0), []);
 
   // Calculated values
   const points = guesses.reduce((sum, guess) => {

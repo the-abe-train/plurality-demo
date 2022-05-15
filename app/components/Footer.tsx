@@ -1,5 +1,8 @@
 import styles from "~/styles/app.css";
 import whiteLogo from "~/images/icons/white_logo.svg";
+import twitterIcon from "~/images/icons/twitter.svg";
+import githubIcon from "~/images/icons/github.svg";
+import emailIcon from "~/images/icons/email.svg";
 import { Link, LinksFunction } from "remix";
 
 export const links: LinksFunction = () => {
@@ -8,18 +11,44 @@ export const links: LinksFunction = () => {
 
 export default function Footer() {
   return (
-    <footer className="bg-secondary p-4 text-primary1 text-sm">
-      <div className="flex justify-between flex-wrap max-w-4xl container space-y-2">
-        <section>
+    <footer className="bg-secondary p-4 text-primary1 mt-4 text-sm">
+      <div
+        className="w-full md:px-4 flex flex-col md:flex-row justify-between max-w-4xl 
+      mx-auto items-center space-y-3 md:space-y-0"
+      >
+        <section
+          className="flex md:flex-col justify-center items-end 
+        md:items-start space-x-4 md:space-x-0 w-full md:w-max"
+        >
           <div className="font-header text-xl space-x-1 flex items-center">
             <img className="inline h-5" src={whiteLogo} alt="logo" />
             <span>Plurality</span>
           </div>
           <p>© Plurality {new Date().getFullYear()}</p>
         </section>
-        <section className="col-start-2">
-          <h3 className="font-bold">Pages</h3>
-          <ul>
+        <section className="flex justify-between w-full md:w-max md:space-x-3">
+          <div>
+            <b>Plurality</b> was created by <br />
+            <a className="underline" href="https://twitter.com/theAbeTrain">
+              The Abe Train
+            </a>{" "}
+            &{" "}
+            <a className="underline" href="https://twitter.com/enriqueolivojr">
+              The Enrique Olivo
+            </a>
+          </div>
+          <a href="https://twitter.com/pluralitygame">
+            <img src={twitterIcon} width={20} alt="Twitter" />
+          </a>
+          <a href="https://github.com/the-abe-train/plurality">
+            <img src={githubIcon} width={20} alt="GitHub" />
+          </a>
+          <a href="mailto:team@plurality.fun">
+            <img src={emailIcon} width={20} alt="Email" />
+          </a>
+        </section>
+        <section>
+          <ul className="grid grid-cols-4 gap-x-4 justify-items-center">
             <li>
               <Link to="/">Home</Link>
             </li>
@@ -27,35 +56,22 @@ export default function Footer() {
               <Link to="/user">Profile</Link>
             </li>
             <li>
+              <Link to="/surveys/today">Guess</Link>
+            </li>
+            <li>
+              <Link to="/surveys/tomorrow">Respond</Link>
+            </li>
+            <li>
+              <Link to="/draft">Draft</Link>
+            </li>
+            <li>
+              <Link to="/surveys">Search</Link>
+            </li>
+            <li>
               <Link to="/help/what-is-plurality">Help</Link>
             </li>
             <li>
-              <Link to="/surveys">Surveys</Link>
-            </li>
-          </ul>
-        </section>
-        <section className="col-start-2">
-          <h3 className="font-bold">Resources</h3>
-          <ul>
-            <li>
-              <Link to="/">Privacy policy</Link>
-            </li>
-            <li>
-              <Link to="/">Environmental assesment</Link>
-            </li>
-            <li>
-              <Link to="/">Open-source code</Link>
-            </li>
-          </ul>
-        </section>
-        <section className="col-start-3">
-          <h3 className="font-bold">Created by</h3>
-          <ul>
-            <li>
-              <a href="https://twitter.com/theAbeTrain">The Abe Train</a>
-            </li>
-            <li>
-              <a href="https://twitter.com/enriqueolivojr">El Enrique Olivo</a>
+              <Link to="/help/policies">Policies</Link>
             </li>
           </ul>
         </section>

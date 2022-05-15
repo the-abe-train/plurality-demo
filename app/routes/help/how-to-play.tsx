@@ -7,7 +7,7 @@ export default function howToPlay() {
     <main className="flex-grow mx-4 md:mx-auto mb-4 max-w-4xl my-4">
       <AnimatedBanner text="How to Play" />
       <div className="flex flex-col md:flex-row-reverse ">
-        <section className="space-y-2">
+        <section className="space-y-6">
           <article className="space-y-2">
             <h2 className="text-2xl font-header">Connecting to Plurality</h2>
             <p>
