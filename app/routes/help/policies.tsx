@@ -106,6 +106,15 @@ export default () => {
               Ethereum transactions.
             </p>
           </article>
+          <article className="space-y-2">
+            <h2 className="mt-3 text-2xl font-header">Aggregated Statistics</h2>
+            <p>
+              We may collect statistics about the behavior of visitors to its
+              website using database and server information. This information
+              may be displayed publicly or provided it to others. However, we
+              will never disclose any personally-identifying information.
+            </p>
+          </article>
         </section>
         <InfoMenu page="policies" />
       </div>
